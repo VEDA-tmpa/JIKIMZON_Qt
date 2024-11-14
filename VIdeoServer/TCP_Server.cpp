@@ -2,6 +2,8 @@
 #include <boost/asio.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 using boost::asio::ip::tcp;
 namespace asio = boost::asio;
@@ -26,6 +28,8 @@ void send_image_to_client(tcp::socket& socket, cv::Mat& frame) {
     boost::asio::write(socket, boost::asio::buffer(buffer.data(), buffer.size()));
 
     std::cout << "프레임 전송 완료!" << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 int main() {
