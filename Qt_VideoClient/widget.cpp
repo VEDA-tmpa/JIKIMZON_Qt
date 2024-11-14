@@ -14,7 +14,9 @@ Widget::Widget(QWidget *parent)
     // QTimer를 설정하여 일정 주기로 UI를 업데이트
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Widget::updateUI);
-    timer->start(30);  // 30ms마다 UI를 갱신
+
+    // 100ms 또는 200ms마다 UI를 갱신
+    timer->start(100);  // 100ms마다 UI를 갱신
 }
 
 Widget::~Widget()
@@ -36,7 +38,9 @@ void Widget::readVideoStream()
 
     // 프레임 데이터가 모두 도착할 때까지 기다림
     if (tcpSocket->bytesAvailable() < frameSize) {
-        return;
+        if (!tcpSocket->waitForReadyRead(100)) { // 100ms 대기
+            return; // 데이터가 도착하지 않으면 반환
+        }
     }
 
     // 프레임 데이터를 모두 읽기
