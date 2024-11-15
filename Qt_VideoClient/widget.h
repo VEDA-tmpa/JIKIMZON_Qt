@@ -7,6 +7,9 @@
 #include <vector>
 #include <QImage>
 #include <QTimer> // QTimer 추가
+#include <QPushButton>
+#include <QComboBox>
+#include <QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
