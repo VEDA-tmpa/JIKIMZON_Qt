@@ -17,6 +17,11 @@ Widget::Widget(QWidget *parent)
 
     // 100ms 또는 200ms마다 UI를 갱신
     timer->start(100);  // 100ms마다 UI를 갱신
+
+    // 시그널과 슬롯 연결
+    connect(ui->playButton, &QPushButton::clicked, this, &Widget::playVideo);
+    connect(ui->pauseButton, &QPushButton::clicked, this, &Widget::pauseVideo);
+    connect(ui->stopButton, &QPushButton::clicked, this, &Widget::stopVideo);
 }
 
 Widget::~Widget()
@@ -70,3 +75,22 @@ void Widget::updateUI()
         frameReady = false;
     }
 }
+
+
+void Widget::playVideo() {
+    // 비디오 재생 로직
+    timer->start(100);  // 타이머를 시작하여 비디오를 재생
+}
+
+void Widget::pauseVideo() {
+    // 비디오 일시 정지 로직
+    timer->stop();  // 타이머를 중지하여 일시 정지
+}
+
+void Widget::stopVideo() {
+    // 비디오 정지 로직
+    timer->stop();  // 타이머를 중지하고 비디오를 정지
+    currentFrame.release();  // 프레임 해제
+    ui->videoLabel->clear();  // 화면 초기화
+}
+
