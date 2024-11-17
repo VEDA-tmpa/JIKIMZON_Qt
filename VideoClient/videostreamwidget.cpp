@@ -90,6 +90,11 @@ void VideoStreamWidget::updateUI()
     }
 }
 
+cv::Mat VideoStreamWidget::getCurrentFrame() const
+{
+    return currentFrame; // 현재 프레임 반환
+}
+
 void VideoStreamWidget::playVideo()
 {
     // 비디오 재생
