@@ -76,6 +76,17 @@ void VideoStreamWidget::readVideoStream()
     }
 }
 
+cv::Mat VideoStreamWidget::getCurrentFrame()
+{
+    if (videoCapture.isOpened()) {
+        videoCapture >> currentFrame; // 현재 프레임 가져오기
+        if (currentFrame.empty()) {
+            qDebug() << "Failed to capture frame!";
+        }
+    }
+    return currentFrame.clone(); // 프레임 복사본 반환
+}
+
 void VideoStreamWidget::updateUI()
 {
     if (frameReady && !currentFrame.empty()) {

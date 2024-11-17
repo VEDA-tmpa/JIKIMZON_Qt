@@ -63,7 +63,18 @@ void RecordingWidget::setSaveLocation() {
 }
 
 void RecordingWidget::saveFrame(const cv::Mat &frame) {
-    if (!frame.empty()) {
-        cv::imwrite(savePath.toStdString() + "/snapshot.png", frame);  // 프레임 저장
+    if (frame.empty()) {
+        qDebug() << "Frame is empty! Unable to save.";
+        return;
+    }
+
+    QString filePath = savePath + "/snapshot.png";
+    qDebug() << "Saving snapshot to:" << filePath;
+
+    if (!cv::imwrite(filePath.toStdString(), frame)) {
+        qDebug() << "Failed to save snapshot!";
+    } else {
+        qDebug() << "Snapshot saved successfully!";
     }
 }
+

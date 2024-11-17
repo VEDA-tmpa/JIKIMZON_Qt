@@ -27,6 +27,8 @@ public:
     explicit VideoStreamWidget(QTcpSocket *socket, QWidget *parent = nullptr);
     ~VideoStreamWidget();
 
+    cv::Mat getCurrentFrame(); // 현재 프레임 가져오기 메서드 추가
+
 protected:
     // ESC 키 처리를 위해 keyPressEvent 재정의
     void keyPressEvent(QKeyEvent *event) override;
@@ -51,6 +53,8 @@ private:
     cv::Mat currentFrame;    // 현재 비디오 프레임
     bool frameReady;         // 새로운 프레임이 준비되었는지 여부
     bool isFullScreen; // 전체 화면 상태
+
+    cv::VideoCapture videoCapture;
 };
 
 #endif // VIDEOSTREAMWIDGET_H
