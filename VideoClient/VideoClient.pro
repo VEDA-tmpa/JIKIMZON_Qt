@@ -11,10 +11,12 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    recordingwidget.cpp \
     videostreamwidget.cpp
 
 HEADERS += \
     mainwindow.h \
+    recordingwidget.h \
     videostreamwidget.h
 
 FORMS += \
