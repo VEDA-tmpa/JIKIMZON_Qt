@@ -27,6 +27,11 @@ public:
     explicit VideoStreamWidget(QTcpSocket *socket, QWidget *parent = nullptr);
     ~VideoStreamWidget();
 
+<<<<<<< HEAD
+=======
+    cv::Mat getCurrentFrame();  // 현재 프레임을 반환하는 함수
+
+>>>>>>> feature/switch
 protected:
     // ESC 키 처리를 위해 keyPressEvent 재정의
     void keyPressEvent(QKeyEvent *event) override;

@@ -76,6 +76,13 @@ void VideoStreamWidget::readVideoStream()
     }
 }
 
+<<<<<<< HEAD
+=======
+cv::Mat VideoStreamWidget::getCurrentFrame() {
+    return currentFrame;  // 현재 프레임을 반환
+}
+
+>>>>>>> feature/switch
 void VideoStreamWidget::updateUI()
 {
     if (frameReady && !currentFrame.empty()) {
