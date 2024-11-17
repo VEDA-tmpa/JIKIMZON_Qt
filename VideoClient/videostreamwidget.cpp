@@ -1,5 +1,6 @@
 #include "VideoStreamWidget.h"
 #include "ui_VideoStreamWidget.h"
+#include "ui_fullScreenWindow.h"
 #include <opencv2/opencv.hpp>
 #include <QTimer>
 #include <QImage>
@@ -10,7 +11,8 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
     ui(new Ui::VideoStreamWidget),
     tcpSocket(socket),
     timer(new QTimer(this)),
-    frameReady(false)
+    frameReady(false),
+    isFullScreen(false) // 초기값 설정
 {
     ui->setupUi(this);
 
@@ -23,6 +25,9 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
     connect(ui->pauseButton, &QPushButton::clicked, this, &VideoStreamWidget::pauseVideo);
     connect(ui->stopButton, &QPushButton::clicked, this, &VideoStreamWidget::stopVideo);
 
+    // 전체 화면 버튼 시그널 연결
+    connect(ui->fullScreenButton, &QPushButton::clicked, this, &VideoStreamWidget::toggleFullScreen);
+
     // QTimer를 설정하여 일정 주기로 UI를 업데이트
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &VideoStreamWidget::updateUI);
@@ -33,6 +38,9 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
 
 VideoStreamWidget::~VideoStreamWidget()
 {
+    if (fullScreenWindow) {
+        delete fullScreenWindow;
+    }
     delete ui;
 }
 
@@ -72,12 +80,14 @@ void VideoStreamWidget::readVideoStream()
 void VideoStreamWidget::updateUI()
 {
     if (frameReady && !currentFrame.empty()) {
-        // OpenCV 이미지를 QImage로 변환
         QImage img((const uchar*)currentFrame.data, currentFrame.cols, currentFrame.rows, currentFrame.step, QImage::Format_BGR888);
 
-        // UI에서 비디오 업데이트
-        ui->videoLabel->setPixmap(QPixmap::fromImage(img));
-        frameReady = false;  // 다음 프레임을 준비
+        if (isFullScreen && fullScreenVideoLabel) {
+            fullScreenVideoLabel->setPixmap(QPixmap::fromImage(img).scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
+        } else {
+            ui->videoLabel->setPixmap(QPixmap::fromImage(img).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+        }
+        frameReady = false;
     }
 }
 
@@ -107,6 +117,59 @@ void VideoStreamWidget::stopVideo()
     }
     currentFrame.release();  // 프레임 해제
     ui->videoLabel->clear();  // 화면 초기화
+}
+
+void VideoStreamWidget::toggleFullScreen()
+{
+    if (!isFullScreen) {
+        // 전체 화면 창 생성
+        fullScreenWindow = new QWidget();
+        fullScreenWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+
+        // 화면 크기 설정
+        QScreen *screen = QGuiApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        fullScreenWindow->setGeometry(screenGeometry);
+
+        // 전체 화면 라벨 생성
+        fullScreenVideoLabel = new QLabel(fullScreenWindow);
+        fullScreenVideoLabel->setAlignment(Qt::AlignCenter);
+        fullScreenVideoLabel->setGeometry(fullScreenWindow->rect());
+
+        // OpenCV 프레임으로 전체 화면 라벨 업데이트
+        if (!currentFrame.empty()) {
+            QImage img((const uchar*)currentFrame.data, currentFrame.cols, currentFrame.rows, currentFrame.step, QImage::Format_BGR888);
+            fullScreenVideoLabel->setPixmap(QPixmap::fromImage(img));
+        }
+
+        // 전체 화면 모드에서 닫기 버튼 추가
+        QPushButton *closeButton = new QPushButton("닫기", fullScreenWindow);
+        closeButton->setGeometry(10, 10, 100, 40);  // 버튼 위치와 크기 설정
+        connect(closeButton, &QPushButton::clicked, this, &VideoStreamWidget::toggleFullScreen); // 클릭 시 전체 화면 종료
+
+        fullScreenWindow->show();
+        isFullScreen = true;
+        qDebug() << "Entering Fullscreen Mode";
+    } else {
+        // 전체 화면 해제
+        if (fullScreenWindow) {
+            fullScreenWindow->close();
+            delete fullScreenWindow;
+            fullScreenWindow = nullptr;
+        }
+        isFullScreen = false;
+        qDebug() << "Exiting Fullscreen Mode";
+    }
+}
+
+void VideoStreamWidget::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape && isFullScreen) {
+        toggleFullScreen(); // ESC 키로 전체 화면 종료
+        event->accept(); // ESC 키 이벤트 처리 완료
+    } else {
+        QWidget::keyPressEvent(event); // 기본 동작 유지
+    }
 }
 
 void VideoStreamWidget::updateNetworkStatus(QAbstractSocket::SocketState socketState)
