@@ -76,6 +76,10 @@ void VideoStreamWidget::readVideoStream()
     }
 }
 
+cv::Mat VideoStreamWidget::getCurrentFrame() {
+    return currentFrame;  // 현재 프레임을 반환
+}
+
 void VideoStreamWidget::updateUI()
 {
     if (frameReady && !currentFrame.empty()) {
@@ -88,11 +92,6 @@ void VideoStreamWidget::updateUI()
         }
         frameReady = false;
     }
-}
-
-cv::Mat VideoStreamWidget::getCurrentFrame() const
-{
-    return currentFrame; // 현재 프레임 반환
 }
 
 void VideoStreamWidget::playVideo()
