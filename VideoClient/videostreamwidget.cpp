@@ -1,6 +1,5 @@
 #include "VideoStreamWidget.h"
 #include "ui_VideoStreamWidget.h"
-#include "ui_fullScreenWindow.h"
 #include <opencv2/opencv.hpp>
 #include <QTimer>
 #include <QImage>

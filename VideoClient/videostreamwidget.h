@@ -13,8 +13,6 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QLabel>
-#include <QGuiApplication>
-#include <QScreen>
 
 namespace Ui {
 class VideoStreamWidget;
