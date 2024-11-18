@@ -1,5 +1,7 @@
 #include "recordingwidget.h"
 #include "videostreamwidget.h"
+#include <thread>
+#include <chrono>
 
 RecordingWidget::RecordingWidget(VideoStreamWidget *videoStream, QWidget *parent)
     : QWidget{parent},
@@ -34,15 +36,30 @@ void RecordingWidget::initializeUI() {
 
 void RecordingWidget::startStopRecording() {
     if (isRecording) {
-        videoWriter.release();
+        videoWriter.release();  // 녹화 중지
         recordButton->setText("녹화 시작");
         isRecording = false;
     } else {
         QString videoFile = QFileDialog::getSaveFileName(this, "비디오 파일 저장", savePath, "*.avi");
         if (!videoFile.isEmpty()) {
             videoWriter.open(videoFile.toStdString(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, cv::Size(640, 480));
+            if (!videoWriter.isOpened()) {
+                qDebug() << "Error: Failed to open video file for writing.";
+                return;
+            }
             recordButton->setText("녹화 정지");
             isRecording = true;
+
+            // 녹화 쓰레드 실행
+            std::thread([this]() {
+                while (isRecording) {
+                    cv::Mat frame = videoStreamWidget->getCurrentFrame();
+                    if (!frame.empty()) {
+                        videoWriter.write(frame);
+                    }
+                    std::this_thread::sleep_for(std::chrono::milliseconds(33));  // 대략 30 FPS
+                }
+            }).detach();
         }
     }
 }
@@ -66,20 +83,18 @@ void RecordingWidget::captureSnapshot() {
 }
 
 void RecordingWidget::saveFrame(const cv::Mat &frame) {
-    if (frame.empty()) {
-        qDebug() << "Frame is empty! Unable to save.";
-        return;
-    }
-
-    QString filePath = savePath + "/snapshot.png";
-    qDebug() << "Saving snapshot to:" << filePath;
-
-    if (!cv::imwrite(filePath.toStdString(), frame)) {
-        qDebug() << "Failed to save snapshot!";
+    QString defaultPath = savePath + "/snapshot.png";
+    if (!frame.empty()) {
+        if (!cv::imwrite(defaultPath.toStdString(), frame)) {
+            qDebug() << "Error: Failed to save frame at" << defaultPath;
+        } else {
+            qDebug() << "Frame saved at" << defaultPath;
+        }
     } else {
-        qDebug() << "Snapshot saved successfully!";
+        qDebug() << "Error: Frame is empty.";
     }
 }
+
 
 void RecordingWidget::setSaveLocation() {
     QString folder = QFileDialog::getExistingDirectory(this, "저장 위치 설정", savePath);
