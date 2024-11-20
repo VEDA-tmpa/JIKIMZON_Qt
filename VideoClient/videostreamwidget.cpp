@@ -6,7 +6,11 @@
 #include <QPixmap>
 #include <cstdint> // uint32_t 사용
 #include <QElapsedTimer>
+#include <QDateTime>
+#include <QStandardPaths>
 #include "framespecs.h"
+#include <QThread>
+
 
 VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
     : QWidget(parent),
@@ -30,15 +34,15 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
     // 전체 화면 버튼 시그널 연결
     connect(ui->fullScreenButton, &QPushButton::clicked, this, &VideoStreamWidget::toggleFullScreen);
 
-    // QTimer를 설정하여 일정 주기로 UI를 업데이트
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this]() {
-        QByteArray frame; // 예: 데이터를 멤버 변수 또는 다른 방식으로 준비
-        processFrame(frame);
-    });
+    // // QTimer를 설정하여 일정 주기로 UI를 업데이트
+    // timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, [this]() {
+    //     QByteArray frame; // 예: 데이터를 멤버 변수 또는 다른 방식으로 준비
+    //     processFrame(frame);
+    // });
 
-    // 100ms 또는 200ms마다 UI를 갱신
-    timer->start(33);  // 100ms마다 UI를 갱신
+    // // 100ms 또는 200ms마다 UI를 갱신
+    // timer->start(33);  // 100ms마다 UI를 갱신
 }
 
 VideoStreamWidget::~VideoStreamWidget()
@@ -49,49 +53,80 @@ VideoStreamWidget::~VideoStreamWidget()
     delete ui;
 }
 
+// void VideoStreamWidget::receiveFrame()
+// {
+//     static QByteArray buffer; // 수신 데이터를 저장할 버퍼
+
+//     while (tcpSocket->bytesAvailable() > 0) {
+//         buffer.append(tcpSocket->readAll()); // 수신된 데이터 추가
+
+//         // 고정된 프레임 크기만큼 처리
+//         const int FRAME_SIZE = Frame::FRAME_SIZE;
+//         while (buffer.size() >= FRAME_SIZE) {
+//             QByteArray frameData = buffer.left(FRAME_SIZE); // 프레임 데이터 추출
+//             buffer.remove(0, FRAME_SIZE);                  // 사용한 데이터 제거
+//             processFrame(frameData);                      // 프레임 처리
+//         }
+
+//         // 잔여 데이터가 적은 경우: 기다림
+//         if (buffer.size() > 0 && buffer.size() < FRAME_SIZE) {
+//             qDebug() << "Waiting for more data, buffer size:" << buffer.size();
+//         }
+//     }
+// }
+
+
 void VideoStreamWidget::receiveFrame()
 {
-    const int FRAME_SIZE = 2764800;
-    static QByteArray buffer;      // 수신 데이터를 저장하는 지속 버퍼
-    static int expectedFrameSize = -1; // 현재 프레임 크기, 초기값 -1은 헤더를 아직 읽지 않은 상태를 의미
+    const int FRAME_SIZE = Frame::FRAME_SIZE;  // 예상 프레임 크기
+    static QByteArray buffer;       // 수신 데이터를 저장하는 버퍼
 
-    while (tcpSocket->bytesAvailable()) {
-        // Step 1: 헤더 처리
-        if (expectedFrameSize == -1 && buffer.size() < 4) {
-            // 헤더 데이터 읽기 (프레임 크기를 나타내는 4바이트)
-            buffer.append(tcpSocket->read(4 - buffer.size()));
-            if (buffer.size() < 4) {
-                return; // 헤더가 아직 완전히 수신되지 않았다면 기다림
-            }
+    // 현재 수신된 데이터를 계속 읽음
+    while (tcpSocket->bytesAvailable() > 0) {
+        int remainingData = FRAME_SIZE - buffer.size(); // 남은 데이터 계산
+        buffer.append(tcpSocket->read(remainingData));  // 남은 데이터만큼 읽기
 
-            // 헤더에서 예상 프레임 크기 추출
-            memcpy(&expectedFrameSize, buffer.data(), 4);
-            expectedFrameSize = ntohl(expectedFrameSize); // 네트워크 바이트 순서를 호스트 순서로 변환
+        // // 프레임 데이터가 다 채워졌을 경우
+        // if (buffer.size() == FRAME_SIZE) {
+        //     qDebug() << "프레임 수신 완료. 크기:" << buffer.size();
 
-            if (expectedFrameSize != FRAME_SIZE) {
-                qWarning() << "수신된 프레임 크기가 예상과 다릅니다. 예상:" << FRAME_SIZE
-                           << ", 수신:" << expectedFrameSize;
-                buffer.clear();       // 프레임 크기가 유효하지 않으면 버퍼 초기화
-                expectedFrameSize = -1; // 헤더 상태를 초기화
-                return;
-            }
+        //     // 프레임을 처리
+        //     processFrame(buffer);
 
-            buffer.remove(0, 4); // 버퍼에서 헤더 데이터 제거
-        }
+        //     // 버퍼 초기화
+        //     buffer.clear();
+        // }
+        // else if (buffer.size() > FRAME_SIZE) {
+        //     qWarning() << "수신된 데이터 크기가 예상 크기를 초과했습니다. 초과 크기:"
+        //                << buffer.size() - FRAME_SIZE;
+        //     buffer.clear();
+        // }
 
-        // Step 2: 프레임 데이터 처리
-        int remainingData = expectedFrameSize - buffer.size();
-        if (remainingData > 0) {
-            // 프레임 데이터를 완전히 수신할 때까지 데이터를 버퍼에 추가
-            buffer.append(tcpSocket->read(remainingData));
-        }
-
-        // Step 3: 버퍼에 프레임 데이터가 모두 채워졌을 때
-        if (buffer.size() == expectedFrameSize) {
+        // 프레임 데이터가 다 채워졌을 경우
+        if (buffer.size() == FRAME_SIZE) {
             qDebug() << "프레임 수신 완료. 크기:" << buffer.size();
-            processFrame(buffer);    // 수신된 프레임을 처리
-            buffer.clear();          // 다음 프레임을 위해 버퍼 초기화
-            expectedFrameSize = -1;  // 다음 프레임 헤더를 읽기 위해 초기화
+
+            // 프레임을 처리
+            processFrame(buffer);
+
+
+            // // 프레임 이미지를 저장
+            // QImage image(reinterpret_cast<const uchar *>(buffer.data()),
+            //              1280, 720, QImage::Format_RGB888);
+
+            // if (!image.isNull()) {
+            //     QString filePath = QString("frame_%1.png").arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss_zzz"));
+            //     if (image.save(filePath)) {
+            //         qDebug() << "프레임이 성공적으로 저장되었습니다:" << filePath;
+            //     } else {
+            //         qWarning() << "프레임 저장 실패!";
+            //     }
+            // } else {
+            //     qWarning() << "이미지 변환 실패로 인해 저장되지 않았습니다!";
+            // }
+
+            // 버퍼 초기화
+            buffer.clear();
         }
     }
 }
@@ -113,22 +148,32 @@ void VideoStreamWidget::processFrame(const QByteArray& frameData)
         return;
     }
 
+    // BGR -> RGB 변환
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
 
     // UI 업데이트
-    QPixmap pixmap = QPixmap::fromImage(img);
-    QMetaObject::invokeMethod(this, [this, pixmap]() {
-        if (isFullScreen && fullScreenVideoLabel) {
-            fullScreenVideoLabel->setPixmap(pixmap.scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
-        } else {
-            ui->videoLabel->setPixmap(pixmap.scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
-        }
-    }, Qt::QueuedConnection);
+    // QPixmap pixmap = QPixmap::fromImage(img);
+    // QMetaObject::invokeMethod(this, [this, pixmap]() {
+    //     if (isFullScreen && fullScreenVideoLabel) {
+    //         fullScreenVideoLabel->setPixmap(pixmap.scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
+    //     } else {
+    //         ui->videoLabel->setPixmap(pixmap.scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+    //         qDebug() << " shot ";
+    //     }
+    // }, Qt::QueuedConnection);
+
+    // QImage img((const uchar*)currentFrame.data, currentFrame.cols, currentFrame.rows, currentFrame.step, QImage::Format_BGR888);
+
+    if (isFullScreen && fullScreenVideoLabel) {
+        fullScreenVideoLabel->setPixmap(QPixmap::fromImage(img).scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
+    } else {
+        ui->videoLabel->setPixmap(QPixmap::fromImage(img).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+        qDebug() << " shot ";
+        QThread::sleep(1);
+    }
 
     qDebug() << "Frame processing time:" << timer.elapsed() << "ms";
-
-    frameReady = true;
 }
 
 void VideoStreamWidget::playVideo()

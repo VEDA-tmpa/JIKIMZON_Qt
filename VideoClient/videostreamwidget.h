@@ -35,7 +35,7 @@ private slots:
     // void readVideoStream();  // 비디오 스트림 읽기
     void processFrame(const QByteArray& frameData);
     void receiveFrame();
-    // void updateUI();         // UI 갱신
+    // void updateFrame();         // UI 갱신
     void playVideo();        // 재생
     void pauseVideo();       // 일시정지
     void stopVideo();        // 멈춤
@@ -51,8 +51,10 @@ private:
 
     QTimer *timer;           // UI 업데이트를 위한 타이머
     cv::Mat currentFrame;    // 현재 비디오 프레임
+    QByteArray currentFrameData;  // 수신된 프레임 데이터를 저장할 변수
     bool frameReady;         // 새로운 프레임이 준비되었는지 여부
     bool isFullScreen; // 전체 화면 상태
+
 };
 
 #endif // VIDEOSTREAMWIDGET_H
