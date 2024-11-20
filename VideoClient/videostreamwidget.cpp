@@ -33,16 +33,6 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
 
     // 전체 화면 버튼 시그널 연결
     connect(ui->fullScreenButton, &QPushButton::clicked, this, &VideoStreamWidget::toggleFullScreen);
-
-    // // QTimer를 설정하여 일정 주기로 UI를 업데이트
-    // timer = new QTimer(this);
-    // connect(timer, &QTimer::timeout, this, [this]() {
-    //     QByteArray frame; // 예: 데이터를 멤버 변수 또는 다른 방식으로 준비
-    //     processFrame(frame);
-    // });
-
-    // // 100ms 또는 200ms마다 UI를 갱신
-    // timer->start(33);  // 100ms마다 UI를 갱신
 }
 
 VideoStreamWidget::~VideoStreamWidget()
@@ -52,29 +42,6 @@ VideoStreamWidget::~VideoStreamWidget()
     }
     delete ui;
 }
-
-// void VideoStreamWidget::receiveFrame()
-// {
-//     static QByteArray buffer; // 수신 데이터를 저장할 버퍼
-
-//     while (tcpSocket->bytesAvailable() > 0) {
-//         buffer.append(tcpSocket->readAll()); // 수신된 데이터 추가
-
-//         // 고정된 프레임 크기만큼 처리
-//         const int FRAME_SIZE = Frame::FRAME_SIZE;
-//         while (buffer.size() >= FRAME_SIZE) {
-//             QByteArray frameData = buffer.left(FRAME_SIZE); // 프레임 데이터 추출
-//             buffer.remove(0, FRAME_SIZE);                  // 사용한 데이터 제거
-//             processFrame(frameData);                      // 프레임 처리
-//         }
-
-//         // 잔여 데이터가 적은 경우: 기다림
-//         if (buffer.size() > 0 && buffer.size() < FRAME_SIZE) {
-//             qDebug() << "Waiting for more data, buffer size:" << buffer.size();
-//         }
-//     }
-// }
-
 
 void VideoStreamWidget::receiveFrame()
 {
@@ -86,44 +53,12 @@ void VideoStreamWidget::receiveFrame()
         int remainingData = FRAME_SIZE - buffer.size(); // 남은 데이터 계산
         buffer.append(tcpSocket->read(remainingData));  // 남은 데이터만큼 읽기
 
-        // // 프레임 데이터가 다 채워졌을 경우
-        // if (buffer.size() == FRAME_SIZE) {
-        //     qDebug() << "프레임 수신 완료. 크기:" << buffer.size();
-
-        //     // 프레임을 처리
-        //     processFrame(buffer);
-
-        //     // 버퍼 초기화
-        //     buffer.clear();
-        // }
-        // else if (buffer.size() > FRAME_SIZE) {
-        //     qWarning() << "수신된 데이터 크기가 예상 크기를 초과했습니다. 초과 크기:"
-        //                << buffer.size() - FRAME_SIZE;
-        //     buffer.clear();
-        // }
-
         // 프레임 데이터가 다 채워졌을 경우
         if (buffer.size() == FRAME_SIZE) {
             qDebug() << "프레임 수신 완료. 크기:" << buffer.size();
 
             // 프레임을 처리
             processFrame(buffer);
-
-
-            // // 프레임 이미지를 저장
-            // QImage image(reinterpret_cast<const uchar *>(buffer.data()),
-            //              1280, 720, QImage::Format_RGB888);
-
-            // if (!image.isNull()) {
-            //     QString filePath = QString("frame_%1.png").arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss_zzz"));
-            //     if (image.save(filePath)) {
-            //         qDebug() << "프레임이 성공적으로 저장되었습니다:" << filePath;
-            //     } else {
-            //         qWarning() << "프레임 저장 실패!";
-            //     }
-            // } else {
-            //     qWarning() << "이미지 변환 실패로 인해 저장되지 않았습니다!";
-            // }
 
             // 버퍼 초기화
             buffer.clear();
@@ -151,19 +86,6 @@ void VideoStreamWidget::processFrame(const QByteArray& frameData)
     // BGR -> RGB 변환
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
-
-    // UI 업데이트
-    // QPixmap pixmap = QPixmap::fromImage(img);
-    // QMetaObject::invokeMethod(this, [this, pixmap]() {
-    //     if (isFullScreen && fullScreenVideoLabel) {
-    //         fullScreenVideoLabel->setPixmap(pixmap.scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
-    //     } else {
-    //         ui->videoLabel->setPixmap(pixmap.scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
-    //         qDebug() << " shot ";
-    //     }
-    // }, Qt::QueuedConnection);
-
-    // QImage img((const uchar*)currentFrame.data, currentFrame.cols, currentFrame.rows, currentFrame.step, QImage::Format_BGR888);
 
     if (isFullScreen && fullScreenVideoLabel) {
         fullScreenVideoLabel->setPixmap(QPixmap::fromImage(img).scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
