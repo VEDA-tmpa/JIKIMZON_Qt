@@ -27,6 +27,8 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+INCLUDEPATH += /usr/local/opt/openssl/include
+LIBS += -L/usr/local/opt/openssl/lib -lssl -lcrypto
 
 # OpenCV Include and Library Paths
 INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4
