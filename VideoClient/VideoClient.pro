@@ -27,8 +27,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-INCLUDEPATH += /usr/local/opt/openssl/include
-LIBS += -L/usr/local/opt/openssl/lib -lssl -lcrypto
+# OpenSSL 라이브러리 경로 추가
+INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
+LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
 
 # OpenCV Include and Library Paths
 INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4
