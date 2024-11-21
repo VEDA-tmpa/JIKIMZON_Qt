@@ -9,12 +9,14 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    decryptor.cpp \
     main.cpp \
     mainwindow.cpp \
     videostreamplayer.cpp
 
 HEADERS += \
     Frame.h \
+    decryptor.h \
     mainwindow.h \
     videostreamplayer.h
 
@@ -25,6 +27,11 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+# OpenSSL 라이브러리 경로 추가
+INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
+LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
+LIBS += -lz
 
 # OpenCV Include and Library Paths
 INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4
