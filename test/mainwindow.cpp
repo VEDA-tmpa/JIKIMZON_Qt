@@ -18,6 +18,17 @@ MainWindow::MainWindow(QWidget *parent)
         ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
+    // 일시 정지 버튼 연결
+    connect(ui->pauseButton, &QPushButton::clicked, this, [&]() {
+        player->pauseStream();
+    });
+
+    // 재개 버튼 연결
+    connect(ui->resumeButton, &QPushButton::clicked, this, [&]() {
+        player->resumeStream();
+    });
+
+
     // 스트림 시작
     player->startStream(tcpSocket, 1280, 720, 1280 * 720 * 3);
 }

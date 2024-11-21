@@ -28,6 +28,16 @@ void VideoStreamPlayer::stopStream()
     stop = true;
 }
 
+void VideoStreamPlayer::pauseStream()
+{
+    pause = true;  // 일시 정지 활성화
+}
+
+void VideoStreamPlayer::resumeStream()
+{
+    pause = false;  // 일시 정지 해제
+}
+
 bool VideoStreamPlayer::isStopped() const
 {
     return stop;
@@ -37,6 +47,13 @@ void VideoStreamPlayer::run()
 {
     QByteArray buffer;
     while (!stop) {
+
+        // 일시 정지 상태라면 대기
+        if (pause) {
+            msleep(150);  // CPU 점유율을 낮추기 위해 대기
+            continue;
+        }
+
         if (tcpSocket && tcpSocket->bytesAvailable() > 0) {
             int remainingData = frameSize - buffer.size();
             buffer.append(tcpSocket->read(remainingData));

@@ -15,6 +15,8 @@ public:
 
     void startStream(QTcpSocket *socket, int frameWidth, int frameHeight, int frameSize);
     void stopStream();
+    void pauseStream();
+    void resumeStream();
     bool isStopped() const;
 
 signals:
@@ -26,6 +28,7 @@ protected:
 private:
     QTcpSocket *tcpSocket;
     bool stop;
+    bool pause;  // 일시 정지 상태
     int frameWidth;
     int frameHeight;
     int frameSize;
