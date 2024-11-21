@@ -1,4 +1,7 @@
 #include "videostreamplayer.h"
+#include "decryptor.h"
+#include <QDebug>
+#include <opencv2/opencv.hpp>
 
 VideoStreamPlayer::VideoStreamPlayer(QObject *parent)
     : QThread(parent), tcpSocket(nullptr), stop(true), frameWidth(0), frameHeight(0), frameSize(0)
@@ -46,6 +49,7 @@ bool VideoStreamPlayer::isStopped() const
 void VideoStreamPlayer::run()
 {
     QByteArray buffer;
+    Decryptor decryptor(this->key);
     while (!stop) {
 
         // 일시 정지 상태라면 대기
@@ -59,9 +63,18 @@ void VideoStreamPlayer::run()
             buffer.append(tcpSocket->read(remainingData));
 
             if (buffer.size() == frameSize) {
+
+                // 암호화된 데이터 복호화
+                QByteArray encryptedData = buffer;
+                QByteArray decryptedData = decryptor.decrypt(encryptedData);
+
                 // 프레임 처리
-                cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)buffer.data());
+                // cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)buffer.data());
+                cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)decryptedData.data());
+
                 if (!frame.empty()) {
+                    qDebug() << "Frame decoded successfully.";
+
                     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
                     QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
                     emit frameReady(img);

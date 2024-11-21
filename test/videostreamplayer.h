@@ -4,11 +4,14 @@
 #include <QThread>
 #include <QTcpSocket>
 #include <QImage>
+#include <zlib.h>
+#include <QByteArray>
 #include <opencv2/opencv.hpp>
 
 class VideoStreamPlayer : public QThread
 {
     Q_OBJECT
+       QByteArray key;  // key 변수 정의
 public:
     explicit VideoStreamPlayer(QObject *parent = nullptr);
     ~VideoStreamPlayer();
