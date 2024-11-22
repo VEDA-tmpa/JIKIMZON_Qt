@@ -49,7 +49,21 @@ bool VideoStreamPlayer::isStopped() const
 void VideoStreamPlayer::run()
 {
     QByteArray buffer;
-    Decryptor decryptor(this->key);
+
+    // 키와 nonce 파일 경로
+    QString keyFilePath = "/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test/keyfile.bin";
+    QByteArray key;
+
+    // .bin 파일에서 키 읽기
+    if (!loadKey(keyFilePath, key)) {
+        qDebug() << "Failed to load key from .bin file.";
+        stop = true;
+        return;
+    }
+
+    // Decryptor 객체 초기화
+    Decryptor decryptor(key);
+
     while (!stop) {
 
         // 일시 정지 상태라면 대기
@@ -65,21 +79,20 @@ void VideoStreamPlayer::run()
             if (buffer.size() == frameSize) {
 
                 // 암호화된 데이터 복호화
-                QByteArray encryptedData = buffer;
-                QByteArray decryptedData = decryptor.decrypt(encryptedData);
+                // QByteArray encryptedData = buffer;
+                QByteArray decryptedData = decryptor.decrypt(buffer);
 
                 // 프레임 처리
                 // cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)buffer.data());
                 cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)decryptedData.data());
-
                 if (!frame.empty()) {
                     qDebug() << "Frame decoded successfully.";
-
                     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
                     QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
+
                     emit frameReady(img);
                 }
-                buffer.clear();  // 버퍼 초기화
+                 buffer.clear();  // 버퍼 초기화
             }
         }
         msleep(150);  // CPU 점유율을 줄이기 위한 짧은 대기

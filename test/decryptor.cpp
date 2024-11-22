@@ -1,9 +1,18 @@
 #include "Decryptor.h"
+#include <QFile>
+#include <QTextStream>
 #include <QDebug>
 #include <openssl/evp.h>
 
-Decryptor::Decryptor(const QByteArray& key) : key(key) {}
+// Decryptor::Decryptor(const QByteArray& key) : key(key) {}
+//생성자
+// Decryptor::Decryptor(const QByteArray& key, const QByteArray& nonce)
+//     : key(key), nonce(nonce) {}
+Decryptor::Decryptor(const QByteArray& key)
+    : key(key), nonce(QByteArray(12, 0x00)) // 고정된 nonce 값
+{}
 
+//암호화 해제
 QByteArray Decryptor::decrypt(const QByteArray& encryptedData) {
     std::vector<unsigned char> encrypted(encryptedData.begin(), encryptedData.end());
     std::vector<unsigned char> decrypted(encrypted.size());
@@ -21,7 +30,14 @@ QByteArray Decryptor::decrypt(const QByteArray& encryptedData) {
     std::vector<unsigned char> nonce(12, 0x00);
 
     // ChaCha20 복호화 초기화
-    if (EVP_DecryptInit_ex(ctx, EVP_chacha20(), nullptr, (unsigned char*)key.data(), nonce.data()) != 1) {
+    // if (EVP_DecryptInit_ex(ctx, EVP_chacha20(), nullptr, (unsigned char*)key.data(), nonce.data()) != 1) {
+    //     qDebug() << "EVP_DecryptInit_ex failed!";
+    //     EVP_CIPHER_CTX_free(ctx);
+    //     return {};
+    // }
+    if (EVP_DecryptInit_ex(ctx, EVP_chacha20(), nullptr,
+                           reinterpret_cast<const unsigned char*>(key.data()),
+                           reinterpret_cast<const unsigned char*>(nonce.data())) != 1) {
         qDebug() << "EVP_DecryptInit_ex failed!";
         EVP_CIPHER_CTX_free(ctx);
         return {};
@@ -48,4 +64,49 @@ QByteArray Decryptor::decrypt(const QByteArray& encryptedData) {
 
     // 복호화된 데이터를 QByteArray로 반환
     return QByteArray(reinterpret_cast<char*>(decrypted.data()), encrypted.size());
+}
+
+// // 키를 텍스트파일에서 읽어오는 함수
+// bool loadKey(const QString& filePath, QByteArray& key) {
+//     QFile file(filePath);
+//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+//         qDebug() << "Failed to open key file:" << filePath;
+//         return false;
+//     }
+
+//     QTextStream in(&file);
+//     QString line;
+//     while (in.readLineInto(&line)) {
+//         if (line.startsWith("key:")) {
+//             key = QByteArray::fromHex(line.mid(4).trimmed().toUtf8());
+//         }
+//     }
+//     file.close();
+
+//     if (key.isEmpty()) {
+//         qDebug() << "Key is missing in file.";
+//         return false;
+//     }
+
+//     return true;
+// }
+
+bool loadKey(const QString& filePath, QByteArray& key) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open key file:" << filePath;
+        return false;
+    }
+
+    // 파일의 전체 내용을 읽어서 key에 저장
+    key = file.readAll();
+    file.close();
+
+    if (key.isEmpty()) {
+        qDebug() << "Key file is empty.";
+        return false;
+    }
+
+    qDebug() << "Key successfully loaded. Size:" << key.size();
+    return true;
 }

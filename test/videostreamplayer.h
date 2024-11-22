@@ -11,7 +11,7 @@
 class VideoStreamPlayer : public QThread
 {
     Q_OBJECT
-       QByteArray key;  // key 변수 정의
+    QByteArray key;  // key 변수 정의
 public:
     explicit VideoStreamPlayer(QObject *parent = nullptr);
     ~VideoStreamPlayer();
