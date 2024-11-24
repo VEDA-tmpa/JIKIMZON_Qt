@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     decryptor.cpp \
+    deserializer.cpp \
     main.cpp \
     mainwindow.cpp \
     videostreamplayer.cpp
@@ -17,6 +18,7 @@ SOURCES += \
 HEADERS += \
     Frame.h \
     decryptor.h \
+    deserializer.h \
     mainwindow.h \
     videostreamplayer.h
 
