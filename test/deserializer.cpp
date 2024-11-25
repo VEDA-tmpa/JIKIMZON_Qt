@@ -1,5 +1,6 @@
 #include "deserializer.h"
 #include <cstring>
+#include <arpa/inet.h>
 
 // Deserializer::Deserializer() {}
 
@@ -12,11 +13,11 @@ bool frame::Deserializer::DeserializeHeader(const std::vector<uint8_t> &buffer, 
     HeaderStruct headerStruct;
     std::memcpy(&headerStruct, buffer.data(), sizeof(HeaderStruct));
 
-    // 엔디안 변환 적용
-    headerStruct.frameId = toHostEndian(headerStruct.frameId);
-    headerStruct.bodySize = toHostEndian(headerStruct.bodySize);
-    headerStruct.imageWidth = toHostEndian(headerStruct.imageWidth);
-    headerStruct.imageHeight = toHostEndian(headerStruct.imageHeight);
+    // arpa/inet.h 엔디안 변환 적용
+    headerStruct.frameId = ntohl(headerStruct.frameId);
+    headerStruct.bodySize = ntohl(headerStruct.bodySize);
+    headerStruct.imageWidth = ntohs(headerStruct.imageWidth);
+    headerStruct.imageHeight = ntohs(headerStruct.imageHeight);
 
     header.SetHeader(headerStruct);
     return true;

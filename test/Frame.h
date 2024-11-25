@@ -8,13 +8,7 @@
 
 namespace frame {
 
-// enum class ImageFormat : uint8_t { RAW, JPEG, PNG };
-enum class ImageFormat : uint8_t {
-    RAW = 0,
-    JPEG = 1,
-    PNG = 2
-};
-
+enum class ImageFormat : uint8_t { RAW, JPEG, PNG };
 
 #pragma pack(push, 1)
 struct HeaderStruct {
@@ -26,7 +20,7 @@ struct HeaderStruct {
     ImageFormat imageFormat;
     uint8_t padding1[3];
 
-    char timestamp[19]; // "YYYY-MM-DD HH:MM:SS"
+    char timestamp[19];
     uint8_t padding2[1];
 };
 #pragma pack(pop)
