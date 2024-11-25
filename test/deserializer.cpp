@@ -11,6 +11,13 @@ bool frame::Deserializer::DeserializeHeader(const std::vector<uint8_t> &buffer, 
     }
     HeaderStruct headerStruct;
     std::memcpy(&headerStruct, buffer.data(), sizeof(HeaderStruct));
+
+    // 엔디안 변환 적용
+    headerStruct.frameId = toHostEndian(headerStruct.frameId);
+    headerStruct.bodySize = toHostEndian(headerStruct.bodySize);
+    headerStruct.imageWidth = toHostEndian(headerStruct.imageWidth);
+    headerStruct.imageHeight = toHostEndian(headerStruct.imageHeight);
+
     header.SetHeader(headerStruct);
     return true;
 }
@@ -21,34 +28,31 @@ bool frame::Deserializer::DeserializeBody(const std::vector<uint8_t> &buffer, Bo
     return true;
 }
 
-bool frame::Deserializer::DeserializeFrame(const std::vector<uint8_t> &buffer, Frame &frame)
+bool frame::Deserializer::DeserializeFrame(const std::vector<uint8_t>& buffer, Frame& frame)
 {
-    // Header와 Body를 분리해서 역직렬화
     size_t headerSize = sizeof(HeaderStruct);
     if (buffer.size() < headerSize) {
+        std::cerr << "Error: Buffer is too small for deserialization." << std::endl;
         return false;
     }
 
     // Header 역직렬화
     Header header;
     if (!DeserializeHeader(std::vector<uint8_t>(buffer.begin(), buffer.begin() + headerSize), header)) {
+        std::cerr << "Error: Failed to deserialize Header." << std::endl;
         return false;
     }
+    std::cout << "Header deserialized successfully!" << std::endl;
 
     // Body 역직렬화
     std::vector<uint8_t> bodyBuffer(buffer.begin() + headerSize, buffer.end());
     Body body;
     if (!DeserializeBody(bodyBuffer, body)) {
+        std::cerr << "Error: Failed to deserialize Body." << std::endl;
         return false;
     }
+    std::cout << "Body deserialized successfully!" << std::endl;
 
-    // auto headerBuffer = std::vector<uint8_t>(buffer.data(), buffer.data() + headerSize);
-    // if (!DeserializeHeader(headerBuffer, header)) {
-    //     return false;
-    // }
-
-
-    // Frame 객체에 Header와 Body 설정
     frame = Frame(header, body);
     return true;
 }
