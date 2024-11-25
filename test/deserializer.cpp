@@ -2,7 +2,9 @@
 #include <cstring>
 #include <arpa/inet.h>
 
-// Deserializer::Deserializer() {}
+frame::Deserializer::Deserializer(const QByteArray& key) : decryptor(key) {
+    // Decryptor 객체를 key로 초기화
+}
 
 bool frame::Deserializer::DeserializeHeader(const std::vector<uint8_t> &buffer, Header &header)
 {
@@ -29,24 +31,42 @@ bool frame::Deserializer::DeserializeBody(const std::vector<uint8_t> &buffer, Bo
     return true;
 }
 
-bool frame::Deserializer::DeserializeFrame(const std::vector<uint8_t>& buffer, Frame& frame)
-{
-    size_t headerSize = sizeof(HeaderStruct);
-    if (buffer.size() < headerSize) {
-        std::cerr << "Error: Buffer is too small for deserialization." << std::endl;
+bool frame::Deserializer::DeserializeFrame(const std::vector<uint8_t>& buffer, Frame& frame) {
+    if (buffer.empty()) {
+        std::cerr << "Error: Buffer is empty for deserialization." << std::endl;
         return false;
     }
 
-    // Header 역직렬화
+    // 1. QByteArray로 변환 (복호화를 위해)
+    QByteArray encryptedData(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+
+    // 2. 복호화 수행
+    QByteArray decryptedData = decryptor.decrypt(encryptedData);
+    if (decryptedData.isEmpty()) {
+        std::cerr << "Error: Decryption failed." << std::endl;
+        return false;
+    }
+
+    // 3. 복호화된 데이터를 다시 std::vector<uint8_t>로 변환
+    std::vector<uint8_t> decryptedBuffer(decryptedData.begin(), decryptedData.end());
+
+    // 4. 복호화된 데이터에서 헤더와 바디를 분리 및 역직렬화
+    size_t headerSize = sizeof(HeaderStruct);
+    if (decryptedBuffer.size() < headerSize) {
+        std::cerr << "Error: Decrypted buffer is too small for deserialization." << std::endl;
+        return false;
+    }
+
+    // 헤더 처리
     Header header;
-    if (!DeserializeHeader(std::vector<uint8_t>(buffer.begin(), buffer.begin() + headerSize), header)) {
+    if (!DeserializeHeader(std::vector<uint8_t>(decryptedBuffer.begin(), decryptedBuffer.begin() + headerSize), header)) {
         std::cerr << "Error: Failed to deserialize Header." << std::endl;
         return false;
     }
     std::cout << "Header deserialized successfully!" << std::endl;
 
-    // Body 역직렬화
-    std::vector<uint8_t> bodyBuffer(buffer.begin() + headerSize, buffer.end());
+    // 바디 처리
+    std::vector<uint8_t> bodyBuffer(decryptedBuffer.begin() + headerSize, decryptedBuffer.end());
     Body body;
     if (!DeserializeBody(bodyBuffer, body)) {
         std::cerr << "Error: Failed to deserialize Body." << std::endl;
@@ -54,6 +74,7 @@ bool frame::Deserializer::DeserializeFrame(const std::vector<uint8_t>& buffer, F
     }
     std::cout << "Body deserialized successfully!" << std::endl;
 
+    // 최종 Frame 설정
     frame = Frame(header, body);
     return true;
 }

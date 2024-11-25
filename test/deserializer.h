@@ -5,18 +5,22 @@
 #include <cstdint>
 #include <cstring>
 #include <arpa/inet.h>
+#include "Decryptor.h"
 #include "Frame.h"
 
 namespace frame {
 
 class Deserializer {
 public:
-    // 역직렬화 메소드
-    static bool DeserializeHeader(const std::vector<uint8_t>& buffer, Header& header);
+    // 생성자에서 복호화기 초기화
+    explicit Deserializer(const QByteArray& decryptionKey);
 
-    static bool DeserializeBody(const std::vector<uint8_t>& buffer, Body& body);
+    bool DeserializeFrame(const std::vector<uint8_t>& buffer, Frame& frame);
+    bool DeserializeHeader(const std::vector<uint8_t>& buffer, Header& header);
+    bool DeserializeBody(const std::vector<uint8_t>& buffer, Body& body);
 
-    static bool DeserializeFrame(const std::vector<uint8_t>& buffer, Frame& frame);
+private:
+    Decryptor decryptor;  // Decryptor 객체
 };
 
 } // namespace frame

@@ -1,5 +1,7 @@
 #include "videostreamplayer.h"
-#include "decryptor.h"
+#include "Decryptor.h"
+#include "deserializer.h"
+#include "Frame.h"
 #include <QDebug>
 #include <opencv2/opencv.hpp>
 
@@ -50,51 +52,53 @@ void VideoStreamPlayer::run()
 {
     QByteArray buffer;
 
-    // 키와 nonce 파일 경로
-    QString keyFilePath = "/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test/keyfile.bin";
+    // 키 초기화 및 복호화기 생성
+    QString keyFilePath = "/Volumes/jjeongni/QtProgramming/test/keyfile.bin";
     QByteArray key;
-
-    // .bin 파일에서 키 읽기
     if (!loadKey(keyFilePath, key)) {
-        qDebug() << "Failed to load key from .bin file.";
+        qDebug() << "Failed to load key.";
         stop = true;
         return;
     }
-
-    // Decryptor 객체 초기화
     Decryptor decryptor(key);
+    frame::Deserializer deserializer(key);
 
     while (!stop) {
-
-        // 일시 정지 상태라면 대기
-        if (pause) {
-            msleep(150);  // CPU 점유율을 낮추기 위해 대기
-            continue;
-        }
-
+        // 데이터 수신
         if (tcpSocket && tcpSocket->bytesAvailable() > 0) {
-            int remainingData = frameSize - buffer.size();
-            buffer.append(tcpSocket->read(remainingData));
+            buffer.append(tcpSocket->readAll());
 
-            if (buffer.size() == frameSize) {
+            // 프레임 단위로 처리
+            while (buffer.size() >= frameSize) {
+                QByteArray encryptedData = buffer.left(frameSize);
+                buffer.remove(0, frameSize);
 
-                // 암호화된 데이터 복호화
-                // QByteArray encryptedData = buffer;
-                QByteArray decryptedData = decryptor.decrypt(buffer);
-
-                // 프레임 처리
-                // cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)buffer.data());
-                cv::Mat frame(frameHeight, frameWidth, CV_8UC3, (uchar *)decryptedData.data());
-                if (!frame.empty()) {
-                    qDebug() << "Frame decoded successfully.";
-                    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
-                    QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
-
-                    emit frameReady(img);
+                // 1. 복호화
+                QByteArray decryptedData = decryptor.decrypt(encryptedData);
+                if (decryptedData.isEmpty()) {
+                    qDebug() << "Decryption failed!";
+                    continue;
                 }
-                 buffer.clear();  // 버퍼 초기화
+
+                // 2. 역직렬화
+                std::vector<uint8_t> rawBuffer(decryptedData.begin(), decryptedData.end());
+                frame::Frame frame;
+                if (deserializer.DeserializeFrame(rawBuffer, frame)) {
+                    qDebug() << "Frame deserialized successfully!";
+
+                    // 3. 디코딩 및 OpenCV 처리
+                    if (!frame.GetData().empty()) {
+                        // std::vector<uint8_t>를 cv::Mat으로 변환
+                        cv::Mat mat(frame.GetData().rows, frame.GetData().cols, CV_8UC3, frame.GetData().data);
+                        cv::cvtColor(mat, mat, cv::COLOR_BGR2RGB);  // 색상 변환
+                        QImage img(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+                        emit frameReady(img);
+                    }
+                } else {
+                    qDebug() << "Failed to deserialize frame.";
+                }
             }
         }
-        msleep(150);  // CPU 점유율을 줄이기 위한 짧은 대기
+        msleep(150);  // CPU 사용 제한
     }
 }

@@ -4,13 +4,13 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include <iostream>
+#include <opencv2/opencv.hpp>  // OpenCV Mat 포함
 
 namespace frame {
 
 enum class ImageFormat : uint8_t { RAW, JPEG, PNG };
 
-#pragma pack(push, 1)
+#pragma pack(push, 1) //1바이트 정렬이 적용되어 모든 멤버가 패딩 없이 바로 뒤에 배치
 struct HeaderStruct {
     uint32_t frameId;
     uint32_t bodySize;
@@ -23,7 +23,7 @@ struct HeaderStruct {
     char timestamp[19];
     uint8_t padding2[1];
 };
-#pragma pack(pop)
+#pragma pack(pop) //#pragma pack(push, 1)으로 변경한 정렬 설정을 원래 상태로 되돌림
 
 class Header {
 public:
@@ -72,13 +72,27 @@ private:
 class Frame {
 public:
     Frame() = default;
-    Frame(const Header& header, const Body& body) : mHeader(header), mBody(body) {}
+
+    // Header와 Body만 받는 생성자 추가
+    Frame(const Header& header, const Body& body)
+        : mHeader(header), mBody(body) {}
+
+    Frame(const Header& header, const Body& body, const cv::Mat& image)
+        : mHeader(header), mBody(body), data(image) {}
 
     void Serialize(std::vector<uint8_t>& outBuffer) const {
         mHeader.Serialize(outBuffer);
         std::vector<uint8_t> bodyBuffer;
         mBody.Serialize(bodyBuffer);
         outBuffer.insert(outBuffer.end(), bodyBuffer.begin(), bodyBuffer.end());
+
+        // 이미지 데이터를 직렬화하여 추가
+        if (!data.empty()) {
+            std::vector<uint8_t> imageData;
+            // OpenCV Mat을 바이트 배열로 변환
+            cv::imencode(".jpg", data, imageData);  // JPEG 형식으로 인코딩
+            outBuffer.insert(outBuffer.end(), imageData.begin(), imageData.end());
+        }
     }
 
     void Deserialize(const std::vector<uint8_t>& inBuffer) {
@@ -90,14 +104,20 @@ public:
         mHeader.Deserialize(headerBuffer);
         std::vector<uint8_t> bodyBuffer(inBuffer.begin() + headerSize, inBuffer.end());
         mBody.Deserialize(bodyBuffer);
+
+        // 이미지 데이터 추출 (여기서는 JPEG로 가정)
+        std::vector<uint8_t> imageData(inBuffer.begin() + headerSize + bodyBuffer.size(), inBuffer.end());
+        data = cv::imdecode(imageData, cv::IMREAD_COLOR);  // JPEG 디코딩
     }
 
     const Header& GetHeader() const { return mHeader; }
     const Body& GetBody() const { return mBody; }
+    const cv::Mat& GetData() const { return data; }
 
 private:
     Header mHeader;
     Body mBody;
+    cv::Mat data;  // 영상 데이터를 저장하는 Mat 객체
 };
 
 } // namespace frame
