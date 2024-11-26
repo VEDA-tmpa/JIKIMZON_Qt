@@ -40,7 +40,14 @@ public:
         if (inBuffer.size() != sizeof(mHeaderStruct)) {
             throw std::runtime_error("Invalid buffer size for HeaderStruct deserialization");
         }
+
         std::memcpy(&mHeaderStruct, inBuffer.data(), sizeof(mHeaderStruct));
+
+        // arpa/inet.h 엔디안 변환 적용
+        mHeaderStruct.frameId = ntohl(mHeaderStruct.frameId);
+        mHeaderStruct.bodySize = ntohl(mHeaderStruct.bodySize);
+        mHeaderStruct.imageWidth = ntohs(mHeaderStruct.imageWidth);
+        mHeaderStruct.imageHeight = ntohs(mHeaderStruct.imageHeight);
     }
 
     const HeaderStruct& GetHeaderStruct() const { return mHeaderStruct; }
@@ -59,8 +66,22 @@ public:
         outBuffer = mBodyData;
     }
 
+    // void Deserialize(const std::vector<uint8_t>& inBuffer) {
+    //     mBodyData = inBuffer;
+    // }
+
     void Deserialize(const std::vector<uint8_t>& inBuffer) {
-        mBodyData = inBuffer;
+        // 0x000001 시작 코드 추가
+        std::vector<uint8_t> h264_data_with_start_code;
+        h264_data_with_start_code.push_back(0x00);
+        h264_data_with_start_code.push_back(0x00);
+        h264_data_with_start_code.push_back(0x01);  // NAL unit을 위한 start code 추가
+
+        // 입력 버퍼를 시작 코드 뒤에 추가
+        h264_data_with_start_code.insert(h264_data_with_start_code.end(), inBuffer.begin(), inBuffer.end());
+
+        // 시작 코드가 추가된 데이터를 mBodyData에 저장
+        mBodyData = h264_data_with_start_code;
     }
 
     const std::vector<uint8_t>& GetBodyData() const { return mBodyData; }
@@ -100,14 +121,16 @@ public:
         if (inBuffer.size() < headerSize) {
             throw std::runtime_error("Invalid buffer size for Frame deserialization");
         }
+
+        // Header 데이터 읽기
         std::vector<uint8_t> headerBuffer(inBuffer.begin(), inBuffer.begin() + headerSize);
         mHeader.Deserialize(headerBuffer);
         std::vector<uint8_t> bodyBuffer(inBuffer.begin() + headerSize, inBuffer.end());
         mBody.Deserialize(bodyBuffer);
 
-        // 이미지 데이터 추출 (여기서는 JPEG로 가정)
-        std::vector<uint8_t> imageData(inBuffer.begin() + headerSize + bodyBuffer.size(), inBuffer.end());
-        data = cv::imdecode(imageData, cv::IMREAD_COLOR);  // JPEG 디코딩
+        // raw 이미지 데이터 추출
+        std::vector<uint8_t> rawData(inBuffer.begin() + headerSize + bodyBuffer.size(), inBuffer.end());
+        data = cv::Mat(rawData.size() / 3, 1280, CV_8UC3, rawData.data()); // raw 이미지로 처리
     }
 
     const Header& GetHeader() const { return mHeader; }

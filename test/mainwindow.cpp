@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
         player->resumeStream();
     });
 
-
     // 스트림 시작
     player->startStream(tcpSocket, 1280, 720, 1280 * 720 * 3);
 }

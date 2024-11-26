@@ -32,9 +32,6 @@ private:
     QTcpSocket *tcpSocket;
     bool stop;
     bool pause;  // 일시 정지 상태
-    int frameWidth;
-    int frameHeight;
-    int frameSize;
 };
 
 #endif // VIDEOSTREAMPLAYER_H
