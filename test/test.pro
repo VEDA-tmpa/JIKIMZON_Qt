@@ -1,3 +1,8 @@
+# FFmpeg 경로 설정
+INCLUDEPATH += /opt/homebrew/Cellar/ffmpeg/7.1_3/include
+LIBS += -L/opt/homebrew/Cellar/ffmpeg/7.1_3/lib \
+         -lavcodec -lavformat -lavutil -lswscale -lpostproc
+
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
