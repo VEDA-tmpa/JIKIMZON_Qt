@@ -3,7 +3,7 @@ INCLUDEPATH += /opt/homebrew/Cellar/ffmpeg/7.1_3/include
 LIBS += -L/opt/homebrew/Cellar/ffmpeg/7.1_3/lib \
          -lavcodec -lavformat -lavutil -lswscale -lpostproc
 
-QT       += core gui network
+QT       += core gui network multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

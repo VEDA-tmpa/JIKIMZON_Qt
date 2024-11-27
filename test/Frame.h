@@ -66,25 +66,11 @@ public:
         outBuffer = mBodyData;
     }
 
-    // void Deserialize(const std::vector<uint8_t>& inBuffer) {
-    //     mBodyData = inBuffer;
-    // }
-
     void Deserialize(const std::vector<uint8_t>& inBuffer) {
-        // 0x000001 시작 코드 추가
-        std::vector<uint8_t> h264_data_with_start_code;
-        h264_data_with_start_code.push_back(0x00);
-        h264_data_with_start_code.push_back(0x00);
-        h264_data_with_start_code.push_back(0x01);  // NAL unit을 위한 start code 추가
-
-        // 입력 버퍼를 시작 코드 뒤에 추가
-        h264_data_with_start_code.insert(h264_data_with_start_code.end(), inBuffer.begin(), inBuffer.end());
-
-        // 시작 코드가 추가된 데이터를 mBodyData에 저장
-        mBodyData = h264_data_with_start_code;
+        mBodyData = inBuffer;
     }
 
-    const std::vector<uint8_t>& GetBodyData() const { return mBodyData; }
+    std::vector<uint8_t>& GetBodyData() { return mBodyData; }
 
 private:
     std::vector<uint8_t> mBodyData;
