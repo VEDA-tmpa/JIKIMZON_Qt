@@ -1,10 +1,17 @@
 #ifndef DESERIALIZER_H
 #define DESERIALIZER_H
 
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #pragma comment(lib, "Ws2_32.lib")
+#else
+    #include <arpa/inet.h>
+#endif
+
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include <arpa/inet.h>
 #include "Decryptor.h"
 #include "Frame.h"
 

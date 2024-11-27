@@ -1,6 +1,13 @@
 #include "deserializer.h"
 #include <cstring>
-#include <arpa/inet.h>
+
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #pragma comment(lib, "ws2_32.lib")
+#else
+    #include <arpa/inet.h>
+#endif
 
 frame::Deserializer::Deserializer(const QByteArray& key) : decryptor(key) {
     // Decryptor 객체를 key로 초기화

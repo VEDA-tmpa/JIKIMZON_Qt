@@ -2,11 +2,19 @@
 #include "Decryptor.h"
 #include "deserializer.h"
 #include "Frame.h"
+
 #include <QDebug>
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <fstream>
-#include <arpa/inet.h>
+
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #pragma comment(lib, "Ws2_32.lib")
+#else
+    #include <arpa/inet.h>
+#endif
 
 
 VideoStreamPlayer::VideoStreamPlayer(QObject *parent)
