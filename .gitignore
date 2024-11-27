@@ -1,6 +1,9 @@
 */build/
 */build/*
 
+*/*.xcodeproj/
+*/*.xcodeproj/*
+
 # C++ objects and libs
 *.slo
 *.lo
