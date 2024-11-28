@@ -47,6 +47,15 @@ win32 {
         -lopencv_world4100
 }
 
+# linux 전처리 지시어
+linux {
+    INCLUDEPATH += /usr/include/opencv4
+    INCLUDEPATH += /usr/include/aarch64-linux-gnu
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs -lopencv_videoio \
+            -lavcodec -lavformat -lavutil -lswscale \ 
+            -lssl -lcrypto
+}
+
 # mac os 전처리 지시어
 macx {
     # FFmpeg 경로 설정
