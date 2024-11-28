@@ -1,5 +1,8 @@
-*/build*
-*/build
+build/
+.vscode/
+
+**/build/
+**/.vscode/
 
 # C++ objects and libs
 *.slo
