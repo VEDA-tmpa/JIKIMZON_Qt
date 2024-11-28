@@ -25,14 +25,17 @@ public:
     explicit VideoStreamPlayer(QObject *parent = nullptr);
     ~VideoStreamPlayer();
 
-    void startStream(QTcpSocket *socket, int frameWidth, int frameHeight, int frameSize);
+    void startStream(QTcpSocket *socket);
     void stopStream();
     void pauseStream();
     void resumeStream();
     bool isStopped() const;
     void connect();
-    void decoding(std::vector<uint8_t> &deserialized, cv::Mat& frame);
+    void decoding(const std::vector<uint8_t> &deserialized, cv::Mat& decodedFrame);
     void initdecoder();
+    void addPacketToBuffer(const std::vector<uint8_t>& deserialized);
+    bool isReadyForDecoding(const std::vector<uint8_t>& buffer);
+    void decodeBufferedData(const std::vector<uint8_t>& buffer);
 
 signals:
     void frameReady(const QImage &frame);
@@ -48,6 +51,7 @@ private:
     SwsContext* mSwsContext;
     AVCodecContext* mCodecContext;
 
+    const AVCodec* codec;
     int mWidth;
     int mHeight;
     int mBitrate;
