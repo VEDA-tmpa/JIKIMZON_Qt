@@ -9,11 +9,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    decodehandler.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    videostreamplayer.cpp
 
 HEADERS += \
-    mainwindow.h
+    decodehandler.h \
+    mainwindow.h \
+    videostreamplayer.h
 
 FORMS += \
     mainwindow.ui
