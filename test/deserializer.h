@@ -12,7 +12,7 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include "Decryptor.h"
+#include "decryptor.h"
 #include "Frame.h"
 
 namespace frame {

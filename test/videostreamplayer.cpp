@@ -1,5 +1,5 @@
 #include "videostreamplayer.h"
-#include "Decryptor.h"
+#include "decryptor.h"
 #include "deserializer.h"
 #include "Frame.h"
 
@@ -240,7 +240,7 @@ void VideoStreamPlayer::run()
     QByteArray buffer;
 
     // 키 초기화 및 복호화기 생성
-    QString keyFilePath = "/Volumes/jjeongni/QtProgramming/test/keyfile.bin";
+    QString keyFilePath = "/home/sihyeon/workspace/JIKIMZON_Qt/test/keyfile.bin";
     QByteArray key;
     if (!loadKey(keyFilePath, key)) {
         qDebug() << "Failed to load key from" << keyFilePath;

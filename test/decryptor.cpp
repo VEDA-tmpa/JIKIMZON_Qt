@@ -1,4 +1,4 @@
-#include "Decryptor.h"
+#include "decryptor.h"
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>

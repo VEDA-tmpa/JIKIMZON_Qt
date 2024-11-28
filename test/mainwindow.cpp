@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Frame.h"
+#include <QPushButton>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,14 +20,14 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     // 일시 정지 버튼 연결
-    connect(ui->pauseButton, &QPushButton::clicked, this, [&]() {
-        player->pauseStream();
-    });
+    // connect(ui->pauseButton, &QPushButton::clicked, this, [&]() {
+    //     player->pauseStream();
+    // });
 
-    // 재개 버튼 연결
-    connect(ui->resumeButton, &QPushButton::clicked, this, [&]() {
-        player->resumeStream();
-    });
+    // // 재개 버튼 연결
+    // connect(ui->resumeButton, &QPushButton::clicked, this, [&]() {
+    //     player->resumeStream();
+    // });
 
     // 스트림 시작
     player->startStream(tcpSocket, 1280, 720, 1280 * 720 * 3);
