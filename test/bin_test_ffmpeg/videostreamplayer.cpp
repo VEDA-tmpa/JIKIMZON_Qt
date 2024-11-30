@@ -73,6 +73,7 @@ void VideoStreamPlayer::processNextFrame() {
         }
 
         lastPts = pts;  // PTS 저장
+
         QImage image = convertToQImage(frame);
         emit frameReady(image);
 
@@ -254,15 +255,44 @@ void VideoStreamPlayer::processFile(const QString &filePath) {
         return;
     }
 
-    AVPacket packet;
-    while (av_read_frame(formatContext, &packet) >= 0) {
-        if (packet.stream_index == videoStreamIndex) {
-            if (avcodec_send_packet(codecContext, &packet) == 0) {
-                processNextFrame(); // 여러 프레임 처리
+    // AVPacket packet;
+    // while (av_read_frame(formatContext, &packet) >= 0) {
+    //     if (packet.stream_index == videoStreamIndex) {
+    //         if (avcodec_send_packet(codecContext, &packet) == 0) {
+    //             processNextFrame(); // 여러 프레임 처리
+    //         }
+    //     }
+    //     av_packet_unref(&packet);
+    // }
+
+    // QThread* decodingThread = QThread::create([this]() {
+    //     AVPacket packet;
+    //     while (av_read_frame(formatContext, &packet) >= 0) {
+    //         if (packet.stream_index == videoStreamIndex) {
+    //             if (avcodec_send_packet(codecContext, &packet) == 0) {
+    //                 while (avcodec_receive_frame(codecContext, frame) == 0) {
+    //                     QImage image = convertToQImage(frame);
+    //                     emit frameReady(image);
+    //                 }
+    //             }
+    //         }
+    //         av_packet_unref(&packet);
+    //     }
+    // });
+    // decodingThread->start();
+
+    QThread* decodingThread = QThread::create([this]() {
+        AVPacket packet;
+        while (av_read_frame(formatContext, &packet) >= 0) {
+            if (packet.stream_index == videoStreamIndex) {
+                if (avcodec_send_packet(codecContext, &packet) == 0) {
+                    processNextFrame();
+                }
             }
+            av_packet_unref(&packet);
         }
-        av_packet_unref(&packet);
-    }
+    });
+    decodingThread->start();
 }
 
 void VideoStreamPlayer::processVideoDataFromMemory(const QByteArray &videoData) {
