@@ -1,0 +1,1524 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+		5E618435888B9D49F8540165 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Qt Qmake";
+			shellPath = "/bin/sh";
+			shellScript = "make -C /Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient -f Qt_TCP_VideoClient.xcodeproj/qt_makeqmake.mak";
+			showEnvVarsInLog = "0";
+		};
+		90E988DF7DC4EA4E9DD884B6 = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/main.cpp";
+			name = "main.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DB6F5DBE6D6BF2E89B2C457A = {
+			fileRef = "90E988DF7DC4EA4E9DD884B6";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		72A341768DA0C6DD08FF7E3B = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/widget.cpp";
+			name = "widget.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		02C327EF231926E47E0C84A3 = {
+			fileRef = "72A341768DA0C6DD08FF7E3B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		B130D1A3C57CA2041F22473B = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/moc_widget.cpp";
+			name = "moc_widget.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		50DAEB1AA0F33E68D41FE511 = {
+			fileRef = "B130D1A3C57CA2041F22473B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		194F4D1FB911446C7CAD399C = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/ui_widget.h";
+			name = "ui_widget.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1C25A669913E484753C514FB = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/widget.h";
+			name = "widget.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		821298A917E5BFA9064C9F3C = {
+			isa = PBXFileReference;
+			path = "/opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp";
+			name = "dummy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		034ED4AAD568CD9B9C6425CB = {
+			fileRef = "821298A917E5BFA9064C9F3C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		6ED2F88C6FED63C986BCA938 = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/widget.ui";
+			name = "widget.ui";
+			sourceTree = "<absolute>";
+		};
+		1735300CDDCA7D18CA19B913 = {
+			fileRef = "6ED2F88C6FED63C986BCA938";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		2DD046686AB75C7E9FCB03FA = {
+			isa = PBXFileReference;
+			path = "/Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient/Qt_TCP_VideoClient.pro";
+			name = "Qt_TCP_VideoClient.pro";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "text";
+		};
+		25B08E2869634E9BCBA333A2 = {
+			isa = PBXGroup;
+			children = (
+				"B130D1A3C57CA2041F22473B",
+				"194F4D1FB911446C7CAD399C");
+			name = "Generated Sources";
+			sourceTree = "<group>";
+		};
+		2EB56BE3C2D93CDAB0C52E67 = {
+			isa = PBXGroup;
+			children = (
+				"90E988DF7DC4EA4E9DD884B6",
+				"72A341768DA0C6DD08FF7E3B",
+				"1C25A669913E484753C514FB");
+			name = "Sources";
+			sourceTree = "<group>";
+		};
+		B8254625CFD509ED2A24A166 = {
+			isa = PBXGroup;
+			children = (
+				"821298A917E5BFA9064C9F3C");
+			name = "Sources [moc_predefs]";
+			sourceTree = "<group>";
+		};
+		12E908B8A1C3C07C115504F5 = {
+			isa = PBXGroup;
+			children = (
+				"6ED2F88C6FED63C986BCA938");
+			name = "Sources [uic]";
+			sourceTree = "<group>";
+		};
+		74B182DB50CB5611B5C1C297 = {
+			isa = PBXGroup;
+			children = (
+				"2DD046686AB75C7E9FCB03FA");
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7EF0942E79C014DCEC8976BC = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Qt Preprocessors";
+			inputPaths = (
+				"/opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp",
+				"widget.h",
+				"widget.ui");
+			outputPaths = (
+				"moc_predefs.h",
+				"moc_widget.cpp",
+				"ui_widget.h");
+			shellPath = "/bin/sh";
+			shellScript = "make -C /Volumes/jjeongni/QtProgramming/Qt_TCP_VideoClient -f Qt_TCP_VideoClient.xcodeproj/qt_preprocess.mak";
+			showEnvVarsInLog = "0";
+			alwaysOutOfDate = "1";
+		};
+		F7E50F631C51CD5B5DC0BC43 = {
+			buildActionMask = 2147483647;
+			files = (
+				"DB6F5DBE6D6BF2E89B2C457A",
+				"02C327EF231926E47E0C84A3",
+				"50DAEB1AA0F33E68D41FE511",
+				"034ED4AAD568CD9B9C6425CB");
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Compile Sources";
+		};
+		CB53AAED42EF8AEBDDC8B0CD = {
+			isa = PBXFileReference;
+			name = "opencv_gapi";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_gapi.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		37189AD4D7CDD05923F1F7DF = {
+			fileRef = "CB53AAED42EF8AEBDDC8B0CD";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		5ABCAA98DCCC51F9262CEA76 = {
+			isa = PBXFileReference;
+			name = "opencv_stitching";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_stitching.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		BA172009D54F5BDD5F48D5F4 = {
+			fileRef = "5ABCAA98DCCC51F9262CEA76";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		27D228643FBECE8EED1F46D0 = {
+			isa = PBXFileReference;
+			name = "opencv_alphamat";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_alphamat.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		D49EA76914C3FB89D512CCB1 = {
+			fileRef = "27D228643FBECE8EED1F46D0";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		5DFD96EA1A2762A82998505C = {
+			isa = PBXFileReference;
+			name = "opencv_aruco";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_aruco.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		1D6FD8ECBCAF938CD9580243 = {
+			fileRef = "5DFD96EA1A2762A82998505C";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		A0A2B699D5320A77D04764B7 = {
+			isa = PBXFileReference;
+			name = "opencv_bgsegm";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_bgsegm.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		369C39B7DE30DC721739B146 = {
+			fileRef = "A0A2B699D5320A77D04764B7";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AC71F7903324E1590731DDDB = {
+			isa = PBXFileReference;
+			name = "opencv_bioinspired";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_bioinspired.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		1B70947D71D1330A14CF2B69 = {
+			fileRef = "AC71F7903324E1590731DDDB";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		00118401A421DE10B5D37A98 = {
+			isa = PBXFileReference;
+			name = "opencv_ccalib";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_ccalib.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		B1E8D8916D4F8D2C9E625AAF = {
+			fileRef = "00118401A421DE10B5D37A98";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		106519086CC9FE60D116711B = {
+			isa = PBXFileReference;
+			name = "opencv_dnn_objdetect";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_dnn_objdetect.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		4A4128A3AF70603ED182A9BB = {
+			fileRef = "106519086CC9FE60D116711B";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		27DCF37EAB37B6A3CF4CCF59 = {
+			isa = PBXFileReference;
+			name = "opencv_dnn_superres";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_dnn_superres.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		9679AE6FFBA6E16320E2D9C9 = {
+			fileRef = "27DCF37EAB37B6A3CF4CCF59";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		C87E74E0824953FC7805C519 = {
+			isa = PBXFileReference;
+			name = "opencv_dpm";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_dpm.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		4B7685D6B374B61F5ABBA759 = {
+			fileRef = "C87E74E0824953FC7805C519";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		EE6812A673544199D177BA63 = {
+			isa = PBXFileReference;
+			name = "opencv_face";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_face.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		116B09E686DBA0DDCD3B6CAD = {
+			fileRef = "EE6812A673544199D177BA63";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		E39C70258659D51D52B9E738 = {
+			isa = PBXFileReference;
+			name = "opencv_freetype";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_freetype.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		35A43532AEE9BCF3113AE378 = {
+			fileRef = "E39C70258659D51D52B9E738";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4C485573EFD06E9909AD658A = {
+			isa = PBXFileReference;
+			name = "opencv_fuzzy";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_fuzzy.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		410CD021625471DE172F756A = {
+			fileRef = "4C485573EFD06E9909AD658A";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		1AE9ADA2FF969DF57B337E86 = {
+			isa = PBXFileReference;
+			name = "opencv_hfs";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_hfs.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		3EA81D3AAA6DBF53CBB4AAF2 = {
+			fileRef = "1AE9ADA2FF969DF57B337E86";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		2CADC3DD36AA8B64BF6D13B6 = {
+			isa = PBXFileReference;
+			name = "opencv_img_hash";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_img_hash.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		D6856875A01284B5C70826AC = {
+			fileRef = "2CADC3DD36AA8B64BF6D13B6";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7401F5BD66FF06CFF5DA39EE = {
+			isa = PBXFileReference;
+			name = "opencv_intensity_transform";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_intensity_transform.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		615C4D92EC6251321E8796CB = {
+			fileRef = "7401F5BD66FF06CFF5DA39EE";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F7964FECACFB976CFBBBCF2E = {
+			isa = PBXFileReference;
+			name = "opencv_line_descriptor";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_line_descriptor.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		8E0ABC24BFF74144243F3304 = {
+			fileRef = "F7964FECACFB976CFBBBCF2E";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F349CB79C9DFC0EFFAEC0FB6 = {
+			isa = PBXFileReference;
+			name = "opencv_mcc";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_mcc.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		BAA3C2981D79A3500FDF8927 = {
+			fileRef = "F349CB79C9DFC0EFFAEC0FB6";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		734FEDACAE4C6847A98C9856 = {
+			isa = PBXFileReference;
+			name = "opencv_quality";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_quality.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		E80DDFECD2474A27F0A561DC = {
+			fileRef = "734FEDACAE4C6847A98C9856";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		1629E5FB59CAAA0D46D665D6 = {
+			isa = PBXFileReference;
+			name = "opencv_rapid";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_rapid.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		A852C4978FEA3C630963B03A = {
+			fileRef = "1629E5FB59CAAA0D46D665D6";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		284DD8A8E0152A09148522FF = {
+			isa = PBXFileReference;
+			name = "opencv_reg";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_reg.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		429D3438F2CDD1C441E9992A = {
+			fileRef = "284DD8A8E0152A09148522FF";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8AE8DF4F0BC9A4C01DBC2FBC = {
+			isa = PBXFileReference;
+			name = "opencv_rgbd";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_rgbd.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		9375B61D53308D57203584E7 = {
+			fileRef = "8AE8DF4F0BC9A4C01DBC2FBC";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		23BB6D0D27BE67F68BADF2F7 = {
+			isa = PBXFileReference;
+			name = "opencv_saliency";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_saliency.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		F261F830DAB4FA1E34571FAC = {
+			fileRef = "23BB6D0D27BE67F68BADF2F7";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		C9751B4126112DA9BCA4B224 = {
+			isa = PBXFileReference;
+			name = "opencv_sfm";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_sfm.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		6F63C19C1BDA5A4549950788 = {
+			fileRef = "C9751B4126112DA9BCA4B224";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		E76FC30E1AD5A8D1687AE199 = {
+			isa = PBXFileReference;
+			name = "opencv_signal";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_signal.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		6ABDB513B67B022709267B2B = {
+			fileRef = "E76FC30E1AD5A8D1687AE199";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD07923BC7E775CB936B3AF6 = {
+			isa = PBXFileReference;
+			name = "opencv_stereo";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_stereo.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		B65D079A74E88071DF4BEB94 = {
+			fileRef = "DD07923BC7E775CB936B3AF6";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		08E5131E3B94FD7D743F17E4 = {
+			isa = PBXFileReference;
+			name = "opencv_structured_light";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_structured_light.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		24D9DD839766874D2C2CF647 = {
+			fileRef = "08E5131E3B94FD7D743F17E4";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4791B94624269020298944E0 = {
+			isa = PBXFileReference;
+			name = "opencv_phase_unwrapping";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_phase_unwrapping.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		89F8209BDE472EBDFA8C1ED6 = {
+			fileRef = "4791B94624269020298944E0";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		D788CDD71FD0197A7F3C5A02 = {
+			isa = PBXFileReference;
+			name = "opencv_superres";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_superres.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		7EC5CB34C0468F2B37492DD6 = {
+			fileRef = "D788CDD71FD0197A7F3C5A02";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DAF479C314BF08720696A134 = {
+			isa = PBXFileReference;
+			name = "opencv_optflow";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_optflow.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		A72D382AAD69817F8B985AC8 = {
+			fileRef = "DAF479C314BF08720696A134";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		61E7BA0C0257DC06C52AED85 = {
+			isa = PBXFileReference;
+			name = "opencv_surface_matching";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_surface_matching.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		D9652F7077DB8966AE2C865B = {
+			fileRef = "61E7BA0C0257DC06C52AED85";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		35A916ED8C8DB28856182B0E = {
+			isa = PBXFileReference;
+			name = "opencv_tracking";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_tracking.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		B7EE121A5735ACB7C8462A51 = {
+			fileRef = "35A916ED8C8DB28856182B0E";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		05BF5159B36DF3BAA2557511 = {
+			isa = PBXFileReference;
+			name = "opencv_highgui";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_highgui.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		5EC775C30C329C16D0C9B7AC = {
+			fileRef = "05BF5159B36DF3BAA2557511";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		09F6226C9903BE631F933CDF = {
+			isa = PBXFileReference;
+			name = "opencv_datasets";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_datasets.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		4F59513B1B4B03F12B10E3A5 = {
+			fileRef = "09F6226C9903BE631F933CDF";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DEA8F61B80391A2EE67884E0 = {
+			isa = PBXFileReference;
+			name = "opencv_text";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_text.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		8589766A0B9FCF614395F110 = {
+			fileRef = "DEA8F61B80391A2EE67884E0";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F20C34BEABFA2E8FCD901C40 = {
+			isa = PBXFileReference;
+			name = "opencv_plot";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_plot.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		5176872FB996D33C585B4095 = {
+			fileRef = "F20C34BEABFA2E8FCD901C40";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		ECB35C3F801F6EDBAF7192B7 = {
+			isa = PBXFileReference;
+			name = "opencv_videostab";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_videostab.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		050EC74342EACD673DA3ADF1 = {
+			fileRef = "ECB35C3F801F6EDBAF7192B7";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		28097A20757044ED2020CA5B = {
+			isa = PBXFileReference;
+			name = "opencv_videoio";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_videoio.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		56D6352346899BB0BE5C8F39 = {
+			fileRef = "28097A20757044ED2020CA5B";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		523D0EFC8251B48BBAF49233 = {
+			isa = PBXFileReference;
+			name = "opencv_viz";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_viz.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		BA01901016D6DBE542772405 = {
+			fileRef = "523D0EFC8251B48BBAF49233";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		ADAAC1DDB4A3690D3EDA6B79 = {
+			isa = PBXFileReference;
+			name = "opencv_wechat_qrcode";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_wechat_qrcode.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		8E3576E85498EFDA182D88C3 = {
+			fileRef = "ADAAC1DDB4A3690D3EDA6B79";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		A859694B0B2BCEF71B78A93E = {
+			isa = PBXFileReference;
+			name = "opencv_xfeatures2d";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_xfeatures2d.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		93D3C5485523DB0FF8EAF5E1 = {
+			fileRef = "A859694B0B2BCEF71B78A93E";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		152F5FE3BC61DB042CBF8709 = {
+			isa = PBXFileReference;
+			name = "opencv_shape";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_shape.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		7D45C3B41AC06A36B8B2EEA3 = {
+			fileRef = "152F5FE3BC61DB042CBF8709";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		736CD115306AA9269EF496BA = {
+			isa = PBXFileReference;
+			name = "opencv_ml";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_ml.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		654A036CFFA0FC8827A80D46 = {
+			fileRef = "736CD115306AA9269EF496BA";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		105DD7DCE2840688C5C304F9 = {
+			isa = PBXFileReference;
+			name = "opencv_ximgproc";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_ximgproc.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		7BFEFC50F6EB154A888B4F37 = {
+			fileRef = "105DD7DCE2840688C5C304F9";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CE2E09FF62691659982688DC = {
+			isa = PBXFileReference;
+			name = "opencv_video";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_video.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		2DF7DEC17A0403899A0B4135 = {
+			fileRef = "CE2E09FF62691659982688DC";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		65D42191BCC3C758708C3FCE = {
+			isa = PBXFileReference;
+			name = "opencv_xobjdetect";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_xobjdetect.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		C1ACEA7747A3CD3CDD98FCA4 = {
+			fileRef = "65D42191BCC3C758708C3FCE";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		A6B9DA70492256BE93A2BC04 = {
+			isa = PBXFileReference;
+			name = "opencv_objdetect";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_objdetect.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		A78D1779740244CFAE839BAA = {
+			fileRef = "A6B9DA70492256BE93A2BC04";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		10479DD8F946BD3C949A461D = {
+			isa = PBXFileReference;
+			name = "opencv_calib3d";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_calib3d.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		B50218BE53FEE13F84CF2331 = {
+			fileRef = "10479DD8F946BD3C949A461D";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CD45190EAC1CC8E29B73C424 = {
+			isa = PBXFileReference;
+			name = "opencv_imgcodecs";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_imgcodecs.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		1425CE099D1E77AF917D511B = {
+			fileRef = "CD45190EAC1CC8E29B73C424";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FC348BF2E98817213727EA03 = {
+			isa = PBXFileReference;
+			name = "opencv_features2d";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_features2d.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		EA7C160E521A2219340631EC = {
+			fileRef = "FC348BF2E98817213727EA03";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		BE295501671F4A220ACA08ED = {
+			isa = PBXFileReference;
+			name = "opencv_dnn";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_dnn.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		D2534E424B4623889F62EA3A = {
+			fileRef = "BE295501671F4A220ACA08ED";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		013B6D04528496D1319FD8E6 = {
+			isa = PBXFileReference;
+			name = "opencv_flann";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_flann.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		8DD6F2FD7BE7F7D831CDCE53 = {
+			fileRef = "013B6D04528496D1319FD8E6";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		A592B3C83B72C0BFF9EE7665 = {
+			isa = PBXFileReference;
+			name = "opencv_xphoto";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_xphoto.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		A35A153019BF3D80069B65E9 = {
+			fileRef = "A592B3C83B72C0BFF9EE7665";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4E71919D3A614D1014236050 = {
+			isa = PBXFileReference;
+			name = "opencv_photo";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_photo.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		2B7D7F6CD477A54528CA5BD5 = {
+			fileRef = "4E71919D3A614D1014236050";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		236DB7BC8246223EDF43706C = {
+			isa = PBXFileReference;
+			name = "opencv_imgproc";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_imgproc.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		C12D54182ADAABF0D970742E = {
+			fileRef = "236DB7BC8246223EDF43706C";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		BC3C17E39CDE203CABB831EB = {
+			isa = PBXFileReference;
+			name = "opencv_core";
+			path = "/opt/homebrew/opt/opencv/lib/libopencv_core.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		4B62F4B532690B96B08BD5F6 = {
+			fileRef = "BC3C17E39CDE203CABB831EB";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC4C2E7E45CB83B707419776 = {
+			isa = PBXFileReference;
+			name = "QtWidgets.framework";
+			path = "/opt/homebrew/lib/QtWidgets.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		7C30F361268D052FF71E287F = {
+			fileRef = "DC4C2E7E45CB83B707419776";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		75BB98347AA20D28579DDB5E = {
+			isa = PBXFileReference;
+			name = "QtGui.framework";
+			path = "/opt/homebrew/lib/QtGui.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		A5F48226AD16997661123CAF = {
+			fileRef = "75BB98347AA20D28579DDB5E";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		723F90793B2C195E2CCB2233 = {
+			isa = PBXFileReference;
+			name = "AppKit.framework";
+			path = "/System/Library/Frameworks/AppKit.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		F2A75ACAC9DF6A3F4E5711E7 = {
+			fileRef = "723F90793B2C195E2CCB2233";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3A8EF9C62A8D4790CBB89CEA = {
+			isa = PBXFileReference;
+			name = "ImageIO.framework";
+			path = "/System/Library/Frameworks/ImageIO.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		61EEC397DC8556BF8C4E36A7 = {
+			fileRef = "3A8EF9C62A8D4790CBB89CEA";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		1B2543FCC48E9436F21C4F63 = {
+			isa = PBXFileReference;
+			name = "Metal.framework";
+			path = "/System/Library/Frameworks/Metal.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		B3FE8FAC746D3D5BB24FA398 = {
+			fileRef = "1B2543FCC48E9436F21C4F63";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CBB5D29B2C34BC7472FAD754 = {
+			isa = PBXFileReference;
+			name = "QtNetwork.framework";
+			path = "/opt/homebrew/lib/QtNetwork.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		D5711FDC6A48F569044E27C9 = {
+			fileRef = "CBB5D29B2C34BC7472FAD754";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		53419A4ADDA92E410E5591BA = {
+			isa = PBXFileReference;
+			name = "QtCore.framework";
+			path = "/opt/homebrew/lib/QtCore.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		38E7C438D5325CA0A308DF2D = {
+			fileRef = "53419A4ADDA92E410E5591BA";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		A1A67BEAA744704B29168D39 = {
+			isa = PBXFileReference;
+			name = "IOKit.framework";
+			path = "/System/Library/Frameworks/IOKit.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		8D267F2E4776F0ECA2F49DC8 = {
+			fileRef = "A1A67BEAA744704B29168D39";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		2B774D8E4178765CE52EAAF5 = {
+			isa = PBXFileReference;
+			name = "DiskArbitration.framework";
+			path = "/System/Library/Frameworks/DiskArbitration.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		A99B2AA0F9CBBDD12BA126A4 = {
+			fileRef = "2B774D8E4178765CE52EAAF5";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8D9815BDB5BD9F90D2BC05C5 = {
+			isa = PBXFileReference;
+			name = "AGL.framework";
+			path = "/System/Library/Frameworks/AGL.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		E45E51A644D5FC9F942ECE55 = {
+			fileRef = "8D9815BDB5BD9F90D2BC05C5";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		D4B32C2222F82AC56BADEB21 = {
+			isa = PBXFileReference;
+			name = "OpenGL.framework";
+			path = "/System/Library/Frameworks/OpenGL.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		8771A8C96E9C391044035D99 = {
+			fileRef = "D4B32C2222F82AC56BADEB21";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AF39DD055C3EF8226FBE929D = {
+			children = (
+				"CB53AAED42EF8AEBDDC8B0CD",
+				"5ABCAA98DCCC51F9262CEA76",
+				"27D228643FBECE8EED1F46D0",
+				"5DFD96EA1A2762A82998505C",
+				"A0A2B699D5320A77D04764B7",
+				"AC71F7903324E1590731DDDB",
+				"00118401A421DE10B5D37A98",
+				"106519086CC9FE60D116711B",
+				"27DCF37EAB37B6A3CF4CCF59",
+				"C87E74E0824953FC7805C519",
+				"EE6812A673544199D177BA63",
+				"E39C70258659D51D52B9E738",
+				"4C485573EFD06E9909AD658A",
+				"1AE9ADA2FF969DF57B337E86",
+				"2CADC3DD36AA8B64BF6D13B6",
+				"7401F5BD66FF06CFF5DA39EE",
+				"F7964FECACFB976CFBBBCF2E",
+				"F349CB79C9DFC0EFFAEC0FB6",
+				"734FEDACAE4C6847A98C9856",
+				"1629E5FB59CAAA0D46D665D6",
+				"284DD8A8E0152A09148522FF",
+				"8AE8DF4F0BC9A4C01DBC2FBC",
+				"23BB6D0D27BE67F68BADF2F7",
+				"C9751B4126112DA9BCA4B224",
+				"E76FC30E1AD5A8D1687AE199",
+				"DD07923BC7E775CB936B3AF6",
+				"08E5131E3B94FD7D743F17E4",
+				"4791B94624269020298944E0",
+				"D788CDD71FD0197A7F3C5A02",
+				"DAF479C314BF08720696A134",
+				"61E7BA0C0257DC06C52AED85",
+				"35A916ED8C8DB28856182B0E",
+				"05BF5159B36DF3BAA2557511",
+				"09F6226C9903BE631F933CDF",
+				"DEA8F61B80391A2EE67884E0",
+				"F20C34BEABFA2E8FCD901C40",
+				"ECB35C3F801F6EDBAF7192B7",
+				"28097A20757044ED2020CA5B",
+				"523D0EFC8251B48BBAF49233",
+				"ADAAC1DDB4A3690D3EDA6B79",
+				"A859694B0B2BCEF71B78A93E",
+				"152F5FE3BC61DB042CBF8709",
+				"736CD115306AA9269EF496BA",
+				"105DD7DCE2840688C5C304F9",
+				"CE2E09FF62691659982688DC",
+				"65D42191BCC3C758708C3FCE",
+				"A6B9DA70492256BE93A2BC04",
+				"10479DD8F946BD3C949A461D",
+				"CD45190EAC1CC8E29B73C424",
+				"FC348BF2E98817213727EA03",
+				"BE295501671F4A220ACA08ED",
+				"013B6D04528496D1319FD8E6",
+				"A592B3C83B72C0BFF9EE7665",
+				"4E71919D3A614D1014236050",
+				"236DB7BC8246223EDF43706C",
+				"BC3C17E39CDE203CABB831EB",
+				"DC4C2E7E45CB83B707419776",
+				"75BB98347AA20D28579DDB5E",
+				"723F90793B2C195E2CCB2233",
+				"3A8EF9C62A8D4790CBB89CEA",
+				"1B2543FCC48E9436F21C4F63",
+				"CBB5D29B2C34BC7472FAD754",
+				"53419A4ADDA92E410E5591BA",
+				"A1A67BEAA744704B29168D39",
+				"2B774D8E4178765CE52EAAF5",
+				"8D9815BDB5BD9F90D2BC05C5",
+				"D4B32C2222F82AC56BADEB21");
+			isa = PBXGroup;
+			name = "Frameworks";
+			sourceTree = "<group>";
+		};
+		D1C883685E82D5676953459A = {
+			buildActionMask = 2147483647;
+			files = (
+				"37189AD4D7CDD05923F1F7DF",
+				"BA172009D54F5BDD5F48D5F4",
+				"D49EA76914C3FB89D512CCB1",
+				"1D6FD8ECBCAF938CD9580243",
+				"369C39B7DE30DC721739B146",
+				"1B70947D71D1330A14CF2B69",
+				"B1E8D8916D4F8D2C9E625AAF",
+				"4A4128A3AF70603ED182A9BB",
+				"9679AE6FFBA6E16320E2D9C9",
+				"4B7685D6B374B61F5ABBA759",
+				"116B09E686DBA0DDCD3B6CAD",
+				"35A43532AEE9BCF3113AE378",
+				"410CD021625471DE172F756A",
+				"3EA81D3AAA6DBF53CBB4AAF2",
+				"D6856875A01284B5C70826AC",
+				"615C4D92EC6251321E8796CB",
+				"8E0ABC24BFF74144243F3304",
+				"BAA3C2981D79A3500FDF8927",
+				"E80DDFECD2474A27F0A561DC",
+				"A852C4978FEA3C630963B03A",
+				"429D3438F2CDD1C441E9992A",
+				"9375B61D53308D57203584E7",
+				"F261F830DAB4FA1E34571FAC",
+				"6F63C19C1BDA5A4549950788",
+				"6ABDB513B67B022709267B2B",
+				"B65D079A74E88071DF4BEB94",
+				"24D9DD839766874D2C2CF647",
+				"89F8209BDE472EBDFA8C1ED6",
+				"7EC5CB34C0468F2B37492DD6",
+				"A72D382AAD69817F8B985AC8",
+				"D9652F7077DB8966AE2C865B",
+				"B7EE121A5735ACB7C8462A51",
+				"5EC775C30C329C16D0C9B7AC",
+				"4F59513B1B4B03F12B10E3A5",
+				"8589766A0B9FCF614395F110",
+				"5176872FB996D33C585B4095",
+				"050EC74342EACD673DA3ADF1",
+				"56D6352346899BB0BE5C8F39",
+				"BA01901016D6DBE542772405",
+				"8E3576E85498EFDA182D88C3",
+				"93D3C5485523DB0FF8EAF5E1",
+				"7D45C3B41AC06A36B8B2EEA3",
+				"654A036CFFA0FC8827A80D46",
+				"7BFEFC50F6EB154A888B4F37",
+				"2DF7DEC17A0403899A0B4135",
+				"C1ACEA7747A3CD3CDD98FCA4",
+				"A78D1779740244CFAE839BAA",
+				"B50218BE53FEE13F84CF2331",
+				"1425CE099D1E77AF917D511B",
+				"EA7C160E521A2219340631EC",
+				"D2534E424B4623889F62EA3A",
+				"8DD6F2FD7BE7F7D831CDCE53",
+				"A35A153019BF3D80069B65E9",
+				"2B7D7F6CD477A54528CA5BD5",
+				"C12D54182ADAABF0D970742E",
+				"4B62F4B532690B96B08BD5F6",
+				"7C30F361268D052FF71E287F",
+				"A5F48226AD16997661123CAF",
+				"F2A75ACAC9DF6A3F4E5711E7",
+				"61EEC397DC8556BF8C4E36A7",
+				"B3FE8FAC746D3D5BB24FA398",
+				"D5711FDC6A48F569044E27C9",
+				"38E7C438D5325CA0A308DF2D",
+				"8D267F2E4776F0ECA2F49DC8",
+				"A99B2AA0F9CBBDD12BA126A4",
+				"E45E51A644D5FC9F942ECE55",
+				"8771A8C96E9C391044035D99");
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Link Binary With Libraries";
+		};
+		30414803F31797EB689AE508 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			isa = PBXResourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Copy Bundle Resources";
+		};
+		99542592E9780B9225F24AA8 = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1D3C6CB1A354445FB554270 = {
+			isa = PBXFileReference;
+			includeInIndex = 0;
+			explicitFileType = "wrapper.application";
+			path = "Qt_TCP_VideoClient.app";
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FE0A091FDBFB3E9C31B7A1BD = {
+			children = (
+				"C1D3C6CB1A354445FB554270");
+			isa = PBXGroup;
+			name = "Products";
+			sourceTree = "<group>";
+		};
+		E8C543AB96796ECAA2E65C57 = {
+			children = (
+				"2EB56BE3C2D93CDAB0C52E67",
+				"25B08E2869634E9BCBA333A2",
+				"B8254625CFD509ED2A24A166",
+				"12E908B8A1C3C07C115504F5",
+				"74B182DB50CB5611B5C1C297",
+				"AF39DD055C3EF8226FBE929D",
+				"FE0A091FDBFB3E9C31B7A1BD");
+			isa = PBXGroup;
+			name = "Qt_TCP_VideoClient";
+			sourceTree = "<group>";
+		};
+		7E22601EC7BC5BD6D6C05A22 = {
+			buildPhases = (
+				"5E618435888B9D49F8540165",
+				"7EF0942E79C014DCEC8976BC");
+			dependencies = (
+				);
+			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59;
+			isa = PBXAggregateTarget;
+			buildRules = (
+);
+			productName = "Qt Preprocess";
+			name = "Qt Preprocess";
+		};
+		0F139494569CC02874F32C74 = {
+			isa = PBXTargetDependency;
+			target = "7E22601EC7BC5BD6D6C05A22";
+		};
+		AD8424EE33002C7E16E46182 = {
+			buildPhases = (
+				"F7E50F631C51CD5B5DC0BC43",
+				"D1C883685E82D5676953459A",
+				"30414803F31797EB689AE508",
+				"99542592E9780B9225F24AA8");
+			dependencies = (
+				"0F139494569CC02874F32C74");
+			productReference = "C1D3C6CB1A354445FB554270";
+			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59;
+			isa = PBXNativeTarget;
+			buildRules = (
+);
+			productType = "com.apple.product-type.application";
+			name = "Qt_TCP_VideoClient";
+			productName = "Qt_TCP_VideoClient";
+		};
+		3AA6C32AC930069E80220CF1 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=macosx*]" = "arm64";
+				COPY_PHASE_STRIP = "NO";
+				DEVELOPMENT_TEAM = "44HHH8ZAMN";
+				ENABLE_BITCODE = "NO";
+				GCC_OPTIMIZATION_LEVEL = "0";
+				ONLY_ACTIVE_ARCH = "YES";
+				PRODUCT_BUNDLE_IDENTIFIER = "jjeongni.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "Qt_TCP_VideoClient";
+				QMAKE_FULL_VERSION = "1.0.0";
+				QMAKE_PKGINFO_TYPEINFO = "????";
+				QMAKE_SHORT_VERSION = "1.0";
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = "macosx";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				CC = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang";
+				LDPLUSPLUS = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++";
+				INFOPLIST_FILE = "Info.plist";
+				SYMROOT = ".xcode";
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DYLIB_CURRENT_VERSION = "1.0.0";
+				DYLIB_COMPATIBILITY_VERSION = "1.0";
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
+				HEADER_SEARCH_PATHS = (
+					".",
+					"/opt/homebrew/opt/opencv/include/opencv4",
+					"/opt/homebrew/lib/QtWidgets.framework/Headers",
+					"/opt/homebrew/lib/QtGui.framework/Headers",
+					"/opt/homebrew/lib/QtNetwork.framework/Headers",
+					"/opt/homebrew/lib/QtCore.framework/Headers",
+					".",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/OpenGL.framework/Headers",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/AGL.framework/Headers",
+					".",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/OpenGL.framework/Headers",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/AGL.framework/Headers",
+					"/opt/homebrew/share/qt/mkspecs/macx-clang");
+				LIBRARY_SEARCH_PATHS = (
+					"/opt/homebrew/opt/opencv/lib",
+					"/opt/homebrew/lib",
+					"/System/Library/Frameworks/");
+				FRAMEWORK_SEARCH_PATHS = (
+					"/opt/homebrew/lib",
+					"/opt/homebrew/lib");
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-O2",
+					"-Wall",
+					"-Wextra",
+					"-DQT_NO_DEBUG",
+					"-DQT_WIDGETS_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB");
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-stdlib=libc++",
+					"-O2",
+					"-std=gnu++1z",
+					"-Wall",
+					"-Wextra",
+					"-DQT_NO_DEBUG",
+					"-DQT_WIDGETS_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB");
+				OTHER_LDFLAGS = (
+						"-stdlib=libc++",
+						"-headerpad_max_install_names",
+						"-Wl,-rpath,@executable_path/../Frameworks",
+						"-Wl,-rpath,/opt/homebrew/lib",
+						"-F/opt/homebrew/lib",
+						"-L/opt/homebrew/opt/opencv/lib");
+				ARCHS = "arm64";
+			};
+			name = "Debug";
+		};
+		77418F46922677BB04ED38DD = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=macosx*]" = "arm64";
+				COPY_PHASE_STRIP = "NO";
+				DEVELOPMENT_TEAM = "44HHH8ZAMN";
+				ENABLE_BITCODE = "NO";
+				GCC_OPTIMIZATION_LEVEL = "0";
+				ONLY_ACTIVE_ARCH = "YES";
+				PRODUCT_BUNDLE_IDENTIFIER = "jjeongni.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "Qt_TCP_VideoClient";
+				QMAKE_FULL_VERSION = "1.0.0";
+				QMAKE_PKGINFO_TYPEINFO = "????";
+				QMAKE_SHORT_VERSION = "1.0";
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = "macosx";
+				PRODUCT_NAME = "Qt_TCP_VideoClient";
+			};
+			name = "Debug";
+		};
+		339EE1B2CC4FC24589A0EA95 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=macosx*]" = "arm64";
+				COPY_PHASE_STRIP = "NO";
+				DEVELOPMENT_TEAM = "44HHH8ZAMN";
+				ENABLE_BITCODE = "NO";
+				PRODUCT_BUNDLE_IDENTIFIER = "jjeongni.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "Qt_TCP_VideoClient";
+				QMAKE_FULL_VERSION = "1.0.0";
+				QMAKE_PKGINFO_TYPEINFO = "????";
+				QMAKE_SHORT_VERSION = "1.0";
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = "macosx";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				CC = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang";
+				LDPLUSPLUS = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++";
+				INFOPLIST_FILE = "Info.plist";
+				SYMROOT = ".xcode";
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DYLIB_CURRENT_VERSION = "1.0.0";
+				DYLIB_COMPATIBILITY_VERSION = "1.0";
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
+				HEADER_SEARCH_PATHS = (
+					".",
+					"/opt/homebrew/opt/opencv/include/opencv4",
+					"/opt/homebrew/lib/QtWidgets.framework/Headers",
+					"/opt/homebrew/lib/QtGui.framework/Headers",
+					"/opt/homebrew/lib/QtNetwork.framework/Headers",
+					"/opt/homebrew/lib/QtCore.framework/Headers",
+					".",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/OpenGL.framework/Headers",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/AGL.framework/Headers",
+					".",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/OpenGL.framework/Headers",
+					"/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks/AGL.framework/Headers",
+					"/opt/homebrew/share/qt/mkspecs/macx-clang");
+				LIBRARY_SEARCH_PATHS = (
+					"/opt/homebrew/opt/opencv/lib",
+					"/opt/homebrew/lib",
+					"/System/Library/Frameworks/");
+				FRAMEWORK_SEARCH_PATHS = (
+					"/opt/homebrew/lib",
+					"/opt/homebrew/lib");
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-O2",
+					"-Wall",
+					"-Wextra",
+					"-DQT_NO_DEBUG",
+					"-DQT_WIDGETS_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB");
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-stdlib=libc++",
+					"-O2",
+					"-std=gnu++1z",
+					"-Wall",
+					"-Wextra",
+					"-DQT_NO_DEBUG",
+					"-DQT_WIDGETS_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB");
+				OTHER_LDFLAGS = (
+						"-stdlib=libc++",
+						"-headerpad_max_install_names",
+						"-Wl,-rpath,@executable_path/../Frameworks",
+						"-Wl,-rpath,/opt/homebrew/lib",
+						"-F/opt/homebrew/lib",
+						"-L/opt/homebrew/opt/opencv/lib");
+				ARCHS = "arm64";
+			};
+			name = "Release";
+		};
+		6666AA5E688052234F6758D8 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=macosx*]" = "arm64";
+				COPY_PHASE_STRIP = "NO";
+				DEVELOPMENT_TEAM = "44HHH8ZAMN";
+				ENABLE_BITCODE = "NO";
+				PRODUCT_BUNDLE_IDENTIFIER = "jjeongni.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "Qt_TCP_VideoClient";
+				QMAKE_FULL_VERSION = "1.0.0";
+				QMAKE_PKGINFO_TYPEINFO = "????";
+				QMAKE_SHORT_VERSION = "1.0";
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = "macosx";
+				PRODUCT_NAME = "Qt_TCP_VideoClient";
+			};
+			name = "Release";
+		};
+		DAC4C1AA5EDEA1C85E9CA5E6 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				"3AA6C32AC930069E80220CF1",
+				"339EE1B2CC4FC24589A0EA95");
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		6CC3B5D2136C7CD6A5CF5A59 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				"77418F46922677BB04ED38DD",
+				"6666AA5E688052234F6758D8");
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		6DB9C3763D02B1415CD9D565 = {
+			hasScannedForEncodings = 1;
+			compatibilityVersion = "Xcode 3.2";
+			isa = PBXProject;
+			mainGroup = "E8C543AB96796ECAA2E65C57";
+			productRefGroup = "FE0A091FDBFB3E9C31B7A1BD";
+			buildConfigurationList = "DAC4C1AA5EDEA1C85E9CA5E6";
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				"AD8424EE33002C7E16E46182",
+				"7E22601EC7BC5BD6D6C05A22");
+			attributes = {
+				TargetAttributes = {
+				};
+			};
+		};
+	};
+	rootObject = "6DB9C3763D02B1415CD9D565";
+}
