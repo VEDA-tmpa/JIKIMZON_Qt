@@ -71,6 +71,7 @@ namespace frame
 	{
 		return mHeader;
 	}
+    
 	const Body& Frame::GetBody() const
 	{
 		return mBody;
