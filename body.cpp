@@ -1,4 +1,5 @@
 #include "body.h"
+#include <QByteArray>
 
 namespace frame
 {
@@ -28,6 +29,13 @@ namespace frame
         mImage.resize(buffer.size());
         std::memcpy(mImage.data(), buffer.data(), buffer.size());
     }
+
+    void Body::Deserialize(QByteArray& buffer)
+    {
+        mImage.clear();
+        mImage.resize(buffer.size());
+        std::memcpy(mImage.data(), buffer.data(), buffer.size());
+    } 
 
     std::vector<uint8_t> Body::GetImage() const
     {

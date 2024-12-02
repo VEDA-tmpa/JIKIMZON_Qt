@@ -19,6 +19,7 @@ namespace frame
         std::vector<uint8_t> Serialize() const override;
         void Serialize(std::vector<uint8_t>& OUT buffer) const override;
         void Deserialize(std::vector<uint8_t>& buffer) override;
+        void Deserialize(QByteArray& buffer) override;
 
         void SetImage(std::vector<uint8_t>& image);
         std::vector<uint8_t> GetImage() const;

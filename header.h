@@ -54,6 +54,7 @@ namespace frame
         std::vector<uint8_t> Serialize() const override;
         void Serialize(std::vector<uint8_t>& OUT buffer) const override;
         void Deserialize(std::vector<uint8_t>& buffer) override;
+        void Deserialize(QByteArray& buffer) override;
 
         uint32_t GetFrameId() const;
         uint32_t GetBodySize() const;

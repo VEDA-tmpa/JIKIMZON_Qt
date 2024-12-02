@@ -2,6 +2,7 @@
 
 //#include <arpa/inet.h>
 #include <QtEndian>
+#include <QByteArray>
 #include <iostream>
 #include <cstring>
 #include <cstring>
@@ -50,6 +51,24 @@ namespace frame
         HeaderStruct header;
         std::memcpy(&header, buffer.data(), sizeof(HeaderStruct));
 
+        header.frameId = qToLittleEndian(header.frameId);
+        header.bodySize = qToLittleEndian(header.bodySize);
+        header.imageWidth = qToLittleEndian(header.imageWidth);
+        header.imageHeight = qToLittleEndian(header.imageHeight);
+
+        mHeader = header;
+    }
+
+    void Header::Deserialize(QByteArray& buffer)
+    {
+        if (buffer.size() < sizeof(HeaderStruct))
+        {
+            throw std::runtime_error("Buffer size is too small for a valid Header.");
+        }
+
+        HeaderStruct header;
+        std::memcpy(&header, buffer.data(), sizeof(HeaderStruct));
+        
         header.frameId = qToLittleEndian(header.frameId);
         header.bodySize = qToLittleEndian(header.bodySize);
         header.imageWidth = qToLittleEndian(header.imageWidth);

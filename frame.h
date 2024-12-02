@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <QByteArray>
 
 #include "ISerializeInterface.h"
 #include "header.h"
@@ -28,6 +29,7 @@ namespace frame
         std::vector<uint8_t> Serialize() const override;
         void Serialize(std::vector<uint8_t>& OUT buffer) const override;
 		void Deserialize(std::vector<uint8_t>& buffer) override;
+        void Deserialize(QByteArray& buffer) override;
 
         void SetFrame(Header& header, Body& body);
 		const Header& GetHeader() const; 

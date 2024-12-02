@@ -1,5 +1,6 @@
 #include "frame.h"
 
+#include <QByteArray>
 #include <cstdint>
 #include <iostream>
 #include <cstring>
@@ -58,6 +59,12 @@ namespace frame
 
         std::vector<uint8_t> bodyBuffer(buffer.begin() + sizeof(HeaderStruct), buffer.end());
         mBody.Deserialize(bodyBuffer);
+    }
+
+    void Frame::Deserialize(QByteArray& buffer)
+    {
+        std::vector<uint8_t> vecBuffer(buffer.begin(), buffer.end());
+        this->Deserialize(vecBuffer);
     }
 
 	const Header& Frame::GetHeader() const
