@@ -2,6 +2,7 @@
 #define VIDEOSTREAMPLAYER_H
 
 #include <QObject>
+#include <QLabel>
 #include <QTcpSocket>
 
 #include "decodehandler.h"
@@ -19,9 +20,11 @@ public:
     void StartStream();
     void StopStream();
     void PauseStream();
+    void SetVideoLabel(QLabel* label);
 
 private:
     DecodeHandler* mDecodeHandler;
+    QLabel* mVideoLabel;
     QTcpSocket* mServerSocket;
     QString mIp;
     int mPort;

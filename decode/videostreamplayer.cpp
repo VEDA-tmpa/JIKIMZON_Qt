@@ -9,6 +9,11 @@
 
 #include <opencv2/core.hpp>
 
+void VideoStreamPlayer::SetVideoLabel(QLabel* label)
+{
+    mVideoLabel = label;
+}
+
 void VideoStreamPlayer::ReadAllData(int expectedSize, OUT QByteArray& buffer)
 {
     buffer.clear();
@@ -17,7 +22,7 @@ void VideoStreamPlayer::ReadAllData(int expectedSize, OUT QByteArray& buffer)
     int readSize = 0;
     while (readSize < expectedSize)
     {   
-        mServerSocket->waitForReadyRead(3000);
+        mServerSocket->waitForReadyRead(10000);
         int read = mServerSocket->read(buffer.data() + readSize, expectedSize - readSize);
         if (read == -1)
         {
@@ -84,10 +89,10 @@ void VideoStreamPlayer::StartStream()
             continue;
         }
 
-        if (!mServerSocket->waitForReadyRead(3000))
+        if (!mServerSocket->waitForReadyRead(30000))
         {
-            qDebug() << "Error: " << mServerSocket->errorString();
-            return;
+            qDebug() << "Error waitForReadyRead: " << mServerSocket->errorString();
+            continue;
         }
 
         if (mServerSocket->bytesAvailable() < sizeof(frame::HeaderStruct))
@@ -133,7 +138,9 @@ void VideoStreamPlayer::StartStream()
 
         // decode frame and get cv::Mat
         mDecodeHandler->DecodeFrame(body.GetImage(), cvFrame);
-        // QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
+
+        QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
+        mVideoLabel->setPixmap(QPixmap::fromImage(img));
         // emit frameReady(img);
 
         // qDebug() << "Frame Decoded";

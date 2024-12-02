@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 
 #include "videostreamplayer.h"
 
@@ -24,6 +25,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QLabel* mVideoLabel;
     VideoStreamPlayer* mVideoStreamPlayer;
 };
 #endif // MAINWINDOW_H

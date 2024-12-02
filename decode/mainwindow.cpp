@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    mVideoLabel = new QLabel(this);
+    mVideoLabel->setAlignment(Qt::AlignCenter);
+    setCentralWidget(mVideoLabel);
 }
 
 MainWindow::~MainWindow()
@@ -19,6 +22,7 @@ void MainWindow::InitStreamPlayer(QString ip, int port, int width, int height, i
 {
     mVideoStreamPlayer = new VideoStreamPlayer();
     mVideoStreamPlayer->InitStreamPlayer(ip, port, width, height, bitrate, fps);
+    mVideoStreamPlayer->SetVideoLabel(mVideoLabel);
 }
 
 void MainWindow::RunStreamPlayer()
