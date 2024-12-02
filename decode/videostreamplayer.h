@@ -15,6 +15,7 @@ public:
     ~VideoStreamPlayer() = default;
 
     void InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps);
+    void ReadAllData(int expectedSize, OUT QByteArray& buffer);
     void StartStream();
     void StopStream();
     void PauseStream();

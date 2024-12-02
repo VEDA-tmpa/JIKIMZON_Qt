@@ -9,6 +9,28 @@
 
 #include <opencv2/core.hpp>
 
+void VideoStreamPlayer::ReadAllData(int expectedSize, OUT QByteArray& buffer)
+{
+    buffer.clear();
+    buffer.resize(expectedSize);
+
+    int readSize = 0;
+    while (readSize < expectedSize)
+    {   
+        mServerSocket->waitForReadyRead(3000);
+        int read = mServerSocket->read(buffer.data() + readSize, expectedSize - readSize);
+        if (read == -1)
+        {
+            qDebug() << "Error: " << mServerSocket->errorString();
+            return;
+        }
+
+        readSize += read;
+    }
+
+    qDebug() << "ReadAllData() - readSize: " << readSize;
+}
+
 void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps)
 {   
     mWidth = width;
@@ -74,11 +96,11 @@ void VideoStreamPlayer::StartStream()
             continue;
         }
 
-        qDebug() << "getting data";
+        qDebug() << "====== getting data ======";
 
         // get header
         headerBuffer.clear();
-        headerBuffer = mServerSocket->read(sizeof(frame::HeaderStruct));
+        ReadAllData(sizeof(frame::HeaderStruct), headerBuffer);
         if (headerBuffer.size() != sizeof(frame::HeaderStruct))
         {
             qDebug() << "header size err: " << headerBuffer.size();
@@ -92,13 +114,14 @@ void VideoStreamPlayer::StartStream()
         qDebug() << "Frame Id: " << static_cast<int>(header.GetFrameId());
         qDebug() << "Timestamp: " << QString::fromStdString(header.GetTimestamp());
         qDebug() << "Header's Body Size: " << static_cast<int>(header.GetBodySize());
+        qDebug() << "Header's Body Size (no-cast): " << header.GetBodySize();
 
         // get body
         frameBuffer.clear();
-        frameBuffer = mServerSocket->read(header.GetBodySize());
-        if (frameBuffer.size() != header.GetBodySize())
+        ReadAllData(header.GetBodySize(), frameBuffer);
+        if (static_cast<int>(header.GetBodySize()) != header.GetBodySize())
         {
-            qDebug() << "body size err: " << frameBuffer.size();
+            qDebug() << "body size err: " << static_cast<int>(header.GetBodySize());
             continue;
         }
 
