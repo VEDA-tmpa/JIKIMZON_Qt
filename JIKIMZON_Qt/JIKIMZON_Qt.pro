@@ -13,6 +13,9 @@ SOURCEPATH += $$PWD
 SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/videostreamplayer.cpp \
+    src/decodehandler.cpp \
+    src/decryptor.cpp \
     src/header.cpp \
     src/body.cpp \
     src/frame.cpp \
@@ -22,6 +25,9 @@ INCLUDEPATH += $$PWD/inc
 
 HEADERS += \
     inc/mainwindow.h \
+    inc/videostreamplayer.h \
+    inc/decodehandler.h \
+    inc/decryptor.h \
     inc/ISerializeInterface.h \
     inc/header.h \
     inc/body.h \

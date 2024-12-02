@@ -1,7 +1,9 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef JIKIMZON_MAINWINDOW_H
+#define JIKIMZON_MAINWINDOW_H
 
 #include <QMainWindow>
+
+#include "videostreamplayer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,7 +19,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void toggleMode();
+    void setLightMode();
+    void setDarkMode();
+
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow *mUI;
+    VideoStreamPlayer *mVideoStreamPlayer;
+
+    bool mbNightMode;
 };
-#endif // MAINWINDOW_H
+#endif // JIKIMZON_MAINWINDOW_H
