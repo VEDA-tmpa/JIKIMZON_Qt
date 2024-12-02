@@ -9,8 +9,24 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += $$PWD/src/*.cpp
-HEADERS += $$PWD/inc/*.h
+SOURCEPATH += $$PWD
+SOURCES += \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/header.cpp \
+    src/body.cpp \
+    src/frame.cpp \
+
+
+INCLUDEPATH += $$PWD/inc
+
+HEADERS += \
+    inc/mainwindow.h \
+    inc/ISerializeInterface.h \
+    inc/header.h \
+    inc/body.h \
+    inc/frame.h \
+
 
 FORMS += \
     mainwindow.ui
