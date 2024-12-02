@@ -29,6 +29,7 @@ public:
     void StoreFrame(const QImage& frame);
     void AddOverlayToFrame(cv::Mat &frame, const std::vector<cv::Rect> &detectedObjects, const std::vector<std::string> &labels);
 
+    // control stream
     void StartStream();
     void StopStream();
     void PauseStream();
@@ -38,6 +39,7 @@ public:
 
     bool IsStopped() const;
 
+    cv::Scalar GetLabelColor(const QString& label);
 
 signals:
     void FrameReady(const QImage& frame);
@@ -76,5 +78,4 @@ private:
         {"unknown", cv::Scalar(200, 200, 200)},
     };
 };
-
 #endif // JIKIMZON_VIDEOSTREAMPLAYER_H

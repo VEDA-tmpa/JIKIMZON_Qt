@@ -230,12 +230,17 @@ void VideoStreamPlayer::StoreFrame(const QImage &frame)
     }
 }
 
+cv::Scalar VideoStreamPlayer::GetLabelColor(const QString& label)
+{
+    return mLabelColors[label];
+}
 
-void AddOverlayToFrame(cv::Mat &frame, const std::vector<cv::Rect> &detectedObjects, const std::vector<std::string> &labels)
+
+void VideoStreamPlayer::AddOverlayToFrame(cv::Mat &frame, const std::vector<cv::Rect> &detectedObjects, const std::vector<std::string> &labels)
 {
     for (size_t i = 0; i < detectedObjects.size(); i++)
     {
-        cv::Scalar color = mLabelColors[QString::fromStdString(labels[i])];
+        cv::Scalar color = GetLabelColor(QString::fromStdString(labels[i]));
         cv::rectangle(frame, detectedObjects[i], color, 5);
         cv::putText(frame, labels[i], cv::Point(detectedObjects[i].x, detectedObjects[i].y - 10), cv::FONT_HERSHEY_SIMPLEX, 2, color, 3);
     }
