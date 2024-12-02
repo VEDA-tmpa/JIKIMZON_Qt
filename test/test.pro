@@ -1,4 +1,9 @@
-QT       += core gui network
+# FFmpeg 경로 설정
+INCLUDEPATH += /opt/homebrew/Cellar/ffmpeg/7.1_3/include
+LIBS += -L/opt/homebrew/Cellar/ffmpeg/7.1_3/lib \
+         -lavcodec -lavformat -lavutil -lswscale -lpostproc
+
+QT       += core gui network multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,18 +14,21 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    decryptor.cpp \
+    deserializer.cpp \
     main.cpp \
     mainwindow.cpp \
-    videostreamwidget.cpp
+    videostreamplayer.cpp
 
 HEADERS += \
-    framespecs.h \
+    Frame.h \
+    decryptor.h \
+    deserializer.h \
     mainwindow.h \
-    videostreamwidget.h
+    videostreamplayer.h
 
 FORMS += \
-    mainwindow.ui \
-    videostreamwidget.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -30,6 +38,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 # OpenSSL 라이브러리 경로 추가
 INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
 LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
+LIBS += -lz
 
 # OpenCV Include and Library Paths
 INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4
@@ -91,6 +100,3 @@ LIBS += -L/opt/homebrew/opt/opencv/lib \
         -lopencv_photo \
         -lopencv_imgproc \
         -lopencv_core
-
-RESOURCES += \
-    assets.qrc

@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,25 +11,24 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    videostreamwidget.cpp
+    videostreamplayer.cpp
 
 HEADERS += \
-    framespecs.h \
     mainwindow.h \
-    videostreamwidget.h
+    videostreamplayer.h
 
 FORMS += \
-    mainwindow.ui \
-    videostreamwidget.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-# OpenSSL 라이브러리 경로 추가
-INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
-LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
+# FFmpeg 경로 설정
+INCLUDEPATH += /opt/homebrew/Cellar/ffmpeg/7.1_3/include
+LIBS += -L/opt/homebrew/Cellar/ffmpeg/7.1_3/lib \
+         -lavcodec -lavformat -lavutil -lswscale -lpostproc
 
 # OpenCV Include and Library Paths
 INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4
@@ -93,4 +92,4 @@ LIBS += -L/opt/homebrew/opt/opencv/lib \
         -lopencv_core
 
 RESOURCES += \
-    assets.qrc
+    file.qrc

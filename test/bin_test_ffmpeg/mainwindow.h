@@ -2,9 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTcpSocket>
-#include <QStackedWidget>
-#include "VideoStreamWidget.h"  // VideoStreamWidget 헤더
+#include <QLabel>
+#include "videostreamplayer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,13 +19,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void onFrameReady(const QImage &image);
+    void onStreamReady();
+
 private:
     Ui::MainWindow *ui;
 
-    // VideoStreamWidget에서 사용할 tcpSocket 생성
-    QTcpSocket *tcpSocket;
-
-    // 위젯들
-    VideoStreamWidget *videoStreamWidget;
+    QLabel *videoLabel;  // 비디오 스트림을 표시할 QLabel
+    VideoStreamPlayer *player;
 };
 #endif // MAINWINDOW_H

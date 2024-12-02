@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/data">
+        <file>output_withHeader.bin</file>
+    </qresource>
+</RCC>

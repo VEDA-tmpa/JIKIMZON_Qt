@@ -4,6 +4,13 @@
 #include <QTimer>
 #include <QImage>
 #include <QPixmap>
+#include <cstdint> // uint32_t 사용
+#include <QElapsedTimer>
+#include <QDateTime>
+#include <QStandardPaths>
+#include "framespecs.h"
+#include <QThread>
+
 
 VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
     : QWidget(parent),
@@ -16,7 +23,7 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
     ui->setupUi(this);
 
     // tcpSocket을 사용하여 비디오 스트리밍 설정
-    connect(tcpSocket, &QTcpSocket::readyRead, this, &VideoStreamWidget::readVideoStream);
+    connect(tcpSocket, &QTcpSocket::readyRead, this, &VideoStreamWidget::receiveFrame);
     connect(tcpSocket, &QTcpSocket::stateChanged, this, &VideoStreamWidget::updateNetworkStatus);
 
     // 버튼 시그널과 슬롯 연결
@@ -26,13 +33,6 @@ VideoStreamWidget::VideoStreamWidget(QTcpSocket *socket, QWidget *parent)
 
     // 전체 화면 버튼 시그널 연결
     connect(ui->fullScreenButton, &QPushButton::clicked, this, &VideoStreamWidget::toggleFullScreen);
-
-    // QTimer를 설정하여 일정 주기로 UI를 업데이트
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &VideoStreamWidget::updateUI);
-
-    // 100ms 또는 200ms마다 UI를 갱신
-    timer->start(100);  // 100ms마다 UI를 갱신
 }
 
 VideoStreamWidget::~VideoStreamWidget()
@@ -43,62 +43,66 @@ VideoStreamWidget::~VideoStreamWidget()
     delete ui;
 }
 
-void VideoStreamWidget::readVideoStream()
+void VideoStreamWidget::receiveFrame()
 {
-    static const int headerSize = sizeof(quint32);
+    const int FRAME_SIZE = Frame::FRAME_SIZE;  // 예상 프레임 크기
+    static QByteArray buffer;       // 수신 데이터를 저장하는 버퍼
 
-    // 헤더 데이터 읽기
-    if (tcpSocket->bytesAvailable() < headerSize) {
+    // 현재 수신된 데이터를 계속 읽음
+    while (tcpSocket->bytesAvailable() > 0) {
+        int remainingData = FRAME_SIZE - buffer.size(); // 남은 데이터 계산
+        buffer.append(tcpSocket->read(remainingData));  // 남은 데이터만큼 읽기
+
+        // 프레임 데이터가 다 채워졌을 경우
+        if (buffer.size() == FRAME_SIZE) {
+            qDebug() << "프레임 수신 완료. 크기:" << buffer.size();
+
+            // 프레임을 처리
+            processFrame(buffer);
+
+            // 버퍼 초기화
+            buffer.clear();
+        }
+    }
+}
+
+void VideoStreamWidget::processFrame(const QByteArray& frameData)
+{
+    if (frameData.size() != Frame::FRAME_SIZE) {
+        qWarning() << "Invalid frame data size: expected" << Frame::FRAME_SIZE << ", got" << frameData.size();
         return;
     }
 
-    QByteArray headerData = tcpSocket->read(headerSize);
-    quint32 frameSize = *(reinterpret_cast<quint32*>(headerData.data()));
+    QElapsedTimer timer;
+    timer.start();
 
-    // 프레임 데이터가 도착할 때까지 대기
-    if (tcpSocket->bytesAvailable() < frameSize) {
-        if (!tcpSocket->waitForReadyRead(100)) {
-            return; // 데이터가 도착하지 않으면 반환
-        }
+    // OpenCV Mat 생성 및 데이터 변환
+    cv::Mat frame(Frame::HEIGHT, Frame::WIDTH, CV_8UC3, (uchar*)frameData.data());
+    if (frame.empty()) {
+        qWarning() << "Failed to decode frame!";
+        return;
     }
 
-    // 프레임 데이터 읽기
-    QByteArray frameData = tcpSocket->read(frameSize);
-    std::vector<uchar> buffer(frameData.begin(), frameData.end());
+    // BGR -> RGB 변환
+    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+    QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
 
-    // OpenCV로 이미지 디코딩
-    cv::Mat frame = cv::imdecode(buffer, cv::IMREAD_COLOR);
-
-    if (!frame.empty()) {
-        // 프레임 저장
-        currentFrame = frame;
-        frameReady = true;
+    if (isFullScreen && fullScreenVideoLabel) {
+        fullScreenVideoLabel->setPixmap(QPixmap::fromImage(img).scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
+    } else {
+        ui->videoLabel->setPixmap(QPixmap::fromImage(img).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+        qDebug() << " shot ";
+        QThread::sleep(1);
     }
-}
 
-cv::Mat VideoStreamWidget::getCurrentFrame() {
-    return currentFrame;  // 현재 프레임을 반환
-}
-
-void VideoStreamWidget::updateUI()
-{
-    if (frameReady && !currentFrame.empty()) {
-        QImage img((const uchar*)currentFrame.data, currentFrame.cols, currentFrame.rows, currentFrame.step, QImage::Format_BGR888);
-
-        if (isFullScreen && fullScreenVideoLabel) {
-            fullScreenVideoLabel->setPixmap(QPixmap::fromImage(img).scaled(fullScreenWindow->size(), Qt::KeepAspectRatio));
-        } else {
-            ui->videoLabel->setPixmap(QPixmap::fromImage(img).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
-        }
-        frameReady = false;
-    }
+    qDebug() << "Frame processing time:" << timer.elapsed() << "ms";
 }
 
 void VideoStreamWidget::playVideo()
 {
     // 비디오 재생
     if (!timer->isActive()) {
-        timer->start(100);  // 100ms마다 UI 갱신
+        timer->start(33);  // 100ms마다 UI 갱신
         qDebug() << "Video Stream Playing...";
     }
 }
