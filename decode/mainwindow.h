@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "videostreamplayer.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -17,7 +19,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps);
+    void RunStreamPlayer();
+
 private:
     Ui::MainWindow *ui;
+    VideoStreamPlayer* mVideoStreamPlayer;
 };
 #endif // MAINWINDOW_H

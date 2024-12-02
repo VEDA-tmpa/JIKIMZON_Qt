@@ -41,7 +41,7 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int he
     }
 }
 
-void VideoStreamPlayer::RunStreamPlayer()
+void VideoStreamPlayer::StartStream()
 {
     QByteArray headerBuffer;
     QByteArray frameBuffer;
