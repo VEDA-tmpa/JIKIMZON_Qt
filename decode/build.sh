@@ -1,5 +1,6 @@
 #!/bin/bash
 cd ./build
-qmake ../JIKIMZON.pro
-make -j3
+make clean
+qmake ../JIKIMZON_Qt.pro
+make -j2
 cd ..

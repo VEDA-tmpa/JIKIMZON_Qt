@@ -1,6 +1,16 @@
 #include "frame.h"
 
-//#include <arpa/inet.h>
+#if defined(_WIN32) || defined(_WIN64)
+    #include <winsock2.h>
+    #pragma comment(lib, "ws2_32.lib")
+
+#elif defined(__linux__) || defined(__APPLE__) && defined(__MACH__) // linux, mac
+    #include <arpa/inet.h>
+    
+#else
+    #error "Unsupported platform"
+#endif
+
 #include <QtEndian>
 #include <QByteArray>
 #include <iostream>
@@ -24,10 +34,10 @@ namespace frame
         buffer.resize(sizeof(HeaderStruct));
 
         HeaderStruct header = mHeader;
-        header.frameId = qToBigEndian(header.frameId);
-        header.bodySize = qToBigEndian(header.bodySize);
-        header.imageWidth = qToBigEndian(header.imageWidth);
-        header.imageHeight = qToBigEndian(header.imageHeight);
+        header.frameId = htonl(header.frameId);
+        header.bodySize = htonl(header.bodySize);
+        header.imageWidth = htons(header.imageWidth);
+        header.imageHeight = htons(header.imageHeight);
 
         std::memcpy(buffer.data(), reinterpret_cast<void*>(&header), sizeof(HeaderStruct));
     }
@@ -51,10 +61,10 @@ namespace frame
         HeaderStruct header;
         std::memcpy(&header, buffer.data(), sizeof(HeaderStruct));
 
-        header.frameId = qToLittleEndian(header.frameId);
-        header.bodySize = qToLittleEndian(header.bodySize);
-        header.imageWidth = qToLittleEndian(header.imageWidth);
-        header.imageHeight = qToLittleEndian(header.imageHeight);
+        header.frameId = ntohl(header.frameId);
+        header.bodySize = ntohl(header.bodySize);
+        header.imageWidth = ntohs(header.imageWidth);
+        header.imageHeight = ntohs(header.imageHeight);
 
         mHeader = header;
     }
@@ -69,10 +79,10 @@ namespace frame
         HeaderStruct header;
         std::memcpy(&header, buffer.data(), sizeof(HeaderStruct));
         
-        header.frameId = qToLittleEndian(header.frameId);
-        header.bodySize = qToLittleEndian(header.bodySize);
-        header.imageWidth = qToLittleEndian(header.imageWidth);
-        header.imageHeight = qToLittleEndian(header.imageHeight);
+        header.frameId = ntohl(header.frameId);
+        header.bodySize = ntohl(header.bodySize);
+        header.imageWidth = ntohs(header.imageWidth);
+        header.imageHeight = ntohs(header.imageHeight);
 
         mHeader = header;
     }

@@ -4,9 +4,37 @@
 #include <QDir>
 #include <QString>
 #include <QImage>
+#include <QString>
 #include <string>
 
 #include <opencv2/core.hpp>
+
+void VideoStreamPlayer::SetVideoLabel(QLabel* label)
+{
+    mVideoLabel = label;
+}
+
+void VideoStreamPlayer::ReadAllData(int expectedSize, OUT QByteArray& buffer)
+{
+    buffer.clear();
+    buffer.resize(expectedSize);
+
+    int readSize = 0;
+    while (readSize < expectedSize)
+    {   
+        mServerSocket->waitForReadyRead(10000);
+        int read = mServerSocket->read(buffer.data() + readSize, expectedSize - readSize);
+        if (read == -1)
+        {
+            qDebug() << "Error: " << mServerSocket->errorString();
+            return;
+        }
+
+        readSize += read;
+    }
+
+    qDebug() << "ReadAllData() - readSize: " << readSize;
+}
 
 void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps)
 {   
@@ -18,8 +46,8 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int he
     mIp = ip;
     mPort = port;
 
-    mbStop = true;
-    mbPause = true;
+    mbStop = false;
+    mbPause = false;
 
     // TODO: 디크립터 생성 QString currentPath = QDir::currentPath(); // QCoreApplication::applicationDirPath();
 
@@ -31,32 +59,56 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int he
     {
         qDebug() << "Error: " << mServerSocket->errorString();
         return;
-    }    
+    }
+
+    if (mServerSocket->state() == QAbstractSocket::ConnectedState) {
+        qDebug() << "Connected to server!";
+    } else {
+        qDebug() << "Failed to connect to server. Current state:" << mServerSocket->state();
+    }
 }
 
-void VideoStreamPlayer::RunStreamPlayer()
+void VideoStreamPlayer::StartStream()
 {
     QByteArray headerBuffer;
     QByteArray frameBuffer;
     cv::Mat cvFrame;
 
+    qDebug() << "started RunStreamPlayer()";
+
     while (!mbStop)
     {
-        if (mbPause)
+        // if (mbPause)
+        // {
+        //     continue;
+        // }
+
+        if (!mServerSocket)
         {
+            qDebug() << "socket not valid";
             continue;
         }
 
-        if ((mServerSocket->bytesAvailable() < 0) || !mServerSocket->isOpen())
+        if (!mServerSocket->waitForReadyRead(30000))
         {
+            qDebug() << "Error waitForReadyRead: " << mServerSocket->errorString();
             continue;
         }
+
+        if (mServerSocket->bytesAvailable() < sizeof(frame::HeaderStruct))
+        {
+            qDebug() << "error: small bytesAvailable: " << mServerSocket->bytesAvailable();
+            continue;
+        }
+
+        qDebug() << "====== getting data ======";
 
         // get header
         headerBuffer.clear();
-        headerBuffer = mServerSocket->read(sizeof(frame::HeaderStruct));
+        ReadAllData(sizeof(frame::HeaderStruct), headerBuffer);
         if (headerBuffer.size() != sizeof(frame::HeaderStruct))
         {
+            qDebug() << "header size err: " << headerBuffer.size();
             continue;
         }
 
@@ -64,15 +116,17 @@ void VideoStreamPlayer::RunStreamPlayer()
         frame::Header header;
         header.Deserialize(headerBuffer);
 
-        qDebug() << "Frame Id: " << header.GetFrameId();
-        qDebug() << "Timestamp: " << header.GetTimestamp();
-        qDebug() << "Body Size: " << header.GetBodySize();
+        qDebug() << "Frame Id: " << static_cast<int>(header.GetFrameId());
+        qDebug() << "Timestamp: " << QString::fromStdString(header.GetTimestamp());
+        qDebug() << "Header's Body Size: " << static_cast<int>(header.GetBodySize());
+        qDebug() << "Header's Body Size (no-cast): " << header.GetBodySize();
 
         // get body
         frameBuffer.clear();
-        frameBuffer = mServerSocket->read(header.GetBodySize());
-        if (frameBuffer.size() != header.GetBodySize())
+        ReadAllData(header.GetBodySize(), frameBuffer);
+        if (static_cast<int>(header.GetBodySize()) != header.GetBodySize())
         {
+            qDebug() << "body size err: " << static_cast<int>(header.GetBodySize());
             continue;
         }
 
@@ -81,17 +135,18 @@ void VideoStreamPlayer::RunStreamPlayer()
         body.Deserialize(frameBuffer);
 
         qDebug() << "Body Size: " << body.GetImage().size();
-        qDebug() << "header's body size: " << header.GetBodySize();
 
         // decode frame and get cv::Mat
         mDecodeHandler->DecodeFrame(body.GetImage(), cvFrame);
-        // QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
+
+        QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
+        mVideoLabel->setPixmap(QPixmap::fromImage(img));
         // emit frameReady(img);
 
-        qDebug() << "Frame Decoded";
-        qDebug() << "Frame Size: " << cvFrame.size().area();
-        qDebug() << "Frame Width: " << cvFrame.cols;
-        qDebug() << "Frame Height: " << cvFrame.rows;
+        // qDebug() << "Frame Decoded";
+        // qDebug() << "Frame Size: " << cvFrame.size().area();
+        // qDebug() << "Frame Width: " << cvFrame.cols;
+        // qDebug() << "Frame Height: " << cvFrame.rows;
     }
     
 

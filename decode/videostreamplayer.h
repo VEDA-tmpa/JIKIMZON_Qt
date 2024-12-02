@@ -2,8 +2,8 @@
 #define VIDEOSTREAMPLAYER_H
 
 #include <QObject>
+#include <QLabel>
 #include <QTcpSocket>
-// hton ntoh 등은 qToBigEndian, qToLittleEndian 등으로 대체 가능
 
 #include "decodehandler.h"
 
@@ -16,13 +16,15 @@ public:
     ~VideoStreamPlayer() = default;
 
     void InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps);
-    void RunStreamPlayer();
+    void ReadAllData(int expectedSize, OUT QByteArray& buffer);
     void StartStream();
     void StopStream();
     void PauseStream();
+    void SetVideoLabel(QLabel* label);
 
 private:
     DecodeHandler* mDecodeHandler;
+    QLabel* mVideoLabel;
     QTcpSocket* mServerSocket;
     QString mIp;
     int mPort;
