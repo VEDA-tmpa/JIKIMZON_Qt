@@ -1,6 +1,11 @@
 #include "videostreamplayer.h"
+#include "frame.h"
+
 #include <QDir>
 #include <QString>
+#include <QImage>
+
+#include <opencv2/core.hpp>
 
 void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps)
 {   
@@ -30,9 +35,9 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int he
 
 void VideoStreamPlayer::RunStreamPlayer()
 {
-    QByteArray buffer;
     QByteArray headerBuffer;
     QByteArray frameBuffer;
+    cv::Mat cvFrame;
 
     while (!mbStop)
     {
@@ -46,10 +51,46 @@ void VideoStreamPlayer::RunStreamPlayer()
             continue;
         }
 
+        // get header
         headerBuffer.clear();
         headerBuffer = mServerSocket->read(sizeof(frame::HeaderStruct));
+        if (headerBuffer.size() != sizeof(frame::HeaderStruct))
+        {
+            continue;
+        }
 
+        // deserialize header
+        frame::Header header;
+        header.Deserialize(headerBuffer);
 
+        qDebug() << "Frame Id: " << header.GetFrameId();
+        qDebug() << "Timestamp: " << header.GetTimestamp();
+        qDebug() << "Body Size: " << header.GetBodySize();
+
+        // get body
+        frameBuffer.clear();
+        frameBuffer = mServerSocket->read(header.GetBodySize());
+        if (frameBuffer.size() != header.GetBodySize())
+        {
+            continue;
+        }
+
+        // deserialize body
+        frame::Body body;
+        body.Deserialize(frameBuffer);
+
+        qDebug() << "Body Size: " << body.GetImage().size();
+        qDebug() << "header's body size: " << header.GetBodySize();
+
+        // decode frame and get cv::Mat
+        mDecodeHandler->DecodeFrame(body.GetImage(), cvFrame);
+        // QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
+        // emit frameReady(img);
+
+        qDebug() << "Frame Decoded";
+        qDebug() << "Frame Size: " << cvFrame.size();
+        qDebug() << "Frame Width: " << cvFrame.cols;
+        qDebug() << "Frame Height: " << cvFrame.rows;
     }
     
 

@@ -63,8 +63,8 @@ void DecodeHandler::initFFmpegDecoder()
     }
 }
 
-// data -> parser -> pkt(YUV) -> frame(YUV) -> frame(RGB) -> outData(RGB)
-void DecodeHandler::DecodeData(const std::vector<uint8_t>& data, OUT std::vector<uint8_t>& outData)
+// data -> parser -> pkt(YUV) -> frame(YUV) -> frame(RGB) -> outFrame(RGB)
+void DecodeHandler::DecodeFrame(const std::vector<uint8_t>& data, OUT cv::Mat& outFrame)
 {
     AVPacket *pkt = av_packet_alloc();  // encoded pkt
     if (!pkt)
@@ -135,10 +135,12 @@ void DecodeHandler::DecodeData(const std::vector<uint8_t>& data, OUT std::vector
                          rgbFrame->data, 
                          rgbFrame->linesize);
 
-                // copy rgbFrame to outData
-                outData.clear();
-                outData.resize(mWidth * mHeight * 3);
-                std::memcpy(outData.data(), rgbFrame->data[0], mWidth * mHeight * 3);
+                outFrame.release();
+                outFrame = cv::Mat(mHeight, mWidth, CV_8UC3, rgbFrame->data[0]);
+                
+                qDebug() << "[DecodeHandler] Frame decoded";
+                //return; ?
+
                 // emit signal
                 // emit frameDecoded(outData);
 

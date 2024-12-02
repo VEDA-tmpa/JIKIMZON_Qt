@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QByteArray>
 
+#include <opencv2/core.hpp>
+
 #include <vector>
 #include <cstdint>
 
@@ -24,7 +26,7 @@ public:
     explicit DecodeHandler(int, int, int, int, enum AVPixelFormat, enum AVPixelFormat, QObject *parent = nullptr);
     ~DecodeHandler();
 
-    void DecodeData(const std::vector<uint8_t>&, OUT std::vector<uint8_t>&);
+    void DecodeFrame(const std::vector<uint8_t>&, OUT cv::Mat&);
 
 private:
     void initFFmpegDecoder();
