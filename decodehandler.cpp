@@ -139,10 +139,13 @@ void DecodeHandler::DecodeData(const std::vector<uint8_t>& data, OUT std::vector
                 outData.clear();
                 outData.resize(mWidth * mHeight * 3);
                 std::memcpy(outData.data(), rgbFrame->data[0], mWidth * mHeight * 3);
-
                 // emit signal
                 // emit frameDecoded(outData);
+
+                av_frame_free(&rgbFrame);
             }
+
+            av_packet_unref(pkt);
         }
     }
 
