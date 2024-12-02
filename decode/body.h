@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
-
+#include <QByteArray>
 #include "ISerializeInterface.h"
 
 namespace frame

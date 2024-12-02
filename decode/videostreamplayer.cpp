@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QString>
 #include <QImage>
+#include <string>
 
 #include <opencv2/core.hpp>
 
@@ -88,7 +89,7 @@ void VideoStreamPlayer::RunStreamPlayer()
         // emit frameReady(img);
 
         qDebug() << "Frame Decoded";
-        qDebug() << "Frame Size: " << cvFrame.size();
+        qDebug() << "Frame Size: " << cvFrame.size().area();
         qDebug() << "Frame Width: " << cvFrame.cols;
         qDebug() << "Frame Height: " << cvFrame.rows;
     }
