@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QString>
 #include <QImage>
+#include <QString>
 #include <string>
 
 #include <opencv2/core.hpp>
@@ -50,10 +51,10 @@ void VideoStreamPlayer::RunStreamPlayer()
 
     while (!mbStop)
     {
-        if (mbPause)
-        {
-            continue;
-        }
+        // if (mbPause)
+        // {
+        //     continue;
+        // }
 
         if (!mServerSocket)
         {
@@ -61,8 +62,17 @@ void VideoStreamPlayer::RunStreamPlayer()
             continue;
         }
 
-        if (!(mServerSocket->bytesAvailable() > 0))
+        if (!mServerSocket->waitForReadyRead(3000))
+        {
+            qDebug() << "Error: " << mServerSocket->errorString();
+            return;
+        }
+
+        if (mServerSocket->bytesAvailable() < sizeof(frame::HeaderStruct))
+        {
+            qDebug() << "error: small bytesAvailable: " << mServerSocket->bytesAvailable();
             continue;
+        }
 
         qDebug() << "getting data";
 
@@ -79,9 +89,9 @@ void VideoStreamPlayer::RunStreamPlayer()
         frame::Header header;
         header.Deserialize(headerBuffer);
 
-        qDebug() << "Frame Id: " << header.GetFrameId();
-        qDebug() << "Timestamp: " << header.GetTimestamp();
-        qDebug() << "Body Size: " << header.GetBodySize();
+        qDebug() << "Frame Id: " << static_cast<int>(header.GetFrameId());
+        qDebug() << "Timestamp: " << QString::fromStdString(header.GetTimestamp());
+        qDebug() << "Header's Body Size: " << static_cast<int>(header.GetBodySize());
 
         // get body
         frameBuffer.clear();
@@ -97,17 +107,16 @@ void VideoStreamPlayer::RunStreamPlayer()
         body.Deserialize(frameBuffer);
 
         qDebug() << "Body Size: " << body.GetImage().size();
-        qDebug() << "header's body size: " << header.GetBodySize();
 
         // decode frame and get cv::Mat
         mDecodeHandler->DecodeFrame(body.GetImage(), cvFrame);
         // QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
         // emit frameReady(img);
 
-        qDebug() << "Frame Decoded";
-        qDebug() << "Frame Size: " << cvFrame.size().area();
-        qDebug() << "Frame Width: " << cvFrame.cols;
-        qDebug() << "Frame Height: " << cvFrame.rows;
+        // qDebug() << "Frame Decoded";
+        // qDebug() << "Frame Size: " << cvFrame.size().area();
+        // qDebug() << "Frame Width: " << cvFrame.cols;
+        // qDebug() << "Frame Height: " << cvFrame.rows;
     }
     
 

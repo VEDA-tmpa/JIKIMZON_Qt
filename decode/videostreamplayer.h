@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QTcpSocket>
-// hton ntoh 등은 qToBigEndian, qToLittleEndian 등으로 대체 가능
 
 #include "decodehandler.h"
 

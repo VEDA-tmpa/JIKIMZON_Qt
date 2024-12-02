@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     VideoStreamPlayer* videoStreamPlayer = new VideoStreamPlayer();
-    videoStreamPlayer->InitStreamPlayer("192.168.50.14", 12345, 1280, 720, 1000000, 15);
+    videoStreamPlayer->InitStreamPlayer("localhost", 12345, 1280, 720, 1000000, 15);
     videoStreamPlayer->RunStreamPlayer();
 }
 
