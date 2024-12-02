@@ -58,8 +58,3 @@ compile_commands.json
 *creator.user*
 
 *_qmlcache.qrc
-
-# macOS 메타데이터 파일 무시
-._*
-.DS_Store
-
