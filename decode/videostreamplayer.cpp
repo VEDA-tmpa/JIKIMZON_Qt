@@ -18,8 +18,8 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int he
     mIp = ip;
     mPort = port;
 
-    mbStop = true;
-    mbPause = true;
+    mbStop = false;
+    mbPause = false;
 
     // TODO: 디크립터 생성 QString currentPath = QDir::currentPath(); // QCoreApplication::applicationDirPath();
 
@@ -31,7 +31,13 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int port, int width, int he
     {
         qDebug() << "Error: " << mServerSocket->errorString();
         return;
-    }    
+    }
+
+    if (mServerSocket->state() == QAbstractSocket::ConnectedState) {
+        qDebug() << "Connected to server!";
+    } else {
+        qDebug() << "Failed to connect to server. Current state:" << mServerSocket->state();
+    }
 }
 
 void VideoStreamPlayer::RunStreamPlayer()
@@ -40,6 +46,8 @@ void VideoStreamPlayer::RunStreamPlayer()
     QByteArray frameBuffer;
     cv::Mat cvFrame;
 
+    qDebug() << "started RunStreamPlayer()";
+
     while (!mbStop)
     {
         if (mbPause)
@@ -47,16 +55,23 @@ void VideoStreamPlayer::RunStreamPlayer()
             continue;
         }
 
-        if ((mServerSocket->bytesAvailable() < 0) || !mServerSocket->isOpen())
+        if (!mServerSocket)
         {
+            qDebug() << "socket not valid";
             continue;
         }
+
+        if (!(mServerSocket->bytesAvailable() > 0))
+            continue;
+
+        qDebug() << "getting data";
 
         // get header
         headerBuffer.clear();
         headerBuffer = mServerSocket->read(sizeof(frame::HeaderStruct));
         if (headerBuffer.size() != sizeof(frame::HeaderStruct))
         {
+            qDebug() << "header size err: " << headerBuffer.size();
             continue;
         }
 
@@ -73,6 +88,7 @@ void VideoStreamPlayer::RunStreamPlayer()
         frameBuffer = mServerSocket->read(header.GetBodySize());
         if (frameBuffer.size() != header.GetBodySize())
         {
+            qDebug() << "body size err: " << frameBuffer.size();
             continue;
         }
 

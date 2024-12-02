@@ -17,7 +17,6 @@ public:
 
     void InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps);
     void RunStreamPlayer();
-    void StartStream();
     void StopStream();
     void PauseStream();
 
