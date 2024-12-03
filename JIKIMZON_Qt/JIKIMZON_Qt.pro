@@ -11,8 +11,8 @@ CONFIG += c++17
 
 SOURCEPATH += $$PWD
 SOURCES += \
-    eventlogmanager.cpp \
-    metadatadisplay.cpp \
+    src/eventlogmanager.cpp \
+    src/metadatadisplay.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/videostreamplayer.cpp \
@@ -26,7 +26,7 @@ SOURCES += \
 INCLUDEPATH += $$PWD/inc
 
 HEADERS += \
-    eventlogmanager.h \
+    inc/eventlogmanager.h \
     inc/mainwindow.h \
     inc/videostreamplayer.h \
     inc/decodehandler.h \
@@ -35,12 +35,16 @@ HEADERS += \
     inc/header.h \
     inc/body.h \
     inc/frame.h \
-    metadatadisplay.h
+    inc/metadatadisplay.h
 
 
 FORMS += \
     mainwindow.ui \
     metadatadisplay.ui
+
+RESOURCES += \
+    assets.qrc
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -94,6 +98,3 @@ macx {
             -lopencv_imgcodecs \
             -lopencv_videoio
 }
-
-RESOURCES += \
-    assets.qrc

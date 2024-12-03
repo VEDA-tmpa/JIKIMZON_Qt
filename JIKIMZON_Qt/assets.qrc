@@ -1,15 +1,15 @@
 <RCC>
     <qresource prefix="/detect">
-        <file>biodegradable.png</file>
-        <file>box.png</file>
-        <file>default.png</file>
-        <file>glass.png</file>
-        <file>metal.png</file>
-        <file>paper.png</file>
-        <file>plastic.png</file>
+        <file>icons/biodegradable.png</file>
+        <file>icons/box.png</file>
+        <file>icons/default.png</file>
+        <file>icons/glass.png</file>
+        <file>icons/metal.png</file>
+        <file>icons/paper.png</file>
+        <file>icons/plastic.png</file>
     </qresource>
     <qresource prefix="/icon">
-        <file>moon.png</file>
-        <file>sun.png</file>
+        <file>icons/moon.png</file>
+        <file>icons/sun.png</file>
     </qresource>
 </RCC>
