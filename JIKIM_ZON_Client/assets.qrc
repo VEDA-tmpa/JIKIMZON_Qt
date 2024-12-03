@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/detect">
+        <file>biodegradable.png</file>
+        <file>box.png</file>
+        <file>default.png</file>
+        <file>glass.png</file>
+        <file>metal.png</file>
+        <file>paper.png</file>
+        <file>plastic.png</file>
+    </qresource>
+    <qresource prefix="/icon">
+        <file>moon.png</file>
+        <file>sun.png</file>
+    </qresource>
+    <qresource prefix="/keyfile">
+        <file>keyfile.bin</file>
+    </qresource>
+</RCC>
