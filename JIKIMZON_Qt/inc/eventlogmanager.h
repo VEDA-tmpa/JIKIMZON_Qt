@@ -1,5 +1,5 @@
-#ifndef EVENTLOGMANAGER_H
-#define EVENTLOGMANAGER_H
+#ifndef JIKIMZON_EVENTLOGMANAGER_H
+#define JIKIMZON_EVENTLOGMANAGER_H
 
 #include <QObject>
 #include <QSqlQuery>
@@ -18,13 +18,12 @@ public:
     ~EventLogManager();
 
     void createTable();
-
-    void saveEventLog(const QString &jsonString);
+    void saveEventLog(QJsonObject& obj);
 
 signals:
 
 private:
-    QSqlDatabase db;
+    QSqlDatabase mDB;
 };
 
-#endif // EVENTLOGMANAGER_H
+#endif // JIKIMZON_EVENTLOGMANAGER_H

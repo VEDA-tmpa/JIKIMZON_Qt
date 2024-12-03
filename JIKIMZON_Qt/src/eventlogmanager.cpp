@@ -1,25 +1,30 @@
 #include "eventlogmanager.h"
 
 EventLogManager::EventLogManager(const QString &dbPath, QObject *parent)
-    : QObject(parent) {
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(dbPath);
+    : QObject(parent)
+{
+    mDB = QSqlDatabase::addDatabase("QSQLITE");
+    mDB.setDatabaseName(dbPath);
 
-    if (!db.open()) {
-        qDebug() << "Error: Unable to open database." << db.lastError().text();
+    if (!mDB.open())
+    {
+        qDebug() << "Error: Unable to open database." << mDB.lastError().text();
         return;
     }
 
-    createTable(); // 테이블 생성 호출
+    // 테이블 생성
+    createTable();
 }
 
 EventLogManager::~EventLogManager() {
-    if (db.isOpen()) {
-        db.close();
+    if (mDB.isOpen())
+    {
+        mDB.close();
     }
 }
 
-void EventLogManager::createTable() {
+void EventLogManager::createTable()
+{
     QSqlQuery query;
     query.exec("CREATE TABLE IF NOT EXISTS event_logs ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -31,23 +36,31 @@ void EventLogManager::createTable() {
                "width INTEGER, "
                "height INTEGER);");
 
-    if (query.lastError().isValid()) {
+    if (query.lastError().isValid())
+    {
         qDebug() << "Failed to create table:" << query.lastError().text();
-    } else {
+    }
+    else
+    {
         qDebug() << "Table created successfully.";
     }
 }
 
 
-void EventLogManager::saveEventLog(const QString &jsonString) {
-    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
-    QJsonObject obj = doc.object();
+void EventLogManager::saveEventLog(QJsonObject &obj)
+{
+    if (obj.isEmpty())
+    {
+        qDebug() << "Empty json object";
+        return;
+    }
 
     int frameId = obj["frameId"].toInt();
     QString timestamp = obj["timestamp"].toString();
 
     QJsonArray objectArray = obj["object"].toArray();
-    for (const QJsonValue &value : objectArray) {
+    for (const QJsonValue &value : objectArray)
+    {
         QJsonObject objData = value.toObject();
         QString className = objData["className"].toString();
         int x = objData["x"].toInt();
@@ -66,7 +79,8 @@ void EventLogManager::saveEventLog(const QString &jsonString) {
         query.bindValue(":width", width);
         query.bindValue(":height", height);
 
-        if (!query.exec()) {
+        if (!query.exec())
+        {
             qDebug() << "Failed to insert event log:" << query.lastError().text();
         }
     }
