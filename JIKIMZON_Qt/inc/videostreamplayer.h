@@ -9,6 +9,7 @@
 #include <QByteArray>
 #include <QVector>
 #include <QMap>
+#include <QSharedPointer>
 
 #include <opencv2/core.hpp>
 
@@ -47,8 +48,8 @@ signals:
     void StreamReady();
 
 public slots:
-    void HandleVideoData(frame::Header& header, QByteArray& videoData);
-    void HandleJsonData(const QString& jsonString);
+    void HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<QByteArray> videoData);
+    void HandleJsonData(QSharedPointer<QJsonDocument> jsonDoc);
 
 private:
     NetworkManager* mNetworkManager;

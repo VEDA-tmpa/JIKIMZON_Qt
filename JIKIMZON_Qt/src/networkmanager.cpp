@@ -5,6 +5,7 @@
 #include "header.h"
 
 #include <QDebug>
+#include <QSharedPointer>
 
 NetworkManager::NetworkManager(QObject *parent) :
     QObject(parent),
@@ -86,13 +87,16 @@ void NetworkManager::onVideoConnected()
 void NetworkManager::onVideoReadyRead()
 {
     QByteArray headerBuffer;
-    QByteArray frameBuffer;
-    frame::Header header;
+
+    QSharedPointer<frame::Header> header(new frame::Header());
+    QSharedPointer<QByteArray> frameBuffer(new QByteArray());
 
     ReadAllData(mVideoSocket, sizeof(frame::HeaderStruct), headerBuffer);
-    header.Deserialize(headerBuffer);
+    header->Deserialize(headerBuffer);
 
-    ReadAllData(mVideoSocket, header.GetBodySize(), frameBuffer);
+    qDebug() << "Header: frameId: " << header->GetFrameId() << ", bodySize: " << header->GetBodySize();
+
+    ReadAllData(mVideoSocket, header->GetBodySize(), *frameBuffer);
 
     emit videoDataReceived(header, frameBuffer);
 }
@@ -105,7 +109,8 @@ void NetworkManager::onJsonConnected()
 void NetworkManager::onJsonReadyRead()
 {
     QByteArray jsonData = mJsonSocket->readAll();
-    QString jsonString(jsonData);
+    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+    QSharedPointer<QJsonDocument> jsonDoc(new QJsonDocument(doc));
 
-    emit jsonDataReceived(jsonString);
+    emit jsonDataReceived(jsonDoc);
 }

@@ -14,5 +14,6 @@
     </qresource>
     <qresource prefix="/res">
         <file>res/keyfile.bin</file>
+        <file>res/keyfile_tmp.bin</file>
     </qresource>
 </RCC>

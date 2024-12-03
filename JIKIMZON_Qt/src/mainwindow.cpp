@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // init player
     mVideoStreamPlayer = new VideoStreamPlayer();
-    mVideoStreamPlayer->InitStreamPlayer("localhost", 12345, 56789, 1280, 720, 100000, 15);
+    mVideoStreamPlayer->InitStreamPlayer("192.168.35.221", 1234, 4321, 1280, 720, 100000, 15);
 
     // init meta data display
     MetaDataDisplay* metaData = new MetaDataDisplay(this);
@@ -34,8 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
         // metaData->updateMetaData("2024-11-15 10:20", "A구역", "paper");
 
     // event log
-    QString dbPath = QDir::currentPath() + "/res/event_log.db";
-    mEventLogManager = new EventLogManager(dbPath, this);
+    // QString dbPath = QDir::currentPath() + "/res/event_log.db";
+    // mEventLogManager = new EventLogManager(dbPath, this);
 
     // QTableView에 사용할 모델 생성
     mItemModel = new QStandardItemModel(this);
@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // connect player
     connect(mVideoStreamPlayer, &VideoStreamPlayer::FrameReady, this, [&](const QImage& frame) {
+        qDebug() << "[MainWindow] FrameReady signal received";
         mUI->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(mUI->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
@@ -73,12 +74,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mUI->saturationSlider, &QSlider::valueChanged, this, &MainWindow::onSaturationSliderChanged);
     connect(mUI->sharpnessSlider, &QSlider::valueChanged, this, &MainWindow::onSharpnessSliderChanged);
 
-
-    // start stream
-    if (!mVideoStreamPlayer->isRunning())
-    {
-        mVideoStreamPlayer->start(QThread::LowPriority);
-    }
 }
 
 MainWindow::~MainWindow()

@@ -51,7 +51,7 @@ private:
 
     VideoStreamPlayer *mVideoStreamPlayer;
     MetaDataDisplay *mMetaData;
-    EventLogManager *mEventLogManager; // EventLogManager 포인터 추가
+    // EventLogManager *mEventLogManager; // EventLogManager 포인터 추가
     QStandardItemModel *mItemModel; // QTableView에 사용할 모델
 
     bool mbNightMode;

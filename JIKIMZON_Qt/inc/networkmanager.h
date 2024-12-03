@@ -20,8 +20,8 @@ public:
     void connectToJsonServer(const QString &host, int port);
 
 signals:
-    void videoDataReceived(frame::Header& header, QByteArray &videoData);
-    void jsonDataReceived(const QString &jsonString);
+    void videoDataReceived(QSharedPointer<frame::Header> header, QSharedPointer<QByteArray> videoData);
+    void jsonDataReceived(QSharedPointer<QJsonDocument> jsonDoc);
 
 private:
     QTcpSocket *mVideoSocket;

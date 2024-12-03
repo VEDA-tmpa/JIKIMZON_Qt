@@ -45,11 +45,11 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int videoPort, int jsonPort
     connect(mNetworkManager, &NetworkManager::jsonDataReceived, this, &VideoStreamPlayer::HandleJsonData);
 }
 
-void VideoStreamPlayer::HandleVideoData(frame::Header &header, QByteArray &videoData)
-{
+void VideoStreamPlayer::HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<QByteArray> videoData)
+{   
     QByteArray decryptedFrame;
-    QString qTimestamp = QString::fromStdString(header.GetTimestamp());
-    mDecryptor->Decrypt(qTimestamp, videoData, decryptedFrame);
+    QString qTimestamp = QString::fromStdString(header->GetTimestamp());
+    mDecryptor->Decrypt(qTimestamp, *videoData, decryptedFrame);
 
     frame::Body body;
     body.Deserialize(decryptedFrame);
@@ -65,9 +65,9 @@ void VideoStreamPlayer::HandleVideoData(frame::Header &header, QByteArray &video
     emit FrameReady(img);
 }
 
-void VideoStreamPlayer::HandleJsonData(const QString &jsonString)
+void VideoStreamPlayer::HandleJsonData(QSharedPointer<QJsonDocument> jsonDoc)
 {
-    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
+    QJsonDocument doc = *jsonDoc;
     if (!doc.isObject())
     {
         qDebug() << "Invalid JSON data";
@@ -163,6 +163,8 @@ bool VideoStreamPlayer::IsStopped() const
 
 void VideoStreamPlayer::StoreFrame(const QImage &frame)
 {
+    qDebug() << "StoreFrame()";
+
     if (!mbPause)
     {
         mFrameHistory.append(frame);
