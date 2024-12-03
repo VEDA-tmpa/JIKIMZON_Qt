@@ -31,9 +31,12 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int videoPort, int jsonPort
     mbStop = false;
     mbPause = false;
 
+    QString logPath = QDir::currentPath() + "/res/event_logs.db";
+
     mNetworkManager = new NetworkManager();
     mDecodeHandler = new DecodeHandler(mHeight, mWidth, mBitrate, mFps, AVPixelFormat::AV_PIX_FMT_YUV420P, AVPixelFormat::AV_PIX_FMT_RGB24, this);
     mDecryptor = new Decryptor();
+    mEventLogManager = new EventLogManager(logPath, this);
 
     mNetworkManager->connectToVideoServer(mIp, mVideoPort);
     mNetworkManager->connectToJsonServer(mIp, mJsonPort);
@@ -65,20 +68,27 @@ void VideoStreamPlayer::HandleVideoData(frame::Header &header, QByteArray &video
 void VideoStreamPlayer::HandleJsonData(const QString &jsonString)
 {
     QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
-    if (!doc.isObject()) {
+    if (!doc.isObject())
+    {
         qDebug() << "Invalid JSON data";
         return;
     }
 
+    // mDetectedObjects.clear();
+    // mObjectLabels.clear();
+
     QJsonObject obj = doc.object();
+
+    // save event log
+    mEventLogManager->saveEventLog(obj);
+
     int frameId = obj["frameId"].toInt();
     QString timestamp = obj["timestamp"].toString();
 
-    mDetectedObjects.clear();
-    mObjectLabels.clear();
-
     QJsonArray objectArray = obj["object"].toArray();
-    for (const QJsonValue &value : objectArray) {
+    
+    for (const QJsonValue &value : objectArray)
+    {
         QJsonObject objData = value.toObject();
         QString className = objData["className"].toString();
         int x = objData["x"].toInt();

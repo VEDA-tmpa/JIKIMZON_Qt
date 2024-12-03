@@ -15,6 +15,7 @@
 #include "networkmanager.h"
 #include "decodehandler.h"
 #include "decryptor.h"
+#include "eventlogmanager.h"
 
 class VideoStreamPlayer : public QObject
 {
@@ -53,6 +54,7 @@ private:
     NetworkManager* mNetworkManager;
     DecodeHandler* mDecodeHandler;
     Decryptor* mDecryptor;
+    EventLogManager* mEventLogManager;
 
     QString mIp;
     int mVideoPort;
