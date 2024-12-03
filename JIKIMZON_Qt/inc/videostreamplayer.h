@@ -1,10 +1,10 @@
 #ifndef JIKIMZON_VIDEOSTREAMPLAYER_H
 #define JIKIMZON_VIDEOSTREAMPLAYER_H
 
-#include <QThread>
 #include <QObject>
 #include <QLabel>
 #include <QTcpSocket>
+#include <QQueue>
 #include <QImage>
 #include <QByteArray>
 #include <QVector>
@@ -12,10 +12,11 @@
 
 #include <opencv2/core.hpp>
 
+#include "networkmanager.h"
 #include "decodehandler.h"
 #include "decryptor.h"
 
-class VideoStreamPlayer : public QThread
+class VideoStreamPlayer : public QObject
 {
     Q_OBJECT
 
@@ -23,8 +24,7 @@ public:
     VideoStreamPlayer() = default;
     ~VideoStreamPlayer();
 
-    void InitStreamPlayer(QString ip, int port, int width, int height, int bitrate, int fps);
-    void ReadAllData(int expectedSize, OUT QByteArray& buffer);
+    void InitStreamPlayer(QString ip, int videoPort, int jsonPort, int width, int height, int bitrate, int fps);
 
     void StoreFrame(const QImage& frame);
     void AddOverlayToFrame(cv::Mat &frame, const std::vector<cv::Rect> &detectedObjects, const std::vector<std::string> &labels);
@@ -43,19 +43,20 @@ public:
 
 signals:
     void FrameReady(const QImage& frame);
+    void StreamReady();
 
-
-protected:
-    void run() override;
-
+public slots:
+    void HandleVideoData(frame::Header& header, QByteArray& videoData);
+    void HandleJsonData(const QString& jsonString);
 
 private:
+    NetworkManager* mNetworkManager;
     DecodeHandler* mDecodeHandler;
     Decryptor* mDecryptor;
 
-    QTcpSocket* mServerSocket;
     QString mIp;
-    int mPort;
+    int mVideoPort;
+    int mJsonPort;
 
     int mWidth;
     int mHeight;
@@ -67,6 +68,9 @@ private:
 
     bool mbStop;
     bool mbPause;
+
+    QVector<QRect> mDetectedObjects;
+    QStringList mObjectLabels;
 
     QMap<QString, cv::Scalar> mLabelColors = {
         {"biodegradable", cv::Scalar(96, 255, 0)},
