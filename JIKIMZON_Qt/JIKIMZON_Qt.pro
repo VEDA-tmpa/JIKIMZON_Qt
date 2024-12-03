@@ -1,4 +1,4 @@
-QT       += core gui network multimedia
+QT       += core gui network multimedia sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,6 +11,8 @@ CONFIG += c++17
 
 SOURCEPATH += $$PWD
 SOURCES += \
+    eventlogmanager.cpp \
+    metadatadisplay.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/videostreamplayer.cpp \
@@ -24,6 +26,7 @@ SOURCES += \
 INCLUDEPATH += $$PWD/inc
 
 HEADERS += \
+    eventlogmanager.h \
     inc/mainwindow.h \
     inc/videostreamplayer.h \
     inc/decodehandler.h \
@@ -32,10 +35,12 @@ HEADERS += \
     inc/header.h \
     inc/body.h \
     inc/frame.h \
+    metadatadisplay.h
 
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    metadatadisplay.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -89,3 +94,6 @@ macx {
             -lopencv_imgcodecs \
             -lopencv_videoio
 }
+
+RESOURCES += \
+    assets.qrc

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>668</width>
-    <height>400</height>
+    <width>735</width>
+    <height>301</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,37 +39,6 @@
      </property>
      <property name="text">
       <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QListWidget" name="eventLog">
-     <property name="styleSheet">
-      <string notr="true">QListWidget {
-        background-color: #f0f0f0;  /* 배경색 */
-        border: 1px solid #ccc;     /* 테두리 */
-        padding: 5px;               /* 여백 */
-        font-size: 14px;            /* 폰트 크기 */
-    }
-
-    QListWidget::item {
-        padding: 5px;
-        background-color: transparent;  /* 항목 배경 */
-        border-bottom: 1px solid #e0e0e0;  /* 항목 사이에 경계선 */
-    }
-
-    QListWidget::item:hover {
-        background-color: #d3d3d3;  /* 마우스 호버 시 배경색 */
-    }
-
-    QListWidget::item:selected {
-        background-color: #4CAF50;  /* 선택된 항목 배경색 */
-        color: white;               /* 선택된 항목 텍스트 색 */
-    }
-
-    QListWidget::item:selected:!active {
-        background-color: #3e8e41;  /* 선택된 항목이 비활성일 때 색상 */
-    }</string>
      </property>
     </widget>
    </item>
@@ -154,6 +123,37 @@
      </property>
      <property name="text">
       <string>객체 종류: </string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QListWidget" name="eventLog">
+     <property name="styleSheet">
+      <string notr="true">QListWidget {
+        background-color: #f0f0f0;  /* 배경색 */
+        border: 1px solid #ccc;     /* 테두리 */
+        padding: 5px;               /* 여백 */
+        font-size: 14px;            /* 폰트 크기 */
+    }
+
+    QListWidget::item {
+        padding: 5px;
+        background-color: transparent;  /* 항목 배경 */
+        border-bottom: 1px solid #e0e0e0;  /* 항목 사이에 경계선 */
+    }
+
+    QListWidget::item:hover {
+        background-color: #d3d3d3;  /* 마우스 호버 시 배경색 */
+    }
+
+    QListWidget::item:selected {
+        background-color: #4CAF50;  /* 선택된 항목 배경색 */
+        color: white;               /* 선택된 항목 텍스트 색 */
+    }
+
+    QListWidget::item:selected:!active {
+        background-color: #3e8e41;  /* 선택된 항목이 비활성일 때 색상 */
+    }</string>
      </property>
     </widget>
    </item>
