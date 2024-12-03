@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QDir>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , mUI(new Ui::MainWindow)
@@ -9,7 +11,36 @@ MainWindow::MainWindow(QWidget *parent)
 
     // init player
     mVideoStreamPlayer = new VideoStreamPlayer();
-    mVideoStreamPlayer->InitStreamPlayer("localhost", 12345, 1280, 720, 100000, 15);
+    mVideoStreamPlayer->InitStreamPlayer("localhost", 12345, 56789, 1280, 720, 100000, 15);
+
+    // init meta data display
+    MetaDataDisplay* metaData = new MetaDataDisplay(this);
+
+    // metaDataContainer에 MetaDataDisplay 추가
+    if (mUI->metaDataContainer->layout())
+    {
+        mUI->metaDataContainer->layout()->addWidget(metaData);
+    }
+    else
+    {
+        // 레이아웃이 없는 경우 새로 설정
+        QVBoxLayout* layout = new QVBoxLayout(mUI->metaDataContainer);
+        layout->setContentsMargins(0,0,0,0);
+        layout->addWidget(metaData);
+        mUI->metaDataContainer->setLayout(layout);
+    }
+
+        // example data
+        // metaData->updateMetaData("2024-11-15 10:20", "A구역", "paper");
+
+    // event log
+    QString dbPath = QDir::currentPath() + "/res/event_log.db";
+    mEventLogManager = new EventLogManager(dbPath, this);
+
+    // QTableView에 사용할 모델 생성
+    mItemModel = new QStandardItemModel(this);
+    mUI->eventlogtableView->setModel(mItemModel);
+
 
     // connect theme button
     connect(mUI->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
@@ -27,38 +58,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mUI->backwardButton, &QPushButton::clicked, mVideoStreamPlayer, &VideoStreamPlayer::GoBackward);
     connect(mUI->forwardButton, &QPushButton::clicked, mVideoStreamPlayer, &VideoStreamPlayer::GoForward);
 
-    // meta data display
-    MetaDataDisplay* metaData = new MetaDataDisplay(this);
-
-    // metaDataContainer에 MetaDataDisplay 추가
-    if (mUI->metaDataContainer->layout()) {
-        mUI->metaDataContainer->layout()->addWidget(metaData);
-    } else {
-        // 레이아웃이 없는 경우 새로 설정
-        QVBoxLayout* layout = new QVBoxLayout(mUI->metaDataContainer);
-        layout->setContentsMargins(0,0,0,0);
-        layout->addWidget(metaData);
-        mUI->metaDataContainer->setLayout(layout);
-    }
-
-    // 메타 데이터 예시 업데이트
-    metaData->updateMetaData("2024-11-15 10:20", "A구역", "paper");
-
-    eventLogManager = new EventLogManager("event_log.db", this);
-    qDebug() << "EventLogManager 초기화 완료";
-
-    // QTableView에 사용할 모델 생성
-    model = new QStandardItemModel(this);
-    mUI->eventlogtableView->setModel(model); // 테이블 뷰에 모델 설정
-    qDebug() << "테이블 뷰 모델 설정 완료";
-
-    //검색 버튼 클릭 시 슬롯 연결
+    // connect search button
     connect(mUI->searchButton, &QPushButton::clicked, this, &MainWindow::onsearchButtonclicked);
-    qDebug() << "검색 버튼 시그널 연결 완료";
 
-    qDebug() << "MainWindow 생성 완료";
-
-    // 슬라이더 초기화 및 연결
+    // connect sliders
     mUI->brightnessSlider->setValue(0);
     mUI->brightnessSlider->setRange(-255, 255);
     mUI->saturationSlider->setValue(0);
@@ -66,10 +69,10 @@ MainWindow::MainWindow(QWidget *parent)
     mUI->sharpnessSlider->setValue(0);
     mUI->sharpnessSlider->setRange(-100, 100);
 
-    // 슬롯 연결 (여전히 필요)
     connect(mUI->brightnessSlider, &QSlider::valueChanged, this, &MainWindow::onBrightnessSliderChanged);
     connect(mUI->saturationSlider, &QSlider::valueChanged, this, &MainWindow::onSaturationSliderChanged);
     connect(mUI->sharpnessSlider, &QSlider::valueChanged, this, &MainWindow::onSharpnessSliderChanged);
+
 
     // start stream
     if (!mVideoStreamPlayer->isRunning())
@@ -87,18 +90,18 @@ MainWindow::~MainWindow()
 void MainWindow::onsearchButtonclicked() {
     qDebug() << "on_searchButton_clicked 호출";
 
-    QString searchTerm = mUI->eventlineEdit->text(); // QLineEdit에서 검색어 가져오기
+    QString searchTerm = mUI->eventlineEdit->text();            // QLineEdit에서 검색어 가져오기
     QString selectedValue = mUI->eventcomboBox->currentText(); // 콤보박스에서 선택된 값 가져오기
 
-    qDebug() << "검색어: " << searchTerm << ", 선택값: " << selectedValue;
+    qDebug() << "[MainWindow onSearchButtonClicked] 검색어: " << searchTerm << ", 선택값: " << selectedValue;
+
+    mItemModel->clear(); // 이전 데이터 지우기
+    mItemModel->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
 
     // 데이터베이스에서 해당 값을 검색
     QString query = QString("SELECT * FROM event_logs WHERE object_class LIKE '%%1%' AND object_class = '%2'")
                         .arg(searchTerm)
                         .arg(selectedValue);
-
-    model->clear(); // 이전 데이터 지우기
-    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
 
     QSqlQuery sqlQuery(query);
 
@@ -109,7 +112,7 @@ void MainWindow::onsearchButtonclicked() {
             for (int i = 0; i < sqlQuery.record().count(); ++i) {
                 rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
             }
-            model->appendRow(rowItems); // 모델에 행 추가
+            mItemModel->appendRow(rowItems); // 모델에 행 추가
         }
         qDebug() << "검색 결과 처리 완료";
     } else {
@@ -156,24 +159,24 @@ void MainWindow::setDarkMode() {
 }
 
 void MainWindow::onBrightnessSliderChanged(int value) {
-    if (!currentFrame.isNull()) {
-        QImage adjustedImage = currentFrame.copy();
+    if (!mCurrentFrame.isNull()) {
+        QImage adjustedImage = mCurrentFrame.copy();
         applyBrightnessEffect(adjustedImage, value); // 밝기 효과 적용
 
     }
 }
 
 void MainWindow::onSaturationSliderChanged(int value) {
-    if (!currentFrame.isNull()) {
-        QImage adjustedImage = currentFrame.copy();
+    if (!mCurrentFrame.isNull()) {
+        QImage adjustedImage = mCurrentFrame.copy();
         applySaturationEffect(adjustedImage, value); // 채도 효과 적용
 
     }
 }
 
 void MainWindow::onSharpnessSliderChanged(int value) {
-    if (!currentFrame.isNull()) {
-        QImage adjustedImage = currentFrame.copy();
+    if (!mCurrentFrame.isNull()) {
+        QImage adjustedImage = mCurrentFrame.copy();
         applySharpnessEffect(adjustedImage, value); // 선명도 효과 적용
 
     }

@@ -8,14 +8,14 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QDebug>
-#include <QSqlRecord> // QSqlRecord 헤더 포함
+#include <QSqlRecord>
 #include <QPalette>
 #include <QImage>
 #include <QPixmap>
 
 #include "videostreamplayer.h"
 #include "metadatadisplay.h"
-#include "eventlogmanager.h" // EventLogManager 헤더 포함
+#include "eventlogmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 public slots:
     void onsearchButtonclicked(); // 검색 버튼 클릭 시 슬롯
 
@@ -47,14 +48,13 @@ private slots:
 
 private:
     Ui::MainWindow *mUI;
+
     VideoStreamPlayer *mVideoStreamPlayer;
+    MetaDataDisplay *mMetaData;
+    EventLogManager *mEventLogManager; // EventLogManager 포인터 추가
+    QStandardItemModel *mItemModel; // QTableView에 사용할 모델
 
     bool mbNightMode;
-    QImage currentFrame;  // 클래스 멤버로 선언하여 사용
-
-    MetaDataDisplay *metaData;
-
-    EventLogManager *eventLogManager; // EventLogManager 포인터 추가
-    QStandardItemModel *model; // QTableView에 사용할 모델
+    QImage mCurrentFrame;
 };
 #endif // JIKIMZON_MAINWINDOW_H
