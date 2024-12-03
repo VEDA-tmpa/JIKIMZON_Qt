@@ -12,6 +12,7 @@ CONFIG += c++17
 SOURCEPATH += $$PWD
 SOURCES += \
     src/eventlogmanager.cpp \
+    src/networkmanager.cpp \
     src/metadatadisplay.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
@@ -27,6 +28,7 @@ INCLUDEPATH += $$PWD/inc
 
 HEADERS += \
     inc/eventlogmanager.h \
+    inc/networkmanager.h \
     inc/mainwindow.h \
     inc/videostreamplayer.h \
     inc/decodehandler.h \
@@ -43,7 +45,8 @@ FORMS += \
     metadatadisplay.ui
 
 RESOURCES += \
-    assets.qrc
+    assets.qrc \
+    res/keyfile.bin \
 
 
 # Default rules for deployment.

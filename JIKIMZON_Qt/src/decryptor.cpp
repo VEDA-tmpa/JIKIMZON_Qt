@@ -11,7 +11,7 @@ Decryptor::Decryptor()
         qDebug() << "EVP_CIPHER_CTX_new failed!";
     }
 
-    QString filepath = QDir::currentPath() + "/res/keyfile.bin";
+    QString filepath = ":/res/res/keyfile.bin";
     LoadKey(filepath);
 }
 
@@ -24,18 +24,15 @@ Decryptor::~Decryptor()
 }
 
 void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT QByteArray& decryptedData)
-{   
-    QString nounce = nounceStr;
-    if (nounceStr.length() > 12)
-    {
-        nounce = nounceStr.right(12);
-    }
+{
+    unsigned char iv[12];
+    std::memcpy(iv, reinterpret_cast<const unsigned char*>(nounceStr.right(12).toStdString().c_str()), 12);
 
     decryptedData.clear();
 
     if (EVP_DecryptInit_ex(mCtx, EVP_chacha20(), nullptr,
                            reinterpret_cast<const unsigned char*>(mKey.data()),
-                           reinterpret_cast<const unsigned char*>(nounce.toStdString().c_str())) != 1)
+                           iv) != 1)
     {
         qDebug() << "EVP_DecryptInit_ex failed!";
         return;
@@ -54,6 +51,9 @@ void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT
         qDebug() << "EVP_DecryptFinal_ex failed!";
         return;
     }
+
+    qDebug() << "Decrypt Done!";    
+    qDebug() << "Decrypted data size: " << decryptedData.size();
 }
 
 bool Decryptor::LoadKey(const QString& filePath)

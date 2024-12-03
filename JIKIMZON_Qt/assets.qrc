@@ -12,4 +12,7 @@
         <file>icons/moon.png</file>
         <file>icons/sun.png</file>
     </qresource>
+    <qresource prefix="/res">
+        <file>res/keyfile.bin</file>
+    </qresource>
 </RCC>
