@@ -19,7 +19,8 @@ public slots:
     void updateMetaData(const QString &time, const QString &location, const QString &objectType);
 
 private:
-    Ui::MetaDataDisplay *ui;
+    Ui::MetaDataDisplay *mUI;
+
 };
 
 #endif // METADATADISPLAY_H

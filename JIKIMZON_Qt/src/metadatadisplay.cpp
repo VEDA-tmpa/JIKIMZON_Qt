@@ -3,21 +3,21 @@
 
 MetaDataDisplay::MetaDataDisplay(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::MetaDataDisplay)
+    , mUI(new Ui::MetaDataDisplay)
 {
-    ui->setupUi(this);
+    mUI->setupUi(this);
 }
 
 MetaDataDisplay::~MetaDataDisplay()
 {
-    delete ui;
+    delete mUI;
 }
 
 void MetaDataDisplay::updateMetaData(const QString &time, const QString &location, const QString &objectType) {
     // UI 레이블에 메타데이터 업데이트
-    ui->timeLabel->setText("시간: " + time);
-    ui->locationLabel->setText("위치: " + location);
-    ui->typeLabel->setText("객체 종류: " + objectType);
+    mUI->timeLabel->setText("시간: " + time);
+    mUI->locationLabel->setText("위치: " + location);
+    mUI->typeLabel->setText("객체 종류: " + objectType);
 
     // 아이콘 및 테두리 색상 경로 설정
     QString iconPath;
@@ -50,12 +50,12 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
 
     // 아이콘 설정
     if (!QPixmap(iconPath).isNull()) {
-        ui->iconLabel->setPixmap(QPixmap(iconPath).scaled(64, 64, Qt::KeepAspectRatio));
-        ui->iconLabel->setAlignment(Qt::AlignCenter); // 아이콘 중앙 배치
+        mUI->iconLabel->setPixmap(QPixmap(iconPath).scaled(64, 64, Qt::KeepAspectRatio));
+        mUI->iconLabel->setAlignment(Qt::AlignCenter); // 아이콘 중앙 배치
     } else {
         // 유효하지 않으면 기본 아이콘 설정
-        ui->iconLabel->setPixmap(QPixmap(":/detect/default.png").scaled(64, 64, Qt::KeepAspectRatio));
-        ui->iconLabel->setAlignment(Qt::AlignCenter);
+        mUI->iconLabel->setPixmap(QPixmap(":/detect/default.png").scaled(64, 64, Qt::KeepAspectRatio));
+        mUI->iconLabel->setAlignment(Qt::AlignCenter);
     }
 
     // 테두리 색상 적용 (QSS 사용)
@@ -66,8 +66,8 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
                         "   padding: 5px;"           // 패딩 추가
                         "}").arg(borderColor);
 
-    ui->iconLabel->setStyleSheet(style); // 스타일 적용
+    mUI->iconLabel->setStyleSheet(style); // 스타일 적용
 
     // 이벤트 로그 추가 (시간 - 객체 종류 - 위치)
-    ui->eventLog->addItem(time + " - " + objectType + " - " + location);
+    mUI->eventLog->addItem(time + " - " + objectType + " - " + location);
 }
