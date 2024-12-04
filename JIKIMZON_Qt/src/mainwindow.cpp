@@ -74,6 +74,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mUI->saturationSlider, &QSlider::valueChanged, this, &MainWindow::onSaturationSliderChanged);
     connect(mUI->sharpnessSlider, &QSlider::valueChanged, this, &MainWindow::onSharpnessSliderChanged);
 
+
+    // // start stream
+    // if (!mVideoStreamPlayer->isRunning())
+    // {
+    //     mVideoStreamPlayer->start(QThread::LowPriority);
+    // }
 }
 
 MainWindow::~MainWindow()
