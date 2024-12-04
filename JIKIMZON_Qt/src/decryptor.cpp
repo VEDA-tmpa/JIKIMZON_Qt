@@ -14,7 +14,7 @@ Decryptor::Decryptor()
     if (!mCtx) {
         qDebug() << "EVP_CIPHER_CTX_new failed!";
     }
-
+    
     QString codePath = __FILE__;
     QString filepath = "C:/Users/sihyu/OneDrive - Kumoh/Source_File/QtCreator/VedaFinal/JIKIMZON_Qt/JIKIMZON_Qt/res/keyfile2.bin";
     LoadKey(filepath);
@@ -27,6 +27,34 @@ Decryptor::~Decryptor()
         EVP_CIPHER_CTX_free(mCtx);
     }
 }
+
+
+void Decryptor::EncryptData(std::string& timestamp, std::vector<uint8_t>& src, int size, std::vector<uint8_t>& OUT dest)
+{   
+    dest.clear();
+    dest.resize(size);
+
+    // unsigned char iv[12];
+    // std::memcpy(iv, reinterpret_cast<const unsigned char*>(timestamp.substr(timestamp.length() - 12, 12).c_str()), 12);
+    
+    // std::cout << "timestamp: " << timestamp << std::endl;
+    // std::cout << "iv: " << iv << std::endl;
+
+    unsigned char iv[12];
+    std::memset(iv, 0, 12);
+
+    if (EVP_EncryptInit_ex(mCtx, EVP_chacha20(), nullptr, mKey, iv) != 1)
+    {
+        std::cerr << "Error: encrypt init" << std::endl;
+    }
+
+    int len;
+    if (EVP_EncryptUpdate(mCtx, dest.data(), &len, src.data(), size) != 1)
+    {
+        std::cerr << "Error: encrypt update" << std::endl;
+    }
+}
+
 
 void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT QByteArray& decryptedData)
 {   
@@ -84,7 +112,7 @@ void Decryptor::Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OU
     }
 
     int outLen;
-    int totalLen = 0;
+    //int totalLen = 0;
     if (EVP_DecryptUpdate(mCtx, reinterpret_cast<unsigned char*>(decryptedData.data()), &outLen,
                         reinterpret_cast<const unsigned char*>(encryptedData.data()), encryptedData.size()) != 1)
     {
@@ -92,16 +120,16 @@ void Decryptor::Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OU
         return;
     }
 
-    totalLen += outLen;
+    //totalLen += outLen;
 
-    if (EVP_DecryptFinal_ex(mCtx, reinterpret_cast<unsigned char*>(decryptedData.data()) + totalLen, &outLen) != 1)
+    if (EVP_DecryptFinal_ex(mCtx, reinterpret_cast<unsigned char*>(decryptedData.data()) + outLen, &outLen) != 1)
     {
         qDebug() << "EVP_DecryptFinal_ex failed!";
         return;
     }
 
-    totalLen += outLen;
-    decryptedData.resize(totalLen);
+    // totalLen += outLen;
+    // decryptedData.resize(totalLen);
 }
 
 bool Decryptor::LoadKey(const QString& filePath)

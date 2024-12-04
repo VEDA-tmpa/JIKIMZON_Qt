@@ -13,6 +13,7 @@ public:
     Decryptor();
     ~Decryptor();
 
+    void EncryptData(std::string& timestamp, std::vector<uint8_t>& src, int size, std::vector<uint8_t>& OUT dest);
     void Decrypt(QString& nounce, const QByteArray& encryptedData, OUT QByteArray& decryptedData);
     void Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OUT std::vector<uint8_t>& decryptedData);
     bool LoadKey(const QString& filePath);
