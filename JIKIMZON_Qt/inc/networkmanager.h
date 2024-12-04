@@ -16,11 +16,12 @@ public:
     explicit NetworkManager(QObject *parent = nullptr);
 
     void ReadAllData(QTcpSocket* socket, int expectedSize, QByteArray &buffer);
+    void ReadAllData(QTcpSocket* socket, int expectedSize, std::vector<uint8_t> &buffer);
     void connectToVideoServer(const QString &host, int port);
     void connectToJsonServer(const QString &host, int port);
 
 signals:
-    void videoDataReceived(QSharedPointer<frame::Header> header, QSharedPointer<QByteArray> videoData);
+    void videoDataReceived(QSharedPointer<frame::Header> header, QSharedPointer<std::vector<uint8_t>> videoData);
     void jsonDataReceived(QSharedPointer<QJsonDocument> jsonDoc);
 
 private:

@@ -48,7 +48,7 @@ signals:
     void StreamReady();
 
 public slots:
-    void HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<QByteArray> videoData);
+    void HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<std::vector<uint8_t>> videoData);
     void HandleJsonData(QSharedPointer<QJsonDocument> jsonDoc);
 
 private:

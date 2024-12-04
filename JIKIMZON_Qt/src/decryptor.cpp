@@ -4,6 +4,10 @@
 #include <QDir>
 #include <QDebug>
 
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
 Decryptor::Decryptor()
 {
     mCtx = EVP_CIPHER_CTX_new();
@@ -11,7 +15,8 @@ Decryptor::Decryptor()
         qDebug() << "EVP_CIPHER_CTX_new failed!";
     }
 
-    QString filepath = ":/res/res/keyfile_tmp.bin";
+    QString codePath = __FILE__;
+    QString filepath = "C:/Users/sihyu/OneDrive - Kumoh/Source_File/QtCreator/VedaFinal/JIKIMZON_Qt/JIKIMZON_Qt/res/keyfile2.bin";
     LoadKey(filepath);
 }
 
@@ -29,10 +34,49 @@ void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT
     decryptedData.resize(encryptedData.size());
 
     unsigned char iv[12];
-    std::memcpy(iv, reinterpret_cast<const unsigned char*>(nounceStr.right(12).toStdString().c_str()), 12);
+    std::memset(iv, 0, 12);
+    //std::memcpy(iv, reinterpret_cast<const unsigned char*>(nounceStr.right(12).toStdString().c_str()), 12);
 
     if (EVP_DecryptInit_ex(mCtx, EVP_chacha20(), nullptr,
-                        reinterpret_cast<const unsigned char*>(mKey.data()),
+                        reinterpret_cast<const unsigned char*>(mKey),
+                        iv) != 1)
+    {
+        qDebug() << "EVP_DecryptInit_ex failed!";
+        return;
+    }
+
+    int outLen;
+    int totalLen = 0;
+    if (EVP_DecryptUpdate(mCtx, reinterpret_cast<unsigned char*>(decryptedData.data()), &outLen,
+                        reinterpret_cast<const unsigned char*>(encryptedData.data()), encryptedData.size()) != 1)
+    {
+        qDebug() << "EVP_DecryptUpdate failed!";
+        return;
+    }
+
+    totalLen += outLen;
+
+    if (EVP_DecryptFinal_ex(mCtx, reinterpret_cast<unsigned char*>(decryptedData.data()) + totalLen, &outLen) != 1)
+    {
+        qDebug() << "EVP_DecryptFinal_ex failed!";
+        return;
+    }
+
+    totalLen += outLen;
+    decryptedData.resize(totalLen);
+}
+
+void Decryptor::Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OUT std::vector<uint8_t>& decryptedData)
+{   
+    decryptedData.clear();
+    decryptedData.resize(encryptedData.size());
+
+    unsigned char iv[12];
+    std::memset(iv, 0, 12);
+    //std::memcpy(iv, reinterpret_cast<const unsigned char*>(nounceStr.right(12).toStdString().c_str()), 12);
+
+    if (EVP_DecryptInit_ex(mCtx, EVP_chacha20(), nullptr,
+                        reinterpret_cast<const unsigned char*>(mKey),
                         iv) != 1)
     {
         qDebug() << "EVP_DecryptInit_ex failed!";
@@ -62,27 +106,26 @@ void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT
 
 bool Decryptor::LoadKey(const QString& filePath)
 {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly))
+    std::string path = filePath.toStdString();
+
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open())
     {
-        qDebug() << "Failed to open key file.";
+        std::cerr << "Error: cipher - file open: " << path << std::endl;
         return false;
     }
 
-    mKey = file.readAll();
+    std::vector<uint8_t> vec((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
 
-    if (mKey.isEmpty())
+    if (vec.size() != 32)
     {
-        qDebug() << "Key file is empty.";
+        std::cerr << "Error: generate key failed" << std::endl;
         return false;
     }
 
-    if (mKey.size() != 32)
-    {
-        qDebug() << "Invalid key size: " << mKey.size();
-        return false;
-    }
+    auto key = reinterpret_cast<unsigned char*>(vec.data());
+    memcpy(mKey, key, 32);
 
     return true;
 }

@@ -45,17 +45,40 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int videoPort, int jsonPort
     connect(mNetworkManager, &NetworkManager::jsonDataReceived, this, &VideoStreamPlayer::HandleJsonData);
 }
 
-void VideoStreamPlayer::HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<QByteArray> videoData)
+void VideoStreamPlayer::HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<std::vector<uint8_t>> videoData)
 {   
-    QByteArray decryptedFrame;
+    std::vector<uint8_t> decryptedFrame;
     QString qTimestamp = QString::fromStdString(header->GetTimestamp());
     mDecryptor->Decrypt(qTimestamp, *videoData, decryptedFrame);
 
     frame::Body body;
     body.Deserialize(decryptedFrame);
+
+    QString codePath = __FILE__;
+    QString filePath = QFileInfo(codePath).absolutePath() + "/../res/frames.h264";
+    
+    // 디버그용 파일 저장
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        qDebug() << "Failed to open file for writing";
+        return;
+    }
+    qint64 bytesWritten = file.write(reinterpret_cast<const char*>(body.GetImage().data()), static_cast<qint64>(body.GetImage().size()));
+    if (bytesWritten == -1)
+    {
+        qDebug() << "Failed to write data to file";
+        return;
+    }
     
     cv::Mat cvFrame;
     mDecodeHandler->DecodeFrame(body.GetImage(), cvFrame);
+
+    if (cvFrame.empty())
+    {
+        qDebug() << "Failed to decode frame: cvFrame is EMPTY!";
+        return;
+    }
 
     QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
 

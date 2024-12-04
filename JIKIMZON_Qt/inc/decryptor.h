@@ -3,6 +3,7 @@
 
 #include <QByteArray>
 #include <vector>
+#include <cstdint>
 #include <openssl/evp.h>
 
 #define OUT
@@ -13,11 +14,12 @@ public:
     ~Decryptor();
 
     void Decrypt(QString& nounce, const QByteArray& encryptedData, OUT QByteArray& decryptedData);
+    void Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OUT std::vector<uint8_t>& decryptedData);
     bool LoadKey(const QString& filePath);
 
 private:
     EVP_CIPHER_CTX* mCtx;
-    QByteArray mKey;
+    unsigned char mKey[32];
     QByteArray mNonce;
 };
 

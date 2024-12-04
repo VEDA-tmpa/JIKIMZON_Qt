@@ -7,6 +7,9 @@
 #include <QDebug>
 #include <QSharedPointer>
 
+#include <vector>
+#include <cstdint>
+
 NetworkManager::NetworkManager(QObject *parent) :
     QObject(parent),
     mVideoSocket(new QTcpSocket(this)),
@@ -38,7 +41,29 @@ void NetworkManager::ReadAllData(QTcpSocket* socket, int expectedSize, QByteArra
         readSize += read;
     }
 
-    qDebug() << "ReadAllData() - readSize: " << readSize;
+    qDebug() << "ReadAllData(QByteArray) - readSize: " << readSize;
+}
+
+void NetworkManager::ReadAllData(QTcpSocket* socket, int expectedSize, std::vector<uint8_t>& buffer)
+{
+    buffer.clear();
+    buffer.resize(expectedSize);
+
+    int readSize = 0;
+    while (readSize < expectedSize)
+    {
+        socket->waitForReadyRead(10000);
+        int read = socket->read(reinterpret_cast<char*>(buffer.data() + readSize), expectedSize - readSize);
+        if (read == -1)
+        {
+            qDebug() << "Error: " << socket->errorString();
+            return;
+        }
+
+        readSize += read;
+    }
+
+    qDebug() << "ReadAllData(vector) - readSize: " << readSize;
 }
 
 void NetworkManager::connectToVideoServer(const QString &host, int port)
@@ -89,7 +114,8 @@ void NetworkManager::onVideoReadyRead()
     QByteArray headerBuffer;
 
     QSharedPointer<frame::Header> header(new frame::Header());
-    QSharedPointer<QByteArray> frameBuffer(new QByteArray());
+    //QSharedPointer<QByteArray> frameBuffer(new QByteArray());
+    QSharedPointer<std::vector<uint8_t>> frameBuffer(new std::vector<uint8_t>());
 
     ReadAllData(mVideoSocket, sizeof(frame::HeaderStruct), headerBuffer);
     header->Deserialize(headerBuffer);
