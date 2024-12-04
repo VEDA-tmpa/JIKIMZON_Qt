@@ -99,12 +99,21 @@ int main(int argc, char *argv[])
     QString dump;
     decryptor.Decrypt(dump, buffer, decryptedData);
 
+    std::vector<uint8_t> aaa;
+    std::string dumps = "20241204_123456.789";
+    decryptor.EncryptData(dumps, decryptedData, decryptedData.size(), aaa);
+
     for (const auto& data : buffer)
     {
         std::cout << static_cast<int>(data) << " ";
     }
     std::cout << "\n=======\n" << std::endl;
     for (const auto& data : decryptedData)
+    {
+        std::cout << static_cast<int>(data) << " ";
+    }
+    std::cout << "\n=======\n" << std::endl;
+    for (const auto& data : aaa)
     {
         std::cout << static_cast<int>(data) << " ";
     }
