@@ -23,7 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnToggleMode->setIconSize(QSize(20, 20));
 
     // TCP 소켓 연결
-    tcpSocket->connectToHost("127.0.0.1", 12345);
+    tcpSocket->connectToHost("192.168.50.14", 23456);
+
+    // tcpSocket->connectToHost("127.0.0.1", 12345);
 
     // VideoStreamPlayer와 UI 연결
     connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {

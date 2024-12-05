@@ -10,7 +10,8 @@ public:
     // Decryptor(const QByteArray& key);
     // Decryptor(const QByteArray& key, const QByteArray& nonce);
     explicit Decryptor(const QByteArray& key);
-    QByteArray decrypt(const QByteArray& encryptedData);
+    // QByteArray decrypt(const QByteArray& encryptedData);
+    QByteArray decrypt(const QByteArray& encryptedData, const QByteArray& nonce);
 
 private:
     QByteArray key;

@@ -33,10 +33,31 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+QMAKE_RPATHDIR += /opt/homebrew/Cellar/ffmpeg/7.1_3/lib
+
 # OpenSSL 라이브러리 경로 추가
 INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
 LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
 LIBS += -lz
+
+#mac
+macx {
+    INCLUDEPATH += /opt/homebrew/Cellar/ffmpeg/7.1_3/include
+    LIBS += -L/opt/homebrew/Cellar/ffmpeg/7.1_3/lib \
+            -lavcodec -lavformat -lavutil -lswscale -lpostproc -lavdevice -lavfilter
+
+    INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
+    LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
+    LIBS += -lz
+
+    INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4
+    LIBS += -L/opt/homebrew/opt/opencv/lib \
+            -lopencv_core \
+            -lopencv_imgproc \
+            -lopencv_highgui \
+            -lopencv_imgcodecs \
+            -lopencv_videoio
+}
 
 # OpenCV Include and Library Paths
 INCLUDEPATH += /opt/homebrew/opt/opencv/include/opencv4

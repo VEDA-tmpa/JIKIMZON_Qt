@@ -7,7 +7,15 @@
 #include <QImage>
 #include <zlib.h>
 #include <QByteArray>
+#include <QList>
 #include <opencv2/opencv.hpp>
+
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/imgutils.h>
+#include <libswscale/swscale.h>
+}
 
 class VideoStreamPlayer : public QThread
 {
@@ -25,6 +33,7 @@ public:
     void goBackward();
     void goForward();
     bool isStopped() const;
+    QList<QByteArray> extractNalUnits(const QByteArray &decryptedData);
     void addOverlayToFrame(cv::Mat &frame,
                            const std::vector<cv::Rect> &detectedObjects,
                            const std::vector<std::string> &labels);
