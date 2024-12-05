@@ -15,7 +15,8 @@ public:
     explicit MetaDataDisplay(QWidget *parent = nullptr);
     ~MetaDataDisplay();
 
-    void updateMetaData(const QString& time, const QString& location, const QString& objectType);
+public slots:
+    void updateMetaData(const QString &time, const QString &location, const QString &objectType);
 
 private:
     Ui::MetaDataDisplay *ui;

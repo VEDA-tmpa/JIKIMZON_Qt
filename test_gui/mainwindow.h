@@ -2,8 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
+#include <QStandardItemModel>
+
 #include "videostreamplayer.h"
 #include "metadatadisplay.h"
+#include "eventlogmanager.h" // EventLogManager 헤더 포함
 
 namespace Ui {
 class MainWindow;
@@ -18,6 +22,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_searchButton_clicked();
+    void onJsonReadyRead();
     void toggleMode();
     void setLightMode();
     void setDarkMode();
@@ -25,7 +31,13 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QTcpSocket *tcpSocket;
+    QTcpSocket *jsonSocket;
     VideoStreamPlayer *player;
+
+    MetaDataDisplay *metaData;
+
+    EventLogManager *eventLogManager; // EventLogManager 포인터 추가
+    QStandardItemModel *model; // QTableView에 사용할 모델
 
     bool isNightMode; // 현재 모드 상태 (낮/밤)
 };

@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network multimedia sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     decryptor.cpp \
     deserializer.cpp \
+    eventlogmanager.cpp \
     main.cpp \
     mainwindow.cpp \
     metadatadisplay.cpp \
@@ -20,6 +21,7 @@ HEADERS += \
     Frame.h \
     decryptor.h \
     deserializer.h \
+    eventlogmanager.h \
     mainwindow.h \
     metadatadisplay.h \
     videostreamplayer.h

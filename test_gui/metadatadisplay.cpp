@@ -13,19 +13,8 @@ MetaDataDisplay::~MetaDataDisplay()
     delete ui;
 }
 
-void MetaDataDisplay::updateMetaData(const QString& time, const QString& location, const QString& objectType) {
-    // // 타임스탬프 처리 (시간 형식으로 변환)
-    // QString time = QString::fromStdString(detection.timeStamp);  // 필요한 경우 형식을 맞춰서 변환
-    // ui->timeLabel->setText("시간: " + time);
-
-    // // 위치 처리 (detection.box의 좌표 (x, y) 사용)
-    // QString location = QString("위치: (%1, %2)").arg(detection.box.x).arg(detection.box.y);
-    // ui->locationLabel->setText(location);
-
-    // // 객체 타입 처리 (className을 사용)
-    // QString objectType = QString::fromStdString(detection.className);
-    // ui->typeLabel->setText("객체 종류: " + objectType);
-
+void MetaDataDisplay::updateMetaData(const QString &time, const QString &location, const QString &objectType) {
+    // UI 레이블에 메타데이터 업데이트
     ui->timeLabel->setText("시간: " + time);
     ui->locationLabel->setText("위치: " + location);
     ui->typeLabel->setText("객체 종류: " + objectType);
@@ -73,12 +62,12 @@ void MetaDataDisplay::updateMetaData(const QString& time, const QString& locatio
     QString style = QString(
                         "QLabel {"
                         "   border: 3px solid %1;"  // 테두리 색상
-                        "   border-radius: 8px;"    // 모서리 둥글게 설정
-                        "   padding: 5px;"          // 패딩 추가
-                        "}"
-                        ).arg(borderColor);
-    ui->iconLabel->setStyleSheet(style);
+                        "   border-radius: 8px;"     // 모서리 둥글게 설정
+                        "   padding: 5px;"           // 패딩 추가
+                        "}").arg(borderColor);
 
+    ui->iconLabel->setStyleSheet(style); // 스타일 적용
+
+    // 이벤트 로그 추가 (시간 - 객체 종류 - 위치)
     ui->eventLog->addItem(time + " - " + objectType + " - " + location);
-    ui->eventLog->setMinimumSize(300, 500);
 }

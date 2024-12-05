@@ -4,6 +4,16 @@
 #include <QDebug>
 #include <QtCore>
 #include <opencv2/opencv.hpp>
+#include <QImage>
+#include <QDebug>
+#include <QThread>
+#include <QMutexLocker>
+#include <QQueue>
+#include <cstdint>  // uint8_t 사용을 위해 추가
+#include <QElapsedTimer>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 #pragma pack(push, 1)
 struct HeaderStruct {
@@ -29,9 +39,10 @@ QString toBinary(const QByteArray &data, int numBytes = 20) {
     return result.trimmed();
 }
 
-VideoStreamPlayer::VideoStreamPlayer(QObject *parent)
+VideoStreamPlayer::VideoStreamPlayer(MetaDataDisplay *metaDataDisplay, QObject *parent)
     : QThread(parent), tcpSocket(nullptr), stop(true), frameWidth(0), frameHeight(0), frameSize(0)
 {
+
 }
 
 VideoStreamPlayer::~VideoStreamPlayer()
@@ -71,6 +82,10 @@ void VideoStreamPlayer::storeFrame(const QImage &frame) {
     if (!pause) {
         frameHistory.append(frame);
         currentFrameIndex = frameHistory.size() - 1;
+        if(frameHistory.size() >= 150)
+        {
+            frameHistory.pop_front();
+        }
     }
 }
 
@@ -317,29 +332,15 @@ bool VideoStreamPlayer::isStopped() const
 // }
 
 
-// //마지막 값 똑같이 찍힌것(엣지랑)
+//마지막 값 똑같이 찍힌것(엣지랑)
 void VideoStreamPlayer::run()
 {
     QByteArray buffer;
     QByteArray headerBuffer(sizeof(HeaderStruct), 0);
 
-    // // 키 파일 경로
-    // // QString keyFilePath = "/Users/kimjeonegeun/Downloads/JIKIMZON_Qt-feature-gui-decode/keyfile1.bin";
-    // QString keyFilePath = "/Volumes/jjeongni/QtProgramming/test_gui/keyfile.bin";
-    // QByteArray key;
-
-    // // 키 로드
-    // if (!loadKey(keyFilePath, key)) {
-    //     qDebug() << "Failed to load key from .bin file.";
-    //     stop = true;
-    //     return;
-    // }
-
-    // // Decryptor 초기화
-    // Decryptor decryptor(key);
-
     // FFmpeg 초기화
     avformat_network_init();
+    SwsContext *swsContext = nullptr;
 
     const AVCodec *codec = avcodec_find_decoder(AV_CODEC_ID_H264);
     if (!codec) {
@@ -365,8 +366,6 @@ void VideoStreamPlayer::run()
         avcodec_free_context(&codecContext);
         return;
     }
-
-    SwsContext *swsContext = nullptr;
 
     while (!stop) {
         if (pause) {
@@ -477,6 +476,9 @@ void VideoStreamPlayer::run()
                         if (!img.isNull()) {
                             qDebug() << "Frame successfully converted to QImage.";
 
+                            // 오버레이 추가
+                            addOverlayToFrame(img);
+
                             emit frameReady(img);
                             frameHistory.push_back(img);
                             currentFrameIndex = frameHistory.size() - 1;
@@ -488,7 +490,7 @@ void VideoStreamPlayer::run()
                 }
             }
         }
-        msleep(100);
+        msleep(150);
     }
 
     // FFmpeg 리소스 해제
@@ -497,6 +499,74 @@ void VideoStreamPlayer::run()
     }
     av_frame_free(&frame);
     avcodec_free_context(&codecContext);
+}
+
+void VideoStreamPlayer::parseObjectDetectionData(const QString &jsonString)
+{
+    qDebug() << "parseObjectDetectionData";
+
+    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
+    if (!doc.isObject()) {
+        qDebug() << "Invalid JSON data";
+        return;
+    }
+
+    QJsonObject obj = doc.object();
+    int frameId = obj["frameId"].toInt();
+    QString timestamp = obj["timestamp"].toString();
+
+    detectedObjects.clear();
+    objectLabels.clear();
+
+    QJsonArray objectArray = obj["object"].toArray();
+    for (const QJsonValue &value : objectArray) {
+        QJsonObject objData = value.toObject();
+        QString className = objData["className"].toString();
+        int x = objData["x"].toInt();
+        int y = objData["y"].toInt();
+        int width = objData["width"].toInt();
+        int height = objData["height"].toInt();
+
+        detectedObjects.append(QRect(x, y, width, height));
+        objectLabels.append(className);
+
+        // // 메타데이터 업데이트
+        QString location = QString("위치: (%1, %2)").arg(x).arg(y);
+        metaData->updateMetaData(timestamp, location, className); // 메타데이터 표시 업데이트
+
+        qDebug() << "detected object name: " << className;
+    }
+}
+
+void VideoStreamPlayer::addOverlayToFrame(QImage &image)
+{
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    for (int i = 0; i < detectedObjects.size(); i++) {
+        QColor color;
+        if (objectLabels[i] == "biodegradable") {
+            color = QColor(96, 255, 0);
+        } else if (objectLabels[i] == "cardboard") {
+            color = QColor(255, 0, 0);
+        } else if (objectLabels[i] == "glass") {
+            color = QColor(0, 7, 255);
+        } else if (objectLabels[i] == "metal") {
+            color = QColor(255, 148, 0);
+        } else if (objectLabels[i] == "paper") {
+            color = QColor(255, 248, 0);
+        } else if (objectLabels[i] == "plastic") {
+            color = QColor(214, 0, 255);
+        } else {
+            color = QColor(200, 200, 200);
+        }
+
+        painter.setPen(QPen(color, 5));
+        painter.drawRect(detectedObjects[i]);
+
+        painter.setFont(QFont("Arial", 20));
+        painter.drawText(detectedObjects[i].topLeft() - QPoint(0, 10), objectLabels[i]);
+    }
 }
 
 
@@ -520,37 +590,3 @@ QList<QByteArray> VideoStreamPlayer::extractNalUnits(const QByteArray &decrypted
 
     return nalUnits;
 }
-
-void VideoStreamPlayer::addOverlayToFrame(cv::Mat &frame,
-                                          const std::vector<cv::Rect> &detectedObjects,
-                                          const std::vector<std::string> &labels)
-{
-    for (size_t i = 0; i < detectedObjects.size(); i++) {
-        // 라벨에 따른 색상 정의
-        cv::Scalar color;
-        if (labels[i] == "biodegradable") {
-            color = cv::Scalar(96, 255, 0); // 초록
-        } else if (labels[i] == "cardboard") {
-            color = cv::Scalar(255, 0, 0); // 빨강
-        } else if (labels[i] == "glass") {
-            color = cv::Scalar(0, 7, 255); // 파랑
-        } else if (labels[i] == "metal") {
-            color = cv::Scalar(255, 148, 0); // 주황
-        } else if (labels[i] == "paper") {
-            color = cv::Scalar(255, 248, 0); // 노랑
-        } else if (labels[i] == "plastic") {
-            color = cv::Scalar(214, 0, 255); // 보라
-        } else {
-            color = cv::Scalar(200, 200, 200); // 기본값: 회색
-        }
-
-        // 각 객체마다 해당 색상으로 사각형 그리기 (굵기: 5)
-        cv::rectangle(frame, detectedObjects[i], color, 5);
-
-        // 라벨 텍스트 추가 (객체 이름)
-        cv::putText(frame, labels[i],
-                    cv::Point(detectedObjects[i].x, detectedObjects[i].y - 10),
-                    cv::FONT_HERSHEY_SIMPLEX, 2, color, 3);
-    }
-}
-

@@ -4,12 +4,21 @@
 #include "Frame.h"
 #include <QLayout>
 #include <QPalette>
+#include <QMessageBox>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QDebug>
+#include <QSqlRecord> // QSqlRecord 헤더 포함
+#include <QImage>
+#include <QPixmap>
+#include <QObject>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , tcpSocket(new QTcpSocket(this))  // 소켓 초기화
-    , player(new VideoStreamPlayer(this))  // 플레이어 초기화
+    , jsonSocket(new QTcpSocket(this))
+    , player(new VideoStreamPlayer(nullptr, this))  // 플레이어 초기화
 {
     ui->setupUi(this);
 
@@ -24,13 +33,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     // TCP 소켓 연결
     tcpSocket->connectToHost("192.168.50.14", 23456);
-
-    // tcpSocket->connectToHost("127.0.0.1", 12345);
+    tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
     // VideoStreamPlayer와 UI 연결
     connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
         ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     });
+
+    jsonSocket->connectToHost("192.168.50.14", 54321);
+    connect(player, &VideoStreamPlayer::parseObjectDetectionData, this, &MainWindow::onJsonReadyRead);
+    //connect(jsonSocket, &MetaDataDisplay::updateMetaData, player, &MainWindow::onJsonReadyRead);
 
     //비디오 스트림 버튼 연결
     connect(ui->pauseButton, &QPushButton::clicked, this, [&]() {
@@ -59,10 +71,56 @@ MainWindow::MainWindow(QWidget *parent)
         ui->metaDataContainer->setLayout(layout);
     }
 
-    // 메타 데이터 예시 업데이트
-    metaData->updateMetaData("2024-11-15 10:20", "A구역", "paper");
+    // 메타 데이터 업데이트
+    //metaData->updateMetaData();
+
+    eventLogManager = new EventLogManager("event_log.db", this);
+    qDebug() << "EventLogManager 초기화 완료";
+
+    // QTableView에 사용할 모델 생성
+    model = new QStandardItemModel(this);
+    ui->eventlogtableView->setModel(model); // 테이블 뷰에 모델 설정
+    qDebug() << "테이블 뷰 모델 설정 완료";
+
+    //검색 버튼 클릭 시 슬롯 연결
+    connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
+    qDebug() << "검색 버튼 시그널 연결 완료";
+
 }
 
+void MainWindow::on_searchButton_clicked() {
+    qDebug() << "on_searchButton_clicked 호출";
+
+    QString searchTerm = ui->eventlineEdit->text(); // QLineEdit에서 검색어 가져오기
+    QString selectedValue = ui->eventcomboBox->currentText(); // 콤보박스에서 선택된 값 가져오기
+
+    qDebug() << "검색어: " << searchTerm << ", 선택값: " << selectedValue;
+
+    // 데이터베이스에서 해당 값을 검색
+    QString query = QString("SELECT * FROM event_logs WHERE object_class LIKE '%%1%' AND object_class = '%2'")
+                        .arg(searchTerm)
+                        .arg(selectedValue);
+
+    model->clear(); // 이전 데이터 지우기
+    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
+
+    QSqlQuery sqlQuery(query);
+
+    if (sqlQuery.exec()) {
+        qDebug() << "SQL Query 실행 성공";
+        while (sqlQuery.next()) {
+            QList<QStandardItem*> rowItems;
+            for (int i = 0; i < sqlQuery.record().count(); ++i) {
+                rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
+            }
+            model->appendRow(rowItems); // 모델에 행 추가
+        }
+        qDebug() << "검색 결과 처리 완료";
+    } else {
+        qDebug() << "SQL Query 실행 실패: " << sqlQuery.lastError().text();
+        QMessageBox::warning(this, "Error", "Failed to execute query: " + sqlQuery.lastError().text());
+    }
+}
 void MainWindow::toggleMode() {
     isNightMode = !isNightMode;
 
@@ -100,5 +158,12 @@ MainWindow::~MainWindow()
     // 리소스 정리
     player->stopStream();
     delete ui;
+}
+
+void MainWindow::onJsonReadyRead()
+{
+    QByteArray jsonData = jsonSocket->readAll();
+    QString jsonString(jsonData);
+
 }
 
