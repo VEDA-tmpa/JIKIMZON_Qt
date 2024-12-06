@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
     , player(new VideoStreamPlayer(this))  // 플레이어 초기화
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/resources/icon.png")); // 리소스 경로에 있는 아이콘 추가
+    this->setWindowTitle("JIKIM-ZON"); // 타이틀바 이름 설정
 
     // 초기 모드는 Light Mode로 설정
     setLightMode();
@@ -33,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnToggleMode->setIconSize(QSize(20, 20));
 
     // 비디오 TCP 소켓 연결
-    tcpSocket->connectToHost("192.168.50.14", 23456);
+    tcpSocket->connectToHost("192.168.50.14", 1234);
     tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
     // VideoStreamPlayer와 UI 연결
@@ -42,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     //json tcp 소켓
-    jsonSocket->connectToHost("192.168.50.14", 54321);
+    jsonSocket->connectToHost("192.168.50.14", 4321);
     // JSON 데이터 수신 처리
     connect(jsonSocket, &QTcpSocket::readyRead, this, &MainWindow::onJsonReadyRead);
 
@@ -82,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
             &MetaDataDisplay::updateMetaData);
 
 
-    eventLogManager = new EventLogManager(QDir::homePath() + "/event_log.db", this);
+    eventLogManager = new EventLogManager("/Volumes/jjeongni/QtProgramming/test_gui/event_log.db", this);
     qDebug() << "EventLogManager 초기화 완료";
 
     player->setEventLogManager(eventLogManager);
@@ -98,70 +100,68 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-// void MainWindow::on_searchButton_clicked() {
-//     qDebug() << "on_searchButton_clicked 호출";
-
-//     QString searchTerm = ui->eventlineEdit->text(); // QLineEdit에서 검색어 가져오기
-//     QString selectedValue = ui->eventcomboBox->currentText(); // 콤보박스에서 선택된 값 가져오기
-
-//     qDebug() << "검색어: " << searchTerm << ", 선택값: " << selectedValue;
-
-//     // 데이터베이스에서 해당 값을 검색
-//     QString query = QString("SELECT * FROM event_logs WHERE object_class LIKE '%%1%' AND object_class = '%2'")
-//                         .arg(searchTerm)
-//                         .arg(selectedValue);
-
-//     model->clear(); // 이전 데이터 지우기
-//     model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
-
-//     QSqlQuery sqlQuery(query);
-
-//     if (sqlQuery.exec()) {
-//         qDebug() << "SQL Query 실행 성공";
-//         while (sqlQuery.next()) {
-//             QList<QStandardItem*> rowItems;
-//             for (int i = 0; i < sqlQuery.record().count(); ++i) {
-//                 rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
-//             }
-//             model->appendRow(rowItems); // 모델에 행 추가
-//         }
-//         qDebug() << "검색 결과 처리 완료";
-//     } else {
-//         qDebug() << "SQL Query 실행 실패: " << sqlQuery.lastError().text();
-//         QMessageBox::warning(this, "Error", "Failed to execute query: " + sqlQuery.lastError().text());
-//     }
-// }
-
 void MainWindow::on_searchButton_clicked() {
     qDebug() << "on_searchButton_clicked 호출";
 
-    QString searchTerm = ui->eventlineEdit->text();
-    QString selectedValue = ui->eventcomboBox->currentText();
+    QString searchTerm = ui->eventlineEdit->text(); // QLineEdit에서 검색어 가져오기
+    QString selectedValue = ui->eventcomboBox->currentText(); // 콤보박스에서 선택된 값 가져오기
 
     qDebug() << "검색어: " << searchTerm << ", 선택값: " << selectedValue;
 
-    QString query = QString(
-                        "SELECT * FROM event_logs "
-                        "WHERE object_class LIKE '%%1%' AND another_column = '%2'")
-                        .arg(searchTerm)
-                        .arg(selectedValue);
+    // 데이터베이스에서 해당 값을 검색
+    QString query = QString("SELECT * FROM event_logs WHERE %1 LIKE '%%2%'")
+                        .arg(selectedValue)
+                        .arg(searchTerm);
 
-    qDebug() << "Generated SQL query: " << query;
+    qDebug() << "Query: " << query;
 
-    model->clear();
-    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"});
+    model->clear(); // 이전 데이터 지우기
+    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
 
     QSqlQuery sqlQuery(query);
 
-    while (sqlQuery.next()) {
+    if (sqlQuery.exec()) {
+        qDebug() << "SQL Query 실행 성공";
+        while (sqlQuery.next()) {
+            QList<QStandardItem*> rowItems;
+            for (int i = 0; i < sqlQuery.record().count(); ++i) {
+                rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
+            }
+            model->appendRow(rowItems); // 모델에 행 추가
+        }
+        qDebug() << "검색 결과 처리 완료";
+    } else {
+        qDebug() << "SQL Query 실행 실패: " << sqlQuery.lastError().text();
+        QMessageBox::warning(this, "Error", "Failed to execute query: " + sqlQuery.lastError().text());
+    }
+}
+
+void MainWindow::loadEventLogs() {
+    qDebug() << "테이블 초기 데이터 로드 시작";
+
+    // 모델 초기화
+    model->clear();
+    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"});
+
+    // 데이터베이스 쿼리 실행
+    QSqlQuery query("SELECT * FROM event_logs");
+    if (!query.exec()) {
+        qDebug() << "event_logs 테이블 초기 데이터 로드 실패:" << query.lastError().text();
+        return;
+    }
+
+    while (query.next()) {
         QList<QStandardItem*> rowItems;
-        for (int i = 0; i < sqlQuery.record().count(); ++i) {
-            rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
+        for (int i = 0; i < query.record().count(); ++i) {
+            rowItems.append(new QStandardItem(query.value(i).toString()));
         }
         model->appendRow(rowItems);
     }
-    qDebug() << "검색 결과 처리 완료";
+
+    ui->eventlogtableView->setModel(model);
+    qDebug() << "테이블 초기 데이터 로드 완료";
 }
+
 
 void MainWindow::toggleMode() {
     isNightMode = !isNightMode;
@@ -279,6 +279,10 @@ QTabWidget::pane {
   )";
      qApp->setStyleSheet(lightModeStyle);
 
+    // metadataDisplay에만 개별 스타일 적용
+    ui->metaDataContainer->setStyleSheet("background-color: #f5f5f5; color: #000000; border: 1px solid #e0e0e0;");
+
+
 }
 
 void MainWindow::setDarkMode() {
@@ -386,6 +390,9 @@ QTabWidget::pane {
 }
     )";
     qApp->setStyleSheet(darkModeStyle);
+
+    // // metadataDisplay에만 개별 스타일 적용
+    // ui->metaDataContainer->setStyleSheet("background-color: #3b3b3b; color: #000000; border: 1px solid #444444;");
 }
 
 MainWindow::~MainWindow()

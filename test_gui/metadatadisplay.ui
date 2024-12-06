@@ -63,13 +63,76 @@
     }
 
     QListWidget::item:selected {
-        background-color: #4CAF50;  /* 선택된 항목 배경색 */
+        background-color: rgb(238, 201, 99);  /* 선택된 항목 배경색 */
         color: white;               /* 선택된 항목 텍스트 색 */
     }
 
     QListWidget::item:selected:!active {
         background-color: #3e8e41;  /* 선택된 항목이 비활성일 때 색상 */
-    }</string>
+    }
+
+/* 세로 스크롤바 스타일 */
+QScrollBar:vertical {
+    border: none;
+    background: rgba(59, 59, 59, 50); /* 스크롤바 배경: #3b3b3b에 투명도 50% */
+    width: 12px;                       /* 스크롤바 너비 */
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: rgba(59, 59, 59, 80); /* 스크롤바 핸들: #3b3b3b에 투명도 80% */
+    min-height: 20px;                        /* 핸들의 최소 높이 */
+    border-radius: 6px;                      /* 모서리 둥글게 */
+}
+
+QScrollBar::add-line:vertical, 
+QScrollBar::sub-line:vertical {
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, 
+QScrollBar::down-arrow:vertical {
+    background: none;
+}
+
+QScrollBar::add-page:vertical, 
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* 가로 스크롤바 스타일 */
+QScrollBar:horizontal {
+    border: none;
+    background: rgba(59, 59, 59, 50); /* 스크롤바 배경: #3b3b3b에 투명도 50% */
+    height: 12px;                      /* 스크롤바 높이 */
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: rgba(59, 59, 59, 80); /* 스크롤바 핸들: #3b3b3b에 투명도 80% */
+    min-width: 20px;                         /* 핸들의 최소 너비 */
+    border-radius: 6px;                      /* 모서리 둥글게 */
+}
+
+QScrollBar::add-line:horizontal, 
+QScrollBar::sub-line:horizontal {
+    width: 0px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal, 
+QScrollBar::right-arrow:horizontal {
+    background: none;
+}
+
+QScrollBar::add-page:horizontal, 
+QScrollBar::sub-page:horizontal {
+    background: none;
+}
+</string>
      </property>
     </widget>
    </item>

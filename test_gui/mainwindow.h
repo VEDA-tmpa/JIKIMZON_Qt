@@ -23,6 +23,7 @@ public:
 
 private slots:
     void on_searchButton_clicked();
+    void loadEventLogs();
     void onJsonReadyRead();
     void toggleMode();
     void setLightMode();

@@ -65,6 +65,7 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
     // 테두리 색상 적용 (QSS 사용)
     QString style = QString(
                         "QLabel {"
+                        "   background-color: #f0f0f0;"
                         "   border: 3px solid %1;"  // 테두리 색상
                         "   border-radius: 8px;"     // 모서리 둥글게 설정
                         "   padding: 5px;"           // 패딩 추가

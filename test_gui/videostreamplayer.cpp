@@ -452,7 +452,10 @@ void VideoStreamPlayer::run()
                 }
 
                 while (avcodec_receive_frame(codecContext, frame) >= 0) {
-                    qDebug() << "Decoded frame PTS:" << frame->pts;
+
+                    // qDebug() << "Decoded frame PTS:" << frame->pts;
+                    double pts_seconds = frame->pts * av_q2d(frame->time_base);
+                    qDebug() << "Decoded frame PTS (seconds):" << pts_seconds;
 
                     if (!swsContext) {
                         swsContext = sws_getContext(frame->width, frame->height, codecContext->pix_fmt,

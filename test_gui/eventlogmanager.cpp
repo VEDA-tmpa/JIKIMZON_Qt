@@ -10,6 +10,9 @@ EventLogManager::EventLogManager(const QString &dbPath, QObject *parent)
         qDebug() << "Error: Unable to open database." << db.lastError().text();
         return;
     }
+    qDebug() << "Database opened successfully.";
+
+    clearTable();  // 기존 데이터 삭제
 
     createTable(); // 테이블 생성 호출
 }
@@ -47,6 +50,14 @@ void EventLogManager::createTable() {
     }
 }
 
+void EventLogManager::clearTable() {
+    QSqlQuery query;
+    if (!query.exec("DELETE FROM event_logs")) {
+        qDebug() << "Error: Unable to clear table:" << query.lastError().text();
+    } else {
+        qDebug() << "All records from event_logs table have been cleared.";
+    }
+}
 
 void EventLogManager::saveEventLog(QJsonObject& obj) {
 

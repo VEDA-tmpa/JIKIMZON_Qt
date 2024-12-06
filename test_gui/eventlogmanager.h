@@ -19,7 +19,7 @@ public:
     ~EventLogManager();
 
     void createTable();
-
+    void clearTable();
     void saveEventLog(QJsonObject& obj);
 
 signals:
