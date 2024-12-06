@@ -479,13 +479,14 @@ void VideoStreamPlayer::run()
                         if (!img.isNull()) {
                             qDebug() << "Frame successfully converted to QImage.";
 
-                            // 오버레이 추가
-                            addOverlayToFrame(img);
+                            addOverlayToFrame(header->frameId, img);     // overlay
+                            frameHistory.push_back(img);
+                            currentFrameIndex = header->frameId;
 
                             emit frameReady(img);
-                            frameHistory.push_back(img);
-                            currentFrameIndex = frameHistory.size() - 1;
-                        } else {
+                        }
+                        else
+                        {
                             qDebug() << "Converted QImage is null.";
                         }
                     }
@@ -523,9 +524,6 @@ void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
     int frameId = obj["frameId"].toInt();
     QString timestamp = obj["timestamp"].toString();
 
-    detectedObjects.clear();
-    objectLabels.clear();
-
     QJsonArray objectArray = obj["object"].toArray();
     for (const QJsonValue &value : objectArray) {
         QJsonObject objData = value.toObject();
@@ -535,6 +533,7 @@ void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
         int width = objData["width"].toInt();
         int height = objData["height"].toInt();
 
+        detectedFrameIds.append(frameId);
         detectedObjects.append(QRect(x, y, width, height));
         objectLabels.append(className);
 
@@ -557,34 +556,42 @@ void VideoStreamPlayer::setEventLogManager(EventLogManager *manager) {
     this->eventLogManager = manager;
 }
 
-void VideoStreamPlayer::addOverlayToFrame(QImage &image)
+void VideoStreamPlayer::addOverlayToFrame(int frameID, QImage &image)
 {
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    for (int i = 0; i < detectedObjects.size(); i++) {
-        QColor color;
-        if (objectLabels[i] == "biodegradable") {
-            color = QColor(96, 255, 0);
-        } else if (objectLabels[i] == "cardboard") {
-            color = QColor(255, 0, 0);
-        } else if (objectLabels[i] == "glass") {
-            color = QColor(0, 7, 255);
-        } else if (objectLabels[i] == "metal") {
-            color = QColor(255, 148, 0);
-        } else if (objectLabels[i] == "paper") {
-            color = QColor(255, 248, 0);
-        } else if (objectLabels[i] == "plastic") {
-            color = QColor(214, 0, 255);
-        } else {
-            color = QColor(200, 200, 200);
+
+
+    for (int i = 0; i < detectedFrameIds.size(); i++) {
+        if (detectedFrameIds[i] == frameID) {
+            QColor color;
+            if (objectLabels[i] == "biodegradable") {
+                color = QColor(96, 255, 0);
+            } else if (objectLabels[i] == "cardboard") {
+                color = QColor(255, 0, 0);
+            } else if (objectLabels[i] == "glass") {
+                color = QColor(0, 7, 255);
+            } else if (objectLabels[i] == "metal") {
+                color = QColor(255, 148, 0);
+            } else if (objectLabels[i] == "paper") {
+                color = QColor(255, 248, 0);
+            } else if (objectLabels[i] == "plastic") {
+                color = QColor(214, 0, 255);
+            } else {
+                color = QColor(200, 200, 200);
+            }
+            
+            painter.setPen(QPen(color, 10));
+            painter.drawRect(detectedObjects[i]);
+
+            painter.setFont(QFont("Arial", 40));
+            painter.drawText(detectedObjects[i].topLeft() - QPoint(0, 10), objectLabels[i]);
+
+            detectedFrameIds.remove(i);
+            detectedObjects.remove(i);
+            objectLabels.removeAt(i);
         }
-
-        painter.setPen(QPen(color, 5));
-        painter.drawRect(detectedObjects[i]);
-
-        painter.setFont(QFont("Arial", 20));
-        painter.drawText(detectedObjects[i].topLeft() - QPoint(0, 10), objectLabels[i]);
     }
 }
 
@@ -608,4 +615,22 @@ QList<QByteArray> VideoStreamPlayer::extractNalUnits(const QByteArray &decrypted
     }
 
     return nalUnits;
+}
+
+//"20241206_123456.789"
+void VideoStreamPlayer::str2time(const QString &str, QTime &time)
+{
+    QString timePart = str.mid(9, 8);       // "123456.789"
+    QString timeOnly = timePart.left(6);    // "123456"
+    QString msOnly = timePart.mid(7);       // "789"
+
+    QTime time = QTime::fromString(timeOnly, "hhmmss");
+    if (!time.isValid())
+    {
+        qDebug() << "Invalid time format!";
+        return -1;
+    }
+
+    int msec = msOnly.toInt();
+    time = time.addMSecs(msec);
 }

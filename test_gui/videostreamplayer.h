@@ -20,6 +20,7 @@
 #include <QBuffer>
 #include <QDataStream>
 #include <QList>
+#include <QTime>
 
 #include <opencv2/opencv.hpp>
 
@@ -53,7 +54,7 @@ public:
     QList<QByteArray> extractNalUnits(const QByteArray &decryptedData);
     //json파싱, 비디오 오버레이
     void parseObjectDetectionData(QByteArray &jsonData);
-    void addOverlayToFrame(QImage &image);
+    void addOverlayToFrame(int frameID, QImage &image);
     void setEventLogManager(EventLogManager *manager); // Setter 추가
 
 signals:
@@ -74,11 +75,15 @@ private:
     int frameHeight;
     int frameSize;
 
+    QVector<int> detectedFrameIds; // 프레임 ID를 저장하는 벡터
+    QList<QTime> detectedTime; // 타임스탬프를 저장하는 벡터
     QVector<QRect> detectedObjects; // 객체 감지를 위한 사각형 벡터
     QStringList objectLabels; // 객체 라벨을 저장하는 리스트
 
     EventLogManager *eventLogManager; // EventLogManager 포인터 선언
     MetaDataDisplay *metaData; // MetaDataDisplay 포인터
+
+    void str2time(const QString &str, QTime &time); // 시간 문자열을 QTime으로 변환하는 함수
 };
 
 #endif // VIDEOSTREAMPLAYER_H
