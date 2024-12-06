@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDebug>
+#include <QJsonObject>
 
 class EventLogManager : public QObject
 {
@@ -19,7 +20,7 @@ public:
 
     void createTable();
 
-    void saveEventLog(const QString &jsonString);
+    void saveEventLog(QJsonObject& obj);
 
 signals:
 
