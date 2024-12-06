@@ -13,6 +13,8 @@
 #include <QPixmap>
 #include <QObject>
 #include <QDir>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,9 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     //테마 버튼
     connect(ui->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
-    // 버튼 초기 아이콘 설정 (해 모양)
-    ui->btnToggleMode->setIcon(QIcon(":/icon/sun.png"));
-    ui->btnToggleMode->setIconSize(QSize(20, 20));
 
     // 비디오 TCP 소켓 연결
     tcpSocket->connectToHost("192.168.50.14", 1234);
@@ -166,22 +165,28 @@ void MainWindow::loadEventLogs() {
 void MainWindow::toggleMode() {
     isNightMode = !isNightMode;
 
+    // opacity effect를 만들어서 아이콘을 변경하는 동안 부드러운 전환 효과를 줄 수 있습니다.
+    QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
+    ui->btnToggleMode->setGraphicsEffect(effect);
+
     if (isNightMode) {
         setDarkMode();
-        ui->btnToggleMode->setIcon(QIcon(":/icon/sun.png")); // 밤 모드 아이콘
+        ui->btnToggleMode; // 밤 모드 아이콘
     } else {
         setLightMode();
-        ui->btnToggleMode->setIcon(QIcon(":/icon/moon.png")); // 낮 모드 아이콘
+        ui->btnToggleMode; // 낮 모드 아이콘
     }
 }
 
 void MainWindow::setLightMode() {
+
     QPalette palette;
     palette.setColor(QPalette::Window, QColor("#ffffff"));
     palette.setColor(QPalette::WindowText, QColor("#000000"));
     palette.setColor(QPalette::Base, QColor("#f5f5f5"));
     palette.setColor(QPalette::Button, QColor("#e0e0e0"));
     palette.setColor(QPalette::ButtonText, QColor("#000000"));
+
     qApp->setPalette(palette);
 
     QString lightModeStyle = R"(
@@ -286,12 +291,14 @@ QTabWidget::pane {
 }
 
 void MainWindow::setDarkMode() {
+
     QPalette palette;
     palette.setColor(QPalette::Window, QColor("#2b2b2b"));
     palette.setColor(QPalette::WindowText, QColor("#ffffff"));
     palette.setColor(QPalette::Base, QColor("#3b3b3b"));
     palette.setColor(QPalette::Button, QColor("#444444"));
     palette.setColor(QPalette::ButtonText, QColor("#ffffff"));
+
     qApp->setPalette(palette);
 
     // QSS 적용
@@ -392,7 +399,7 @@ QTabWidget::pane {
     qApp->setStyleSheet(darkModeStyle);
 
     // // metadataDisplay에만 개별 스타일 적용
-    // ui->metaDataContainer->setStyleSheet("background-color: #3b3b3b; color: #000000; border: 1px solid #444444;");
+    ui->metaDataContainer->setStyleSheet("background-color: #3b3b3b; color: #000000; border: 1px solid #444444;");
 }
 
 MainWindow::~MainWindow()
