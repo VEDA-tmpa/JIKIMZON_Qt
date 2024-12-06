@@ -2,6 +2,7 @@
 
 EventLogManager::EventLogManager(const QString &dbPath, QObject *parent)
     : QObject(parent) {
+
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(dbPath);
 
@@ -34,14 +35,20 @@ void EventLogManager::createTable() {
     if (query.lastError().isValid()) {
         qDebug() << "Failed to create table:" << query.lastError().text();
     } else {
-        qDebug() << "Table created successfully.";
+        qDebug() << "Table created successfully.";      
+    }
+
+    // Check if table exists after creation
+    QSqlQuery checkQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='event_logs';");
+    if (checkQuery.exec() && checkQuery.next()) {
+        qDebug() << "Table 'event_logs' exists in the database.";
+    } else {
+        qDebug() << "Table 'event_logs' does not exist. Error:" << checkQuery.lastError().text();
     }
 }
 
 
-void EventLogManager::saveEventLog(const QString &jsonString) {
-    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
-    QJsonObject obj = doc.object();
+void EventLogManager::saveEventLog(QJsonObject& obj) {
 
     int frameId = obj["frameId"].toInt();
     QString timestamp = obj["timestamp"].toString();
