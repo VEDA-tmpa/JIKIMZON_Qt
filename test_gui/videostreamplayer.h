@@ -54,7 +54,7 @@ public:
     QList<QByteArray> extractNalUnits(const QByteArray &decryptedData);
     //json파싱, 비디오 오버레이
     void parseObjectDetectionData(QByteArray &jsonData);
-    void addOverlayToFrame(int frameID, QImage &image);
+    void addOverlayToFrame(QTime time, QImage &image);
     void setEventLogManager(EventLogManager *manager); // Setter 추가
 
 signals:

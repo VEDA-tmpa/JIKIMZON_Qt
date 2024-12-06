@@ -375,7 +375,7 @@ void VideoStreamPlayer::run()
                     emit frameReady(frame);
                 }
             }
-            msleep(150);
+            msleep(100);
             continue;
         }
 
@@ -479,7 +479,11 @@ void VideoStreamPlayer::run()
                         if (!img.isNull()) {
                             qDebug() << "Frame successfully converted to QImage.";
 
-                            addOverlayToFrame(header->frameId, img);     // overlay
+                            QTime time;
+                            QString timestamp(header->timestamp);
+                            str2time(timestamp, time);
+                            addOverlayToFrame(time, img);     // overlay
+
                             frameHistory.push_back(img);
                             currentFrameIndex = header->frameId;
 
@@ -494,7 +498,7 @@ void VideoStreamPlayer::run()
                 }
             }
         }
-        msleep(150);
+        msleep(100);
     }
 
     // FFmpeg 리소스 해제
@@ -533,9 +537,12 @@ void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
         int width = objData["width"].toInt();
         int height = objData["height"].toInt();
 
+        QTime time;
+        str2time(timestamp, time);
         detectedFrameIds.append(frameId);
         detectedObjects.append(QRect(x, y, width, height));
         objectLabels.append(className);
+        detectedTime.append(time);
 
         // // 메타데이터 업데이트
         QString location = QString("위치: (%1, %2)").arg(x).arg(y);
@@ -556,15 +563,17 @@ void VideoStreamPlayer::setEventLogManager(EventLogManager *manager) {
     this->eventLogManager = manager;
 }
 
-void VideoStreamPlayer::addOverlayToFrame(int frameID, QImage &image)
+void VideoStreamPlayer::addOverlayToFrame(QTime time, QImage &image)
 {
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
 
+    for (int i = 0; i < detectedTime.size();)
+    {
+        int diff = detectedTime[i].msecsTo(time); // time - detectedTime[i]
 
-
-    for (int i = 0; i < detectedFrameIds.size(); i++) {
-        if (detectedFrameIds[i] == frameID) {
+        if (diff >= -3000 && diff <= 3000)
+        {
             QColor color;
             if (objectLabels[i] == "biodegradable") {
                 color = QColor(96, 255, 0);
@@ -581,16 +590,24 @@ void VideoStreamPlayer::addOverlayToFrame(int frameID, QImage &image)
             } else {
                 color = QColor(200, 200, 200);
             }
-            
+
             painter.setPen(QPen(color, 10));
             painter.drawRect(detectedObjects[i]);
 
             painter.setFont(QFont("Arial", 40));
             painter.drawText(detectedObjects[i].topLeft() - QPoint(0, 10), objectLabels[i]);
 
-            detectedFrameIds.remove(i);
-            detectedObjects.remove(i);
+            detectedFrameIds.removeAt(i);
+            detectedObjects.removeAt(i);
             objectLabels.removeAt(i);
+            detectedTime.removeAt(i);
+        }
+        else if (diff > 3000)
+        {
+            detectedFrameIds.removeAt(i);
+            detectedObjects.removeAt(i);
+            objectLabels.removeAt(i);
+            detectedTime.removeAt(i);
         }
     }
 }
@@ -624,11 +641,11 @@ void VideoStreamPlayer::str2time(const QString &str, QTime &time)
     QString timeOnly = timePart.left(6);    // "123456"
     QString msOnly = timePart.mid(7);       // "789"
 
-    QTime time = QTime::fromString(timeOnly, "hhmmss");
+    time = QTime::fromString(timeOnly, "hhmmss");
     if (!time.isValid())
     {
         qDebug() << "Invalid time format!";
-        return -1;
+        return;
     }
 
     int msec = msOnly.toInt();
