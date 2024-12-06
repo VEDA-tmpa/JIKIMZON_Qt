@@ -1,7 +1,7 @@
 #ifndef VIDEOSTREAMPLAYER_H
 #define VIDEOSTREAMPLAYER_H
 
-#include "Decryptor.h"  // Decryptor 헤더 추가
+#include "decryptor.h"  // Decryptor 헤더 추가
 #include "eventlogmanager.h"
 #include "metadatadisplay.h" // MetaDataDisplay 헤더 포함
 

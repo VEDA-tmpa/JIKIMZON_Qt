@@ -1,6 +1,8 @@
 #include "metadatadisplay.h"
 #include "ui_metadatadisplay.h"
 
+#include <QDebug>
+
 MetaDataDisplay::MetaDataDisplay(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MetaDataDisplay)

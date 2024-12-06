@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "metadatadisplay.h"
-#include "Frame.h"
+#include "frame.h"
 #include <QLayout>
 #include <QPalette>
 #include <QMessageBox>

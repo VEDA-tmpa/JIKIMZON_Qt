@@ -6,6 +6,8 @@
 #include <cstring>
 #include <opencv2/opencv.hpp>  // OpenCV Mat 포함
 
+#include <arpa/inet.h>
+
 namespace frame {
 
 enum class ImageFormat : uint8_t { RAW, JPEG, PNG };
