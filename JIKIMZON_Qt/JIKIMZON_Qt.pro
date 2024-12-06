@@ -46,7 +46,7 @@ FORMS += \
 
 RESOURCES += \
     assets.qrc \
-    res/keyfile.bin \
+    res/keyfile2.bin \
 
 
 # Default rules for deployment.

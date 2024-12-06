@@ -31,6 +31,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void InitMainWindow();
+
 public slots:
     void onsearchButtonclicked(); // 검색 버튼 클릭 시 슬롯
 

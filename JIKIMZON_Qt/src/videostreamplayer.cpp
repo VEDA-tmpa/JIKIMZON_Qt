@@ -39,6 +39,7 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int videoPort, int jsonPort
     mEventLogManager = new EventLogManager(logPath, this);
 
     mNetworkManager->connectToVideoServer(mIp, mVideoPort);
+    // mNetworkManager->connectToUdpServer(mIp, mVideoPort);
     mNetworkManager->connectToJsonServer(mIp, mJsonPort);
 
     connect(mNetworkManager, &NetworkManager::videoDataReceived, this, &VideoStreamPlayer::HandleVideoData);
@@ -46,46 +47,84 @@ void VideoStreamPlayer::InitStreamPlayer(QString ip, int videoPort, int jsonPort
 }
 
 void VideoStreamPlayer::HandleVideoData(QSharedPointer<frame::Header> header, QSharedPointer<std::vector<uint8_t>> videoData)
-{   
-    std::vector<uint8_t> decryptedFrame;
+{
+    //std::vector<uint8_t> decryptedFrame;
     QString qTimestamp = QString::fromStdString(header->GetTimestamp());
-    mDecryptor->Decrypt(qTimestamp, *videoData, decryptedFrame);
+    //mDecryptor->Decrypt(qTimestamp, *videoData, decryptedFrame);
 
-    frame::Body body;
-    body.Deserialize(decryptedFrame);
+    if (videoData.isNull())
+    {
+        qDebug() << "Failed to get frame: videoData is NULL!";
+        return;
+    }
 
-    QString codePath = __FILE__;
-    QString filePath = QFileInfo(codePath).absolutePath() + "/../res/frames.h264";
-    
+    if ((*videoData).empty())
+    {
+        qDebug() << "Failed to get frame: *videoData is EMPTY!";
+        return;
+    }
+
+    QByteArray qVideoData(reinterpret_cast<const char*>(videoData->data()), static_cast<int>(videoData->size()));
+    QList<QByteArray> nalUnits;
+    int pos = 0;
+    while (pos < qVideoData.size())
+    {
+        int nextStartCode = qVideoData.indexOf(mStartCode, pos);
+        if (nextStartCode == -1)
+        {
+            nextStartCode = qVideoData.size();
+        }
+
+        int nalUnitSize = nextStartCode - pos;
+        QByteArray nalUnit = qVideoData.mid(pos, nalUnitSize);
+        nalUnits.append(nalUnit);
+
+        pos = nextStartCode + mStartCode.size();
+    }
+
+    qDebug() << "Number of NAL Units:" << nalUnits.size();
+    for (int i = 0; i < nalUnits.size(); ++i)
+    {
+        qDebug() << "NAL Unit" << i << "Size:" << nalUnits[i].size();
+    }
+
+    for (auto& unit : nalUnits)
+    {
+        if (unit.size() == 0)
+        {
+            continue;
+        }
+        
+        std::vector<uint8_t> unitData(unit.begin(), unit.end());   
+
+        QSharedPointer<QImage> qFrame;
+        mDecodeHandler->DecodeFrame(unitData, qFrame);
+
+        StoreFrame(qFrame);
+        emit FrameReady(qFrame);
+    }
+
+
+    // frame::Body body;
+    // body.Deserialize(*videoData);
+
     // 디버그용 파일 저장
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
-    {
-        qDebug() << "Failed to open file for writing";
-        return;
-    }
-    qint64 bytesWritten = file.write(reinterpret_cast<const char*>(body.GetImage().data()), static_cast<qint64>(body.GetImage().size()));
-    if (bytesWritten == -1)
-    {
-        qDebug() << "Failed to write data to file";
-        return;
-    }
+    // QString codePath = __FILE__;
+    // QString filePath = QFileInfo(codePath).absolutePath() + "/../res/frames.h264";
     
-    cv::Mat cvFrame;
-    mDecodeHandler->DecodeFrame(body.GetImage(), cvFrame);
-
-    if (cvFrame.empty())
-    {
-        qDebug() << "Failed to decode frame: cvFrame is EMPTY!";
-        return;
-    }
-
-    QImage img(cvFrame.data, cvFrame.cols, cvFrame.rows, cvFrame.step, QImage::Format_RGB888);
-
-    // store frame
-    StoreFrame(img);
-
-    emit FrameReady(img);
+    // QFile file(filePath);
+    // if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
+    // {
+    //     qDebug() << "Failed to open file for writing";
+    //     return;
+    // }
+    // qint64 bytesWritten = file.write(reinterpret_cast<const char*>(body.GetImage().data()), static_cast<qint64>(body.GetImage().size()));
+    // if (bytesWritten == -1)
+    // {
+    //     qDebug() << "Failed to write data to file";
+    //     return;
+    // }
+    // file.close();
 }
 
 void VideoStreamPlayer::HandleJsonData(QSharedPointer<QJsonDocument> jsonDoc)
@@ -154,7 +193,7 @@ void VideoStreamPlayer::GoBackward()
     if (mCurFrameIndex > 0)
     {
         mCurFrameIndex -= 1;
-        emit FrameReady(mFrameHistory[mCurFrameIndex]);
+        //emit FrameReady(mFrameHistory[mCurFrameIndex]);
 
         qDebug() << "Backward: Current frame index is" << mCurFrameIndex;
     }
@@ -169,7 +208,7 @@ void VideoStreamPlayer::GoForward()
     if (mCurFrameIndex < mFrameHistory.size() - 1)
     {
         mCurFrameIndex += 1;
-        emit FrameReady(mFrameHistory[mCurFrameIndex]);
+        //emit FrameReady(mFrameHistory[mCurFrameIndex]);
 
         qDebug() << "Forward: Current frame index is" << mCurFrameIndex;
     }
@@ -184,15 +223,15 @@ bool VideoStreamPlayer::IsStopped() const
     return mbStop;
 }
 
-void VideoStreamPlayer::StoreFrame(const QImage &frame)
+void VideoStreamPlayer::StoreFrame(QSharedPointer<QImage> frame)
 {
     qDebug() << "StoreFrame()";
 
-    if (!mbPause)
-    {
-        mFrameHistory.append(frame);
-        mCurFrameIndex = mFrameHistory.size() - 1;
-    }
+    // if (!mbPause)
+    // {
+    //     mFrameHistory.append(*frame);
+    //     mCurFrameIndex = mFrameHistory.size() - 1;
+    // }
 }
 
 cv::Scalar VideoStreamPlayer::GetLabelColor(const QString& label)

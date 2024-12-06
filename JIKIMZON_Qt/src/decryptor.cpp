@@ -14,9 +14,10 @@ Decryptor::Decryptor()
     if (!mCtx) {
         qDebug() << "EVP_CIPHER_CTX_new failed!";
     }
-    
+
     QString codePath = __FILE__;
     QString filepath = "C:/Users/sihyu/OneDrive - Kumoh/Source_File/QtCreator/VedaFinal/JIKIMZON_Qt/JIKIMZON_Qt/res/keyfile2.bin";
+    // std::string filepath = "C:/Users/sihyu/OneDrive - Kumoh/Source_File/QtCreator/VedaFinal/JIKIMZON_Qt/JIKIMZON_Qt/res/keyfile2.bin";
     LoadKey(filepath);
 }
 
@@ -30,13 +31,13 @@ Decryptor::~Decryptor()
 
 
 void Decryptor::EncryptData(std::string& timestamp, std::vector<uint8_t>& src, int size, std::vector<uint8_t>& OUT dest)
-{   
+{
     dest.clear();
     dest.resize(size);
 
     // unsigned char iv[12];
     // std::memcpy(iv, reinterpret_cast<const unsigned char*>(timestamp.substr(timestamp.length() - 12, 12).c_str()), 12);
-    
+
     // std::cout << "timestamp: " << timestamp << std::endl;
     // std::cout << "iv: " << iv << std::endl;
 
@@ -57,7 +58,7 @@ void Decryptor::EncryptData(std::string& timestamp, std::vector<uint8_t>& src, i
 
 
 void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT QByteArray& decryptedData)
-{   
+{
     decryptedData.clear();
     decryptedData.resize(encryptedData.size());
 
@@ -94,8 +95,9 @@ void Decryptor::Decrypt(QString& nounceStr, const QByteArray& encryptedData, OUT
     decryptedData.resize(totalLen);
 }
 
+
 void Decryptor::Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OUT std::vector<uint8_t>& decryptedData)
-{   
+{
     decryptedData.clear();
     decryptedData.resize(encryptedData.size());
 
@@ -132,9 +134,11 @@ void Decryptor::Decrypt(QString& nounce, std::vector<uint8_t>& encryptedData, OU
     // decryptedData.resize(totalLen);
 }
 
-bool Decryptor::LoadKey(const QString& filePath)
+
+bool Decryptor::LoadKey(QString& filePath)
 {
     std::string path = filePath.toStdString();
+    qDebug() << "keyfile path: " + path;
 
     std::ifstream file(path, std::ios::binary);
     if (!file.is_open())
@@ -154,6 +158,13 @@ bool Decryptor::LoadKey(const QString& filePath)
 
     auto key = reinterpret_cast<unsigned char*>(vec.data());
     memcpy(mKey, key, 32);
+
+
+    std::cout << "mKey: " << std::endl;
+    for (int i = 0; i < 32; i++)
+    {
+        std::cout << std::hex << static_cast<int>(mKey[i]) << " ";
+    }
 
     return true;
 }

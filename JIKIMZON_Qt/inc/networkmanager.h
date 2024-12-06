@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QUdpSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -15,10 +16,11 @@ class NetworkManager : public QObject
 public:
     explicit NetworkManager(QObject *parent = nullptr);
 
-    void ReadAllData(QTcpSocket* socket, int expectedSize, QByteArray &buffer);
-    void ReadAllData(QTcpSocket* socket, int expectedSize, std::vector<uint8_t> &buffer);
+    void ReadAllData(QAbstractSocket* socket, int expectedSize, QByteArray &buffer);
+    void ReadAllData(QAbstractSocket* socket, int expectedSize, std::vector<uint8_t> &buffer);
     void connectToVideoServer(const QString &host, int port);
     void connectToJsonServer(const QString &host, int port);
+    // void connectToUdpServer(const QString& host, int port);
 
 signals:
     void videoDataReceived(QSharedPointer<frame::Header> header, QSharedPointer<std::vector<uint8_t>> videoData);
@@ -27,12 +29,15 @@ signals:
 private:
     QTcpSocket *mVideoSocket;
     QTcpSocket *mJsonSocket;
+    QUdpSocket *mUdpSocket;
 
 private slots:
     void onVideoConnected();
     void onVideoReadyRead();
     void onJsonConnected();
     void onJsonReadyRead();
+    // void onUdpConnected();
+    // void onUdpReadyRead();
 
 };
 

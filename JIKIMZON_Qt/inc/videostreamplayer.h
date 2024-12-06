@@ -28,7 +28,7 @@ public:
 
     void InitStreamPlayer(QString ip, int videoPort, int jsonPort, int width, int height, int bitrate, int fps);
 
-    void StoreFrame(const QImage& frame);
+    void StoreFrame(QSharedPointer<QImage> frame);
     void AddOverlayToFrame(cv::Mat &frame, const std::vector<cv::Rect> &detectedObjects, const std::vector<std::string> &labels);
 
     // control stream
@@ -44,7 +44,7 @@ public:
     cv::Scalar GetLabelColor(const QString& label);
 
 signals:
-    void FrameReady(const QImage& frame);
+    void FrameReady(QSharedPointer<QImage> frame);
     void StreamReady();
 
 public slots:
@@ -74,6 +74,8 @@ private:
 
     QVector<QRect> mDetectedObjects;
     QStringList mObjectLabels;
+
+    QByteArray mStartCode = QByteArray::fromHex("00000001");
 
     QMap<QString, cv::Scalar> mLabelColors = {
         {"biodegradable", cv::Scalar(96, 255, 0)},

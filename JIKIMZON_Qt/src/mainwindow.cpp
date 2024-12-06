@@ -8,10 +8,19 @@ MainWindow::MainWindow(QWidget *parent)
     , mUI(new Ui::MainWindow)
 {
     mUI->setupUi(this);
+}
 
+MainWindow::~MainWindow()
+{
+    mVideoStreamPlayer->StopStream();
+    delete mUI;
+}
+
+void MainWindow::InitMainWindow()
+{
     // init player
     mVideoStreamPlayer = new VideoStreamPlayer();
-    mVideoStreamPlayer->InitStreamPlayer("192.168.35.221", 1234, 4321, 1280, 720, 100000, 15);
+    mVideoStreamPlayer->InitStreamPlayer("192.168.50.14", 12345, 54321, 1280, 720, 100000, 15);
 
     // init meta data display
     MetaDataDisplay* metaData = new MetaDataDisplay(this);
@@ -41,16 +50,15 @@ MainWindow::MainWindow(QWidget *parent)
     mItemModel = new QStandardItemModel(this);
     mUI->eventlogtableView->setModel(mItemModel);
 
-
     // connect theme button
     connect(mUI->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
     mUI->btnToggleMode->setIcon(QIcon(":/icon/sun.png"));
     mUI->btnToggleMode->setIconSize(QSize(20, 20));
 
     // connect player
-    connect(mVideoStreamPlayer, &VideoStreamPlayer::FrameReady, this, [&](const QImage& frame) {
+    connect(mVideoStreamPlayer, &VideoStreamPlayer::FrameReady, this, [&](QSharedPointer<QImage> frame) {
         qDebug() << "[MainWindow] FrameReady signal received";
-        mUI->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(mUI->videoLabel->size(), Qt::KeepAspectRatio));
+        mUI->videoLabel->setPixmap(QPixmap::fromImage(*(frame.data())).scaled(mUI->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
     // connect video stream buttons
@@ -73,19 +81,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mUI->brightnessSlider, &QSlider::valueChanged, this, &MainWindow::onBrightnessSliderChanged);
     connect(mUI->saturationSlider, &QSlider::valueChanged, this, &MainWindow::onSaturationSliderChanged);
     connect(mUI->sharpnessSlider, &QSlider::valueChanged, this, &MainWindow::onSharpnessSliderChanged);
-
-
-    // // start stream
-    // if (!mVideoStreamPlayer->isRunning())
-    // {
-    //     mVideoStreamPlayer->start(QThread::LowPriority);
-    // }
-}
-
-MainWindow::~MainWindow()
-{
-    mVideoStreamPlayer->StopStream();
-    delete mUI;
 }
 
 void MainWindow::onsearchButtonclicked() {

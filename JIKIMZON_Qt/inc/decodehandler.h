@@ -26,7 +26,7 @@ public:
     explicit DecodeHandler(int, int, int, int, enum AVPixelFormat, enum AVPixelFormat, QObject *parent = nullptr);
     ~DecodeHandler();
 
-    void DecodeFrame(const std::vector<uint8_t>&, OUT cv::Mat&);
+    void DecodeFrame(const std::vector<uint8_t>&, OUT QSharedPointer<QImage>);
 
 private:
     void initFFmpegDecoder();
