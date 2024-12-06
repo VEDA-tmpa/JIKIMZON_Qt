@@ -54,9 +54,11 @@ public:
     //json파싱, 비디오 오버레이
     void parseObjectDetectionData(const QString &jsonString);
     void addOverlayToFrame(QImage &image);
+    void setEventLogManager(EventLogManager *manager); // Setter 추가
 
 signals:
     void frameReady(const QImage &frame);
+    void objectDetected(const QString &timestamp, const QString &location, const QString &objectType);
 
 protected:
     void run() override;

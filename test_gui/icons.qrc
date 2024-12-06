@@ -11,5 +11,9 @@
     <qresource prefix="/icon">
         <file>moon.png</file>
         <file>sun.png</file>
+        <file>forward.png</file>
+        <file>pause.png</file>
+        <file>play.png</file>
+        <file>backward.png</file>
     </qresource>
 </RCC>

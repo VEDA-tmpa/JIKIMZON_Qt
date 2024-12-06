@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>970</width>
-    <height>745</height>
+    <width>1153</width>
+    <height>823</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QWidget" name="metaDataContainer" native="true">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>730</x>
       <y>70</y>
       <width>411</width>
-      <height>601</height>
+      <height>681</height>
      </rect>
     </property>
    </widget>
@@ -29,15 +29,15 @@
      <rect>
       <x>20</x>
       <y>70</y>
-      <width>491</width>
-      <height>391</height>
+      <width>691</width>
+      <height>431</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="2" column="2">
-      <widget class="QPushButton" name="forwardButton">
+      <widget class="QPushButton" name="resumeButton">
        <property name="text">
-        <string>forward</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -56,23 +56,23 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QPushButton" name="resumeButton">
+      <widget class="QPushButton" name="pauseButton">
        <property name="text">
-        <string>resume</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QPushButton" name="pauseButton">
+      <widget class="QPushButton" name="backwardButton">
        <property name="text">
-        <string>pause</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item row="2" column="3">
-      <widget class="QPushButton" name="backwardButton">
+      <widget class="QPushButton" name="forwardButton">
        <property name="text">
-        <string>backward</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -82,72 +82,135 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>470</y>
-      <width>501</width>
-      <height>201</height>
+      <y>520</y>
+      <width>691</width>
+      <height>231</height>
      </rect>
     </property>
-    <property name="currentIndex">
-     <number>1</number>
+    <property name="tabPosition">
+     <enum>QTabWidget::North</enum>
     </property>
-    <widget class="QWidget" name="tab_2">
-     <attribute name="title">
-      <string>알림설정</string>
-     </attribute>
-    </widget>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>이벤트</string>
+      <string>이벤트 로그</string>
      </attribute>
-     <widget class="QComboBox" name="eventcomboBox">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>20</y>
-        <width>103</width>
-        <height>32</height>
+        <y>10</y>
+        <width>661</width>
+        <height>191</height>
        </rect>
       </property>
+      <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,0" columnminimumwidth="0,0,0">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>-1</number>
+       </property>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="searchButton">
+         <property name="maximumSize">
+          <size>
+           <width>53</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>검색</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QComboBox" name="eventcomboBox">
+         <item>
+          <property name="text">
+           <string>ID</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Frame ID</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Timesteamp</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Object Class</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>X</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Y</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Width</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Height</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="eventlineEdit">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QTableView" name="eventlogtableView"/>
+       </item>
+      </layout>
      </widget>
-     <widget class="QLineEdit" name="eventlineEdit">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>20</y>
-        <width>291</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="searchButton">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>20</y>
-        <width>81</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>검색</string>
-      </property>
-     </widget>
-     <widget class="QTableView" name="eventlogtableView">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>60</y>
-        <width>461</width>
-        <height>101</height>
-       </rect>
-      </property>
-     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>비디오 설정</string>
+     </attribute>
     </widget>
    </widget>
    <widget class="QPushButton" name="btnToggleMode">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>1080</x>
       <y>10</y>
       <width>51</width>
       <height>51</height>
@@ -155,8 +218,7 @@
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
-    background-color: rgb(229, 231, 158); /* 배경색 */
-    border: 2px solid rgb(69, 61, 53); /* 테두리 색상과 두께 */
+    background-color: rgb(238, 201, 99); /* 배경색 */
     border-radius: 25px; /* 버튼 크기의 절반으로 설정 (정확한 원형) */
     color: white; /* 텍스트 색상 */
     font-size: 15px; /* 텍스트 크기 */
@@ -165,11 +227,11 @@
 }
 
 QPushButton:hover {
-    background-color: rgb(170, 197, 227); /* 호버 상태 배경색 */
+    background-color: rgb(137, 148, 180); /* 호버 상태 배경색 */
 }
 
 QPushButton:pressed {
-    background-color: rgb(252, 253, 248); /* 클릭 시 배경색 */
+    background-color: rrgb(255, 255, 255); /* 클릭 시 배경색 */
 }</string>
     </property>
     <property name="text">
@@ -182,7 +244,7 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>970</width>
+     <width>1153</width>
      <height>24</height>
     </rect>
    </property>

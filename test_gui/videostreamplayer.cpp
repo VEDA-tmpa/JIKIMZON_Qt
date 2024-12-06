@@ -532,10 +532,21 @@ void VideoStreamPlayer::parseObjectDetectionData(const QString &jsonString)
 
         // // 메타데이터 업데이트
         QString location = QString("위치: (%1, %2)").arg(x).arg(y);
-        metaData->updateMetaData(timestamp, location, className); // 메타데이터 표시 업데이트
+        emit objectDetected(timestamp, location, className); // 메타데이터 표시 업데이트
 
         qDebug() << "detected object name: " << className;
     }
+
+    // EventLogManager를 통해 이벤트 로그 저장
+    if (eventLogManager) {
+        eventLogManager->saveEventLog(jsonString);
+    } else {
+        qDebug() << "EventLogManager is not set!";
+    }
+}
+
+void VideoStreamPlayer::setEventLogManager(EventLogManager *manager) {
+    this->eventLogManager = manager;
 }
 
 void VideoStreamPlayer::addOverlayToFrame(QImage &image)
