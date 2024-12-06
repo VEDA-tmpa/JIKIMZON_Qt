@@ -39,7 +39,7 @@ QString toBinary(const QByteArray &data, int numBytes = 20) {
     return result.trimmed();
 }
 
-VideoStreamPlayer::VideoStreamPlayer(MetaDataDisplay *metaDataDisplay, QObject *parent)
+VideoStreamPlayer::VideoStreamPlayer(QObject *parent)
     : QThread(parent), tcpSocket(nullptr), stop(true), frameWidth(0), frameHeight(0), frameSize(0)
 {
 
@@ -501,11 +501,16 @@ void VideoStreamPlayer::run()
     avcodec_free_context(&codecContext);
 }
 
-void VideoStreamPlayer::parseObjectDetectionData(const QString &jsonString)
+void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
 {
     qDebug() << "parseObjectDetectionData";
 
-    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
+    // 불필요한 문자를 제거
+    if (jsonData.endsWith('|')) {
+        jsonData.chop(1); // 마지막 문자 제거
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
     if (!doc.isObject()) {
         qDebug() << "Invalid JSON data";
         return;
@@ -539,7 +544,7 @@ void VideoStreamPlayer::parseObjectDetectionData(const QString &jsonString)
 
     // EventLogManager를 통해 이벤트 로그 저장
     if (eventLogManager) {
-        eventLogManager->saveEventLog(jsonString);
+        eventLogManager->saveEventLog(obj);
     } else {
         qDebug() << "EventLogManager is not set!";
     }

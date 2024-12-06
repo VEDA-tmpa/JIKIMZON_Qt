@@ -14,6 +14,8 @@ MetaDataDisplay::~MetaDataDisplay()
 }
 
 void MetaDataDisplay::updateMetaData(const QString &time, const QString &location, const QString &objectType) {
+    qDebug() << "MetaDataDisplay::updateMetaData";
+
     // UI 레이블에 메타데이터 업데이트
     ui->timeLabel->setText("시간: " + time);
     ui->locationLabel->setText("위치: " + location);

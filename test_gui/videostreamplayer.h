@@ -38,7 +38,7 @@ class VideoStreamPlayer : public QThread
     Q_OBJECT
     QByteArray key;  // key 변수 정의
 public:
-    explicit VideoStreamPlayer(MetaDataDisplay *metaDataDisplay = nullptr, QObject *parent = nullptr);
+    explicit VideoStreamPlayer(QObject *parent = nullptr);
     VideoStreamPlayer() = default;
     ~VideoStreamPlayer();
 
@@ -52,7 +52,7 @@ public:
     bool isStopped() const;
     QList<QByteArray> extractNalUnits(const QByteArray &decryptedData);
     //json파싱, 비디오 오버레이
-    void parseObjectDetectionData(const QString &jsonString);
+    void parseObjectDetectionData(QByteArray &jsonData);
     void addOverlayToFrame(QImage &image);
     void setEventLogManager(EventLogManager *manager); // Setter 추가
 
