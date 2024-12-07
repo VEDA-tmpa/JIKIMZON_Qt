@@ -14,6 +14,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSslSocket>
 
 #pragma pack(push, 1)
 struct HeaderStruct {
@@ -40,7 +41,7 @@ QString toBinary(const QByteArray &data, int numBytes = 20) {
 }
 
 VideoStreamPlayer::VideoStreamPlayer(QObject *parent)
-    : QThread(parent), tcpSocket(nullptr), stop(true), frameWidth(0), frameHeight(0), frameSize(0)
+    : QThread(parent), sslSocket(nullptr), stop(true), frameWidth(0), frameHeight(0), frameSize(0)
 {
 
 }
@@ -51,9 +52,9 @@ VideoStreamPlayer::~VideoStreamPlayer()
     wait();  // 스레드 종료 대기
 }
 
-void VideoStreamPlayer::startStream(QTcpSocket *socket, int width, int height, int size)
+void VideoStreamPlayer::startStream(QSslSocket *socket, int width, int height, int size)
 {
-    tcpSocket = socket;
+    sslSocket = socket;
     frameWidth = width;
     frameHeight = height;
     frameSize = size;
@@ -379,10 +380,10 @@ void VideoStreamPlayer::run()
             continue;
         }
 
-        if (tcpSocket && tcpSocket->bytesAvailable() > 0) {
+        if (sslSocket && sslSocket->bytesAvailable() > 0) {
             // 헤더 읽기
             while (buffer.size() < sizeof(HeaderStruct)) {
-                buffer.append(tcpSocket->read(sizeof(HeaderStruct) - buffer.size()));
+                buffer.append(sslSocket->read(sizeof(HeaderStruct) - buffer.size()));
             }
 
             // 헤더 파싱
@@ -401,7 +402,7 @@ void VideoStreamPlayer::run()
 
             // 데이터 읽기
             while (buffer.size() < bodySize) {
-                buffer.append(tcpSocket->read(bodySize - buffer.size()));
+                buffer.append(sslSocket->read(bodySize - buffer.size()));
             }
 
             QByteArray encryptedData = buffer.left(bodySize);

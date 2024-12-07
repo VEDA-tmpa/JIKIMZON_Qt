@@ -21,6 +21,7 @@
 #include <QDataStream>
 #include <QList>
 #include <QTime>
+#include <QSslSocket>
 
 #include <opencv2/opencv.hpp>
 
@@ -43,7 +44,7 @@ public:
     VideoStreamPlayer() = default;
     ~VideoStreamPlayer();
 
-    void startStream(QTcpSocket *socket, int frameWidth, int frameHeight, int frameSize);
+    void startStream(QSslSocket *socket, int frameWidth, int frameHeight, int frameSize);
     void stopStream();
     void pauseStream();
     void resumeStream();
@@ -65,7 +66,9 @@ protected:
     void run() override;
 
 private:
-    QTcpSocket *tcpSocket;
+    //QTcpSocket* tcpSocket;
+    QSslSocket* sslSocket;
+
     bool stop;
     bool pause;  // 일시 정지 상태
 
