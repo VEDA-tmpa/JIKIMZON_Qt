@@ -50,9 +50,32 @@ MainWindow::MainWindow(QWidget *parent)
         ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
+    // SSL 인증서 설정
+    sslConfig = QSslConfiguration::defaultConfiguration();
+    sslConfig.setProtocol(QSsl::TlsV1_3);
+    sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
+
+    QFile certFile("/home/sihyeon/workspace/JIKIMZON_Qt/test_gui/server.cert");
+    if (!certFile.open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open certificate file";
+    } 
+    else {
+        QSslCertificate selfSignedCert(&certFile, QSsl::Pem);
+        if (selfSignedCert.isNull()) {
+            qDebug() << "Failed to parse certificate";
+        }
+        else {
+            qDebug() << "Certificate loaded successfully";
+            sslConfig.setCaCertificates({selfSignedCert});
+            frameSSLSocket->setSslConfiguration(sslConfig);
+            jsonSSLSocket->setSslConfiguration(sslConfig);
+        }
+    }
+
     // 비디오 SSL 소켓 연결
-    frameSSLSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    frameSSLSocket->setPeerVerifyMode(QSslSocket::VerifyNone);
     frameSSLSocket->ignoreSslErrors();
+    frameSSLSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     connect(frameSSLSocket, &QSslSocket::encrypted, this, [&]() {
         qDebug() << "Frame SSL connection established.";
     });
@@ -63,13 +86,18 @@ MainWindow::MainWindow(QWidget *parent)
         frameSSLSocket->ignoreSslErrors();
     });
     
-    frameSSLSocket->connectToHostEncrypted("192.168.50.14", 1234);
-    if (!frameSSLSocket->waitForEncrypted()) {
+    frameSSLSocket->connectToHostEncrypted("192.168.35.221", 1234);
+    if (!frameSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << frameSSLSocket->errorString();
     }
 
     //json ssl 소켓 연결
+    jsonSSLSocket->setPeerVerifyMode(QSslSocket::VerifyNone);
+    jsonSSLSocket->ignoreSslErrors();
     jsonSSLSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    connect(jsonSSLSocket, &QSslSocket::encrypted, this, [&]() {
+        qDebug() << "JSON SSL connection established.";
+    });
     connect(jsonSSLSocket, QOverload<const QList<QSslError>&>::of(&QSslSocket::sslErrors), 
                      [&](const QList<QSslError> &errors) {
         for (const auto &error : errors)
@@ -77,16 +105,12 @@ MainWindow::MainWindow(QWidget *parent)
         jsonSSLSocket->ignoreSslErrors();
     });
 
-    connect(jsonSSLSocket, &QSslSocket::encrypted, this, [&]() {
-        qDebug() << "JSON SSL connection established.";
-    });
-
-    jsonSSLSocket->connectToHostEncrypted("192.168.50.14", 4321);
-    if (!jsonSSLSocket->waitForEncrypted()) {
+    jsonSSLSocket->connectToHostEncrypted("192.168.35.221", 4321);
+    if (!jsonSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << jsonSSLSocket->errorString();
     }
     connect(jsonSSLSocket, &QSslSocket::readyRead, this, &MainWindow::onJsonReadyRead);
-   
+    
 
     //비디오 스트림 버튼 연결
     ui->pauseButton->setIcon(QIcon(":/icon/pause.png"));

@@ -18,4 +18,7 @@
         <file>Moon2.png</file>
         <file>Sun2.png</file>
     </qresource>
+    <qresource prefix="/certs">
+        <file>server.cert</file>
+    </qresource>
 </RCC>

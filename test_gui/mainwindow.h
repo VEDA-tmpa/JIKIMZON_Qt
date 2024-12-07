@@ -51,6 +51,7 @@ private:
     // QTcpSocket *jsonSocket;
     QSslSocket *frameSSLSocket;
     QSslSocket *jsonSSLSocket;
+    QSslConfiguration sslConfig;
 
     VideoStreamPlayer *player;
 

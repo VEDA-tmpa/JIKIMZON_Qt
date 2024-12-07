@@ -376,11 +376,14 @@ void VideoStreamPlayer::run()
                     emit frameReady(frame);
                 }
             }
-            msleep(100);
+            msleep(150);
             continue;
         }
 
         if (sslSocket && sslSocket->bytesAvailable() > 0) {
+            
+            buffer.clear();
+            
             // 헤더 읽기
             while (buffer.size() < sizeof(HeaderStruct)) {
                 buffer.append(sslSocket->read(sizeof(HeaderStruct) - buffer.size()));
@@ -499,7 +502,7 @@ void VideoStreamPlayer::run()
                 }
             }
         }
-        msleep(100);
+        msleep(150);
     }
 
     // FFmpeg 리소스 해제
