@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QStandardItemModel>
+#include <QSslSocket>
 #include <QTimer>
 #include <QDateTime>
 #include <QNetworkAccessManager>
@@ -46,7 +47,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    
     // QTcpSocket *tcpSocket;
     // QTcpSocket *jsonSocket;
     QSslSocket *frameSSLSocket;

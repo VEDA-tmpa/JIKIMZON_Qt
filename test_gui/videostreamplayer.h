@@ -66,7 +66,6 @@ protected:
     void run() override;
 
 private:
-    //QTcpSocket *tcpSocket;
     QSslSocket *sslSocket;
     bool stop;
     bool pause;  // 일시 정지 상태

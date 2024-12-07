@@ -14,6 +14,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSslSocket>
 
 #pragma pack(push, 1)
 struct HeaderStruct {
