@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
+#include <QtMath> // qRound 사용을 위해 필요
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,6 +27,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/resources/icon.png")); // 리소스 경로에 있는 아이콘 추가
     this->setWindowTitle("JIKIM-ZON"); // 타이틀바 이름 설정
+
+    // 시간 표시 설정
+    setupTimeDisplay();
+
+    // 네트워크 상태 확인
+    updateNetworkStatus();
+    QTimer *networkTimer = new QTimer(this);
+    connect(networkTimer, &QTimer::timeout, this, &MainWindow::updateNetworkStatus);
+    networkTimer->start(5000);  // 5초마다 네트워크 상태 확인
+
+    setupWeatherDisplay();
 
     // 초기 모드는 Light Mode로 설정
     setLightMode();
@@ -286,8 +298,6 @@ QTabWidget::pane {
 
     // metadataDisplay에만 개별 스타일 적용
     ui->metaDataContainer->setStyleSheet("background-color: #f5f5f5; color: #000000; border: 1px solid #e0e0e0;");
-
-
 }
 
 void MainWindow::setDarkMode() {
@@ -401,6 +411,113 @@ QTabWidget::pane {
     // // metadataDisplay에만 개별 스타일 적용
     ui->metaDataContainer->setStyleSheet("background-color: #3b3b3b; color: #000000; border: 1px solid #444444;");
 }
+
+// // 시간 표시 업데이트 함수
+// void MainWindow::updateTime() {
+//     QString currentTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm A"); // 년-월-일 시:분 AM/PM
+//     ui->timeLabel->setText(currentTime);
+// }
+// 시간 및 날짜 표시 업데이트 함수
+void MainWindow::updateTime() {
+    QDateTime now = QDateTime::currentDateTime();
+
+    // 한국어 요일 표시를 위해 QLocale 설정
+    QLocale koreanLocale(QLocale::Korean, QLocale::SouthKorea);
+    QString currentDate = koreanLocale.toString(now, "yyyy년 MM월 dd일 ddd"); // 한국어 날짜와 요일
+    QString currentTime = now.toString("hh:mm A"); // 시간 형식 (AM/PM 포함)
+
+    ui->timeLabel->setText(QString("%1 %2").arg(currentDate).arg(currentTime));
+}
+
+// QTimer로 주기적으로 업데이트
+void MainWindow::setupTimeDisplay() {
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
+    timer->start(1000);  // 1초마다 업데이트
+}
+
+// 네트워크 상태 확인 함수
+void MainWindow::updateNetworkStatus() {
+    // tcpSocket 상태 확인
+    if (tcpSocket->state() == QAbstractSocket::ConnectedState) {
+        ui->networkStatusLabel->setText(
+            "<span style='color:black;'>연결상태:</span> <span style='color:green; font-weight:bold;'>정상</span>");
+    } else {
+        ui->networkStatusLabel->setText(
+            "<span style='color:black;'>연결상태:</span> <span style='color:red; font-weight:bold;'>끊김</span>");
+    }
+}
+
+void MainWindow::updateWeather() {
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QString apiKey = "84c00c8cadfb7cbf0f63220a6a738d25";
+    QString city = "Seoul";
+    QString url = QString("http://api.openweathermap.org/data/2.5/weather?q=%1&appid=%2&units=metric").arg(city, apiKey);
+
+    QNetworkRequest request(url);
+    QNetworkReply *reply = manager->get(request);
+
+    connect(reply, &QNetworkReply::finished, [reply, this]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+            QJsonObject obj = doc.object();
+
+            double temp = obj["main"].toObject()["temp"].toDouble();
+            int roundedTemp = qRound(temp);
+            QString description = obj["weather"].toArray()[0].toObject()["description"].toString();
+            QString iconCode = obj["weather"].toArray()[0].toObject()["icon"].toString();
+
+            // QMap을 사용하여 한국어로 변환
+            QMap<QString, QString> weatherTranslation = {
+                {"clear sky", "맑음"},
+                {"few clouds", "구름 조금"},
+                {"scattered clouds", "흩어진 구름"},
+                {"broken clouds", "짙은 구름"},
+                {"shower rain", "소나기"},
+                {"rain", "비"},
+                {"thunderstorm", "뇌우"},
+                {"snow", "눈"},
+                {"mist", "안개"}
+            };
+            description = weatherTranslation.value(description, "알 수 없음");
+
+            // 아이콘 다운로드 및 텍스트/아이콘 통합
+            QString iconUrl = QString("http://openweathermap.org/img/wn/%1@2x.png").arg(iconCode);
+            QNetworkAccessManager *iconManager = new QNetworkAccessManager(this);
+            QNetworkRequest iconRequest(iconUrl);
+            QNetworkReply *iconReply = iconManager->get(iconRequest);
+
+            connect(iconReply, &QNetworkReply::finished, [iconReply, this, roundedTemp, description]() {
+                if (iconReply->error() == QNetworkReply::NoError) {
+                    QByteArray iconData = iconReply->readAll();
+                    QString base64Data = QString::fromLatin1(iconData.toBase64());
+                    QString html = QString(
+                                       "<html><body>"
+                                       "<img src='data:image/png;base64,%1' width='32' height='32' style='vertical-align:middle;'>"
+                                       " 날씨: %2°C, %3"
+                                       "</body></html>"
+                                       ).arg(base64Data).arg(roundedTemp).arg(description);
+
+                    ui->weatherLabel->setText(html);
+                } else {
+                    ui->weatherLabel->setText(QString("날씨: %1°C, %2").arg(roundedTemp).arg(description));
+                }
+                iconReply->deleteLater();
+            });
+        } else {
+            ui->weatherLabel->setText("날씨 정보를 가져올 수 없음");
+        }
+        reply->deleteLater();
+    });
+}
+
+void MainWindow::setupWeatherDisplay() {
+    updateWeather();  // 처음 실행 시 날씨 표시
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::updateWeather);
+    timer->start(60000);  // 1분마다 날씨 갱신
+}
+
 
 MainWindow::~MainWindow()
 {

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -42,9 +42,9 @@
     <property name="geometry">
      <rect>
       <x>730</x>
-      <y>70</y>
+      <y>60</y>
       <width>411</width>
-      <height>681</height>
+      <height>311</height>
      </rect>
     </property>
    </widget>
@@ -58,14 +58,10 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0" colspan="4">
-      <widget class="QLabel" name="videoLabel">
-       <property name="styleSheet">
-        <string notr="true">QLabel {
-        background:  rgb(0, 0, 0);  /* 배경 투명 transparent */
-        border: 1px solid black;   /* 얇은 검은색 테두리 */
-        padding: 5px;              /* 테두리와 이미지 간의 간격 */
-    }</string>
+     <item row="2" column="3">
+      <widget class="QPushButton" name="forwardButton">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="text">
         <string/>
@@ -82,8 +78,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
-      <widget class="QPushButton" name="forwardButton">
+     <item row="2" column="1">
+      <widget class="QPushButton" name="pauseButton">
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
@@ -102,10 +98,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pauseButton">
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
+     <item row="0" column="0" colspan="4">
+      <widget class="QLabel" name="videoLabel">
+       <property name="styleSheet">
+        <string notr="true">QLabel {
+        background:  rgb(0, 0, 0);  /* 배경 투명 transparent */
+        border: 1px solid black;   /* 얇은 검은색 테두리 */
+        padding: 5px;              /* 테두리와 이미지 간의 간격 */
+    }</string>
        </property>
        <property name="text">
         <string/>
@@ -293,6 +293,63 @@
     <property name="autoDefault">
      <bool>false</bool>
     </property>
+   </widget>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>390</y>
+      <width>411</width>
+      <height>361</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="page_7"/>
+    <widget class="QWidget" name="page_8"/>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>691</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,4,4">
+     <property name="spacing">
+      <number>-1</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="timeLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="weatherLabel">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="networkStatusLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
