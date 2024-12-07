@@ -15,5 +15,7 @@
         <file>pause.png</file>
         <file>play.png</file>
         <file>backward.png</file>
+        <file>Moon2.png</file>
+        <file>Sun2.png</file>
     </qresource>
 </RCC>
