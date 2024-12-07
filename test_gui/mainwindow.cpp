@@ -20,8 +20,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , tcpSocket(new QTcpSocket(this))  // 소켓 초기화
-    , jsonSocket(new QTcpSocket(this))
+    , frameSSLSocket(new QSslSocket(this))  // 소켓 초기화
+    , jsonSSLSocket(new QSslSocket(this))
     , player(new VideoStreamPlayer(this))  // 플레이어 초기화
 {
     ui->setupUi(this);
@@ -45,19 +45,48 @@ MainWindow::MainWindow(QWidget *parent)
     //테마 버튼
     connect(ui->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
 
-    // 비디오 TCP 소켓 연결
-    tcpSocket->connectToHost("192.168.50.14", 1234);
-    tcpSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-
     // VideoStreamPlayer와 UI 연결
     connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
         ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
-    //json tcp 소켓
-    jsonSocket->connectToHost("192.168.50.14", 4321);
-    // JSON 데이터 수신 처리
-    connect(jsonSocket, &QTcpSocket::readyRead, this, &MainWindow::onJsonReadyRead);
+    // 비디오 SSL 소켓 연결
+    frameSSLSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    frameSSLSocket->ignoreSslErrors();
+    connect(frameSSLSocket, &QSslSocket::encrypted, this, [&]() {
+        qDebug() << "Frame SSL connection established.";
+    });
+    connect(frameSSLSocket, QOverload<const QList<QSslError>&>::of(&QSslSocket::sslErrors), 
+                     [&](const QList<QSslError> &errors) {
+        for (const auto &error : errors)
+            qDebug() << "SSL Error:" << error.errorString();
+        frameSSLSocket->ignoreSslErrors();
+    });
+    
+    frameSSLSocket->connectToHostEncrypted("192.168.50.14", 1234);
+    if (!frameSSLSocket->waitForEncrypted()) {
+        qDebug() << "Error:" << frameSSLSocket->errorString();
+    }
+
+    //json ssl 소켓 연결
+    jsonSSLSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    connect(jsonSSLSocket, QOverload<const QList<QSslError>&>::of(&QSslSocket::sslErrors), 
+                     [&](const QList<QSslError> &errors) {
+        for (const auto &error : errors)
+            qDebug() << "SSL Error:" << error.errorString();
+        jsonSSLSocket->ignoreSslErrors();
+    });
+
+    connect(jsonSSLSocket, &QSslSocket::encrypted, this, [&]() {
+        qDebug() << "JSON SSL connection established.";
+    });
+
+    jsonSSLSocket->connectToHostEncrypted("192.168.50.14", 4321);
+    if (!jsonSSLSocket->waitForEncrypted()) {
+        qDebug() << "Error:" << jsonSSLSocket->errorString();
+    }
+    connect(jsonSSLSocket, &QSslSocket::readyRead, this, &MainWindow::onJsonReadyRead);
+   
 
     //비디오 스트림 버튼 연결
     ui->pauseButton->setIcon(QIcon(":/icon/pause.png"));
@@ -75,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->forwardButton, &QPushButton::clicked, player, &VideoStreamPlayer::goForward);
 
     // 스트림 시작
-    player->startStream(tcpSocket, 1280, 720, 1280 * 720 * 3);
+    player->startStream(frameSSLSocket, 1280, 720, 1280 * 720 * 3);
 
     // MetaDataDisplay 생성
     metaData = new MetaDataDisplay(this);
@@ -439,7 +468,7 @@ void MainWindow::setupTimeDisplay() {
 // 네트워크 상태 확인 함수
 void MainWindow::updateNetworkStatus() {
     // tcpSocket 상태 확인
-    if (tcpSocket->state() == QAbstractSocket::ConnectedState) {
+    if (frameSSLSocket->state() == QAbstractSocket::ConnectedState) {
         ui->networkStatusLabel->setText(
             "<span style='color:black;'>연결상태:</span> <span style='color:green; font-weight:bold;'>정상</span>");
     } else {
@@ -528,7 +557,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onJsonReadyRead()
 {
-    QByteArray jsonData = jsonSocket->readAll();
+    QByteArray jsonData = jsonSSLSocket->readAll();
 
     // 디버깅: 수신된 JSON 데이터 출력
     qDebug() << "Received JSON:" << jsonData;

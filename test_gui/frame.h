@@ -4,9 +4,14 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include <opencv2/opencv.hpp>  // OpenCV Mat 포함
+#include <opencv2/opencv.hpp>
 
-#include <arpa/inet.h>
+
+#ifdef _WIN32
+    #include <winsock2.h>
+#else
+    #include <arpa/inet.h>
+#endif
 
 namespace frame {
 

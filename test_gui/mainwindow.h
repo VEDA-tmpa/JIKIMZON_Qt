@@ -10,6 +10,7 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSslSocket>
 
 #include "videostreamplayer.h"
 #include "metadatadisplay.h"
@@ -45,8 +46,12 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QTcpSocket *tcpSocket;
-    QTcpSocket *jsonSocket;
+    
+    // QTcpSocket *tcpSocket;
+    // QTcpSocket *jsonSocket;
+    QSslSocket *frameSSLSocket;
+    QSslSocket *jsonSSLSocket;
+
     VideoStreamPlayer *player;
 
     MetaDataDisplay *metaData;
