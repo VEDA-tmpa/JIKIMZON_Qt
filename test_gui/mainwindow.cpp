@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "metadatadisplay.h"
+#include "dashboardwidget.h"
 #include "frame.h"
 #include <QLayout>
 #include <QPalette>
@@ -160,6 +161,24 @@ MainWindow::MainWindow(QWidget *parent)
     //검색 버튼 클릭 시 슬롯 연결
     connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
     qDebug() << "검색 버튼 시그널 연결 완료";
+
+    connect(ui->leftArrowButton, &QPushButton::clicked, this, &MainWindow::onLeftArrowClicked);
+    connect(ui->rightArrowButton, &QPushButton::clicked, this, &MainWindow::onRightArrowClicked);
+
+    // Dashboard 생성 및 추가
+    dashboard = new DashboardWidget(this);
+
+    if (ui->dashboardContainer->layout()) {
+        ui->dashboardContainer->layout()->addWidget(dashboard);
+    } else {
+        QVBoxLayout *layout = new QVBoxLayout(ui->dashboardContainer);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->addWidget(dashboard);
+        ui->dashboardContainer->setLayout(layout);
+    }
+    connect(player, &VideoStreamPlayer::dashobjectDetected,
+            dashboard, &DashboardWidget::updateDetectedObjects);
+
 }
 
 void MainWindow::on_searchButton_clicked() {
@@ -590,4 +609,18 @@ void MainWindow::onJsonReadyRead()
 
     // VideoStreamPlayer의 데이터 처리 함수 호출
     player->parseObjectDetectionData(jsonData);
+}
+
+void MainWindow::onLeftArrowClicked()
+{
+    // 이전 페이지로 이동
+    int currentIndex = ui->stackedWidget->currentIndex();
+    ui->stackedWidget->setCurrentIndex((currentIndex - 1 + ui->stackedWidget->count()) % ui->stackedWidget->count());
+}
+
+void MainWindow::onRightArrowClicked()
+{
+    // 다음 페이지로 이동
+    int currentIndex = ui->stackedWidget->currentIndex();
+    ui->stackedWidget->setCurrentIndex((currentIndex + 1) % ui->stackedWidget->count());
 }

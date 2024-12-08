@@ -9,6 +9,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    calendarwidget.cpp \
+    dashboardwidget.cpp \
     decryptor.cpp \
     deserializer.cpp \
     eventlogmanager.cpp \
@@ -18,6 +20,8 @@ SOURCES += \
     videostreamplayer.cpp
 
 HEADERS += \
+    calendarwidget.h \
+    dashboardwidget.h \
     frame.h \
     decryptor.h \
     deserializer.h \
@@ -27,6 +31,8 @@ HEADERS += \
     videostreamplayer.h
 
 FORMS += \
+    calendarwidget.ui \
+    dashboardwidget.ui \
     mainwindow.ui \
     metadatadisplay.ui
 

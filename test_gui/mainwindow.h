@@ -15,7 +15,8 @@
 
 #include "videostreamplayer.h"
 #include "metadatadisplay.h"
-#include "eventlogmanager.h" // EventLogManager 헤더 포함
+#include "eventlogmanager.h"
+#include "dashboardwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -45,6 +46,10 @@ private slots:
     void updateWeather();
     void setupWeatherDisplay();
 
+    //스택위젯
+    void onLeftArrowClicked();
+    void onRightArrowClicked();
+
 private:
     Ui::MainWindow *ui;
     // QTcpSocket *tcpSocket;
@@ -56,6 +61,7 @@ private:
     VideoStreamPlayer *player;
 
     MetaDataDisplay *metaData;
+    DashboardWidget *dashboard;
 
     EventLogManager *eventLogManager; // EventLogManager 포인터 추가
     QStandardItemModel *model; // QTableView에 사용할 모델

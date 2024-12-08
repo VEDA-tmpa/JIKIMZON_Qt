@@ -552,6 +552,8 @@ void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
         QString location = QString("위치: (%1, %2)").arg(x).arg(y);
         emit objectDetected(timestamp, location, className); // 메타데이터 표시 업데이트
 
+        emit dashobjectDetected(frameId, timestamp, className);
+
         qDebug() << "detected object name: " << className;
     }
     // EventLogManager를 통해 이벤트 로그 저장
