@@ -69,6 +69,10 @@ private:
     QStandardItemModel *model; // QTableView에 사용할 모델
 
     bool isNightMode; // 현재 모드 상태 (낮/밤)
+
+    float brightness = 0.0f;
+    float contrast = 1.0f;
+    float saturation = 1.0f;
 };
 
 #endif // MAINWINDOW_H

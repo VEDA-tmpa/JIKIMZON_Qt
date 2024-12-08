@@ -58,6 +58,11 @@ public:
     void addOverlayToFrame(QTime time, QImage &image);
     void setEventLogManager(EventLogManager *manager); // Setter 추가
 
+    //비디오 설정(밝기, 대비, 채도)
+    QImage adjustBrightness(QImage image, int value);
+    QImage adjustContrast(QImage image, int value);
+    QImage adjustSaturation(QImage image, int value);
+
 signals:
     void frameReady(const QImage &frame);
     void objectDetected(const QString &timestamp, const QString &location, const QString &objectType);

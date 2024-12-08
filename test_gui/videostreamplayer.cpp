@@ -513,6 +513,56 @@ void VideoStreamPlayer::run()
     avcodec_free_context(&codecContext);
 }
 
+QImage VideoStreamPlayer::adjustBrightness(QImage image, int value)
+{
+    // 밝기 값에 따른 조정 로직
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QColor color = image.pixelColor(x, y);
+            color.setRed(qBound(0, color.red() + value, 255));
+            color.setGreen(qBound(0, color.green() + value, 255));
+            color.setBlue(qBound(0, color.blue() + value, 255));
+            image.setPixelColor(x, y, color);
+        }
+    }
+    return image;
+}
+
+QImage VideoStreamPlayer::adjustContrast(QImage image, int value)
+{
+    // 대비 값에 따른 조정 로직
+    float factor = (259 * (value + 255)) / (255 * (259 - value)); // 대비 공식
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QColor color = image.pixelColor(x, y);
+            int red = qBound(0.0f, factor * (color.red() - 128) + 128.0f, 255.0f);
+            int green = qBound(0.0f, factor * (color.green() - 128) + 128.0f, 255.0f);
+            int blue = qBound(0.0f, factor * (color.blue() - 128) + 128.0f, 255.0f);
+            color.setRed(red);
+            color.setGreen(green);
+            color.setBlue(blue);
+            image.setPixelColor(x, y, color);
+        }
+    }
+    return image;
+}
+
+QImage VideoStreamPlayer::adjustSaturation(QImage image, int value)
+{
+    // 채도 값에 따른 조정 로직
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QColor color = image.pixelColor(x, y);
+            int average = (color.red() + color.green() + color.blue()) / 3;
+            color.setRed(qBound(0, average + (color.red() - average) * value / 100, 255));
+            color.setGreen(qBound(0, average + (color.green() - average) * value / 100, 255));
+            color.setBlue(qBound(0, average + (color.blue() - average) * value / 100, 255));
+            image.setPixelColor(x, y, color);
+        }
+    }
+    return image;
+}
+
 void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
 {
     qDebug() << "parseObjectDetectionData";

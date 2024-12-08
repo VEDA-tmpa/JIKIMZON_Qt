@@ -51,6 +51,40 @@ MainWindow::MainWindow(QWidget *parent)
         ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
+    // connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
+    //     // 비디오 스트림에서 받은 원본 프레임을 밝기, 대비, 채도 조정 함수에 전달하여 수정
+    //     QImage adjustedFrame = frame; // 프레임을 그대로 복사하여 시작
+    //     adjustedFrame = player->adjustBrightness(adjustedFrame, brightness);
+    //     adjustedFrame = player->adjustContrast(adjustedFrame, contrast);
+    //     adjustedFrame = player->adjustSaturation(adjustedFrame, saturation);
+
+    //     // 수정된 프레임을 비디오 위젯에 표시
+    //     ui->videoLabel->setPixmap(QPixmap::fromImage(adjustedFrame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+    // });
+
+    // ui->brightnessSlider->setMinimum(0);
+    // ui->brightnessSlider->setMaximum(100);
+    // ui->brightnessSlider->setValue(50); // 초기값 설정
+
+    // ui->contrastSlider->setMinimum(0);
+    // ui->contrastSlider->setMaximum(100);
+    // ui->contrastSlider->setValue(50); // 초기값 설정
+
+    // ui->saturationSlider->setMinimum(0);
+    // ui->saturationSlider->setMaximum(100);
+    // ui->saturationSlider->setValue(50); // 초기값 설정
+
+    // // 슬라이더 값이 변경될 때
+    // connect(ui->brightnessSlider, &QSlider::valueChanged, this, [&](int value) {
+    //     brightness = value / 100.0f; // 0.0 ~ 1.0 범위로 변환
+    // });
+    // connect(ui->contrastSlider, &QSlider::valueChanged, this, [&](int value) {
+    //     contrast = value / 100.0f; // 0.0 ~ 1.0 범위로 변환
+    // });
+    // connect(ui->saturationSlider, &QSlider::valueChanged, this, [&](int value) {
+    //     saturation = value / 100.0f; // 0.0 ~ 1.0 범위로 변환
+    // });
+
     // SSL 인증서 설정
     sslConfig = QSslConfiguration::defaultConfiguration();
     sslConfig.setProtocol(QSsl::TlsV1_3);
@@ -374,31 +408,6 @@ QTabWidget::pane {
     border: 1px solid #cccccc;
     border-top: none; /* 탭 아래쪽 경계 제거 */
 }
-/* QCalendarWidget */
-    QCalendarWidget {
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        color: #000000;
-    }
-
-    QCalendarWidget QAbstractItemView {
-        selection-background-color: #d3e0fc;
-        selection-color: #000000;
-    }
-
-    QCalendarWidget QTableView {
-        background-color: #ffffff;
-    }
-
-    QCalendarWidget QHeaderView {
-        background-color: #f5f5f5;
-        border: none;
-    }
-
-    QCalendarWidget QTableView::item {
-        padding: 5px;
-        border: 1px solid #f0f0f0;
-    }
   )";
      qApp->setStyleSheet(lightModeStyle);
 
@@ -511,32 +520,6 @@ QTabWidget::pane {
     border: 1px solid #444444;
     border-top: none; /* 탭 아래쪽 경계 제거 */
 }
-
-  /* QCalendarWidget */
-    QCalendarWidget {
-        background-color: #2b2b2b;
-        border: 1px solid #444444;
-        color: #ffffff;
-    }
-
-    QCalendarWidget QAbstractItemView {
-        selection-background-color: #555555;
-        selection-color: #ffffff;
-    }
-
-    QCalendarWidget QTableView {
-        background-color: #2b2b2b;
-    }
-
-    QCalendarWidget QHeaderView {
-        background-color: #3b3b3b;
-        border: none;
-    }
-
-    QCalendarWidget QTableView::item {
-        padding: 5px;
-        border: 1px solid #444444;
-    }
     )";
     qApp->setStyleSheet(darkModeStyle);
 
