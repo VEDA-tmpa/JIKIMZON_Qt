@@ -3,12 +3,28 @@
 
 #include <QDebug>
 #include <QPropertyAnimation> // 애니메이션을 위한 헤더 추가
+#include <QGraphicsItem>
 
 MetaDataDisplay::MetaDataDisplay(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MetaDataDisplay)
 {
     ui->setupUi(this);
+
+    // 차트 초기화
+    QChart *chart = new QChart();
+    chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    // 새로운 QVBoxLayout 생성
+    QVBoxLayout *chartLayout = new QVBoxLayout();
+    chartLayout->addWidget(chartView);
+
+    // 기존 UI에 새 레이아웃 추가
+    ui->chartContainer->setLayout(chartLayout);
+
+    // 차트 업데이트
+    updateChart();
 }
 
 MetaDataDisplay::~MetaDataDisplay()
@@ -17,6 +33,7 @@ MetaDataDisplay::~MetaDataDisplay()
 }
 
 void MetaDataDisplay::updateMetaData(const QString &time, const QString &location, const QString &objectType) {
+
     qDebug() << "MetaDataDisplay::updateMetaData";
 
     // 시간 문자열 추출
@@ -71,25 +88,48 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
         ui->iconLabel->setAlignment(Qt::AlignCenter);
     }
 
-    // 테두리 색상 적용 (QSS 사용)
-    QString style = QString(
-                        "QLabel {"
-                        "   background-color: #f0f0f0;"
-                        "   border: 3px solid %1;"  // 테두리 색상
-                        "   border-radius: 8px;"     // 모서리 둥글게 설정
-                        "   padding: 5px;"           // 패딩 추가
-                        "}").arg(borderColor);
+    // // 테두리 색상 적용 (QSS 사용)
+    // QString style = QString(
+    //                     "QLabel {"
+    //                     "   background-color: #f0f0f0;"
+    //                     "   border: 3px solid %1;"  // 테두리 색상
+    //                     "   border-radius: 8px;"     // 모서리 둥글게 설정
+    //                     "   padding: 5px;"           // 패딩 추가
+    //                     "}").arg(borderColor);
 
-    ui->iconLabel->setStyleSheet(style); // 스타일 적용
+    // ui->iconLabel->setStyleSheet(style); // 스타일 적용
 
-    // 애니메이션 추가
-    QPropertyAnimation *animation = new QPropertyAnimation(ui->iconLabel, "geometry", this);
-    animation->setDuration(300); // 애니메이션 지속 시간 (밀리초)
-    animation->setKeyValueAt(0, ui->iconLabel->geometry()); // 초기 상태
-    animation->setKeyValueAt(0.5, ui->iconLabel->geometry().adjusted(-10, -10, 10, 10)); // 확대 상태
-    animation->setKeyValueAt(1, ui->iconLabel->geometry()); // 원래 상태로 돌아옴
-    animation->setEasingCurve(QEasingCurve::OutBounce); // 스프링 효과
-    animation->start(QAbstractAnimation::DeleteWhenStopped); // 애니메이션 실행
+    // 테두리 색상 애니메이션
+    QPropertyAnimation *borderAnimation = new QPropertyAnimation(ui->iconLabel, "styleSheet", this);
+    borderAnimation->setDuration(500); // 애니메이션 지속 시간 (밀리초)
+
+    // 초기 상태
+    QString originalStyle = QString(
+                                "QLabel {"
+                                "   background-color: #f0f0f0;"
+                                "   border: 3px solid %1;"  // 테두리 색상
+                                "   border-radius: 8px;"
+                                "   padding: 5px;"
+                                "}").arg(borderColor);
+
+    // 애니메이션 키프레임
+    QString highlightStyle = QString(
+                                 "QLabel {"
+                                 "   background-color: #f0f0f0;"
+                                 "   border: 6px solid %1;"  // 더 두꺼운 테두리
+                                 "   border-radius: 10px;"
+                                 "   padding: 5px;"
+                                 "}").arg(borderColor);
+
+    borderAnimation->setKeyValueAt(0, originalStyle); // 초기 상태
+    borderAnimation->setKeyValueAt(0.5, highlightStyle); // 강조 상태
+    borderAnimation->setKeyValueAt(1, originalStyle); // 원래 상태로 복구
+
+    borderAnimation->start(QAbstractAnimation::DeleteWhenStopped); // 애니메이션 실행
+
+    // connect(borderAnimation, &QPropertyAnimation::finished, [this, originalStyle]() {
+    //     ui->iconLabel->setStyleSheet(originalStyle);
+    // });
 
     // 이벤트 로그 추가 (시간 - 객체 종류 - 위치)
     // ui->eventLog->addItem(time + " - " + objectType + " - " + location);
@@ -109,8 +149,90 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
     }
 
     // 로그 메시지 생성
-    QString logMessage = QString("%1   %2 %3 (%4)").arg(time, emoji, objectType, location);
+    QString logMessage = QString("%1   %2 %3 (%4)").arg(timeOnly, emoji, objectType, location);
 
     // QListWidget에 추가
     ui->eventLog->addItem(logMessage);
+
+    // 객체 수 업데이트
+    objectCounts[objectType]++;
+}
+
+void MetaDataDisplay::updateChart()
+{
+    qDebug() << "Updating chart. Object counts:" << objectCounts;
+
+    // objectCounts의 내용 확인
+    for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
+        qDebug() << "Category:" << it.key() << "Count:" << it.value();
+    }
+
+    // 테스트를 위한 예시 데이터
+    objectCounts.clear();  // 기존 데이터 초기화
+    objectCounts["biodegradable"] = 10;  // 생분해성 10개
+    objectCounts["cardboard"] = 5;       // 종이박스 5개
+    objectCounts["glass"] = 7;           // 유리 7개
+    objectCounts["metal"] = 3;           // 금속 3개
+    objectCounts["paper"] = 8;           // 종이 8개
+    objectCounts["plastic"] = 12;        // 플라스틱 12개
+
+    // 도넛 그래프 시리즈 설정
+    QPieSeries *series = new QPieSeries();
+
+    QMap<QString, QString> emojis;
+    QMap<QString, QColor> colors;
+
+    // 이모티콘과 색상 설정
+    emojis["biodegradable"] = "🌱";
+    emojis["cardboard"] = "📦";
+    emojis["glass"] = "🍾";
+    emojis["metal"] = "🔩";
+    emojis["paper"] = "📄";
+    emojis["plastic"] = "🧴";
+
+    colors["biodegradable"] = QColor(138, 201, 38);
+    colors["cardboard"] = QColor(255, 89, 94);
+    colors["glass"] = QColor(25, 130, 196);
+    colors["metal"] = QColor(251, 133, 0);
+    colors["paper"] = QColor(255, 202, 58);
+    colors["plastic"] = QColor(106, 76, 147);
+
+    // 탐지된 객체에 대해 비율을 도넛 그래프에 추가
+    int totalCount = 0;
+    for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
+        totalCount += it.value();
+    }
+
+    for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
+        QString category = it.key();
+        int count = it.value();
+
+        // 객체에 대한 이모티콘을 설정
+        QString label = emojis.value(category) + " " + QString::number(count);
+
+        // 도넛 그래프에 추가
+        QPieSlice *slice = series->append(label, count);
+        slice->setBrush(colors.value(category));  // 색상 설정
+        slice->setLabelVisible(true);  // 라벨 표시
+
+        // 비율을 라벨로 추가 (예: "카드보드 15 (25%)")
+        slice->setLabel(QString("%1 (%2%)")
+                            .arg(emojis.value(category))
+                            .arg(static_cast<int>(count * 100.0 / totalCount)));
+    }
+
+    // 기존 chartView에 새로운 차트 설정
+    QChart *chart = chartView->chart();
+    chart->removeAllSeries(); // 기존 시리즈 제거
+    chart->addSeries(series);
+    chart->setTitle("탐지된 객체 종류 비율");
+    chart->setAnimationOptions(QChart::SeriesAnimations);
+
+    // 범례 숨기기
+    chart->legend()->setVisible(false);
+
+    // 도넛 형태로 만들기 위해 가운데 비워두기
+    series->setHoleSize(0.35);  // 가운데 비율을 설정 (0.35는 기본 값)
+
+    chartView->update();  // 차트 뷰 갱신
 }

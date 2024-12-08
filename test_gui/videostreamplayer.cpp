@@ -554,7 +554,6 @@ void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
 
         qDebug() << "detected object name: " << className;
     }
-
     // EventLogManager를 통해 이벤트 로그 저장
     if (eventLogManager) {
         eventLogManager->saveEventLog(obj);

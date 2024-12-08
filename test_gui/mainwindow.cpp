@@ -147,7 +147,6 @@ MainWindow::MainWindow(QWidget *parent)
             metaData,
             &MetaDataDisplay::updateMetaData);
 
-
     eventLogManager = new EventLogManager("/Volumes/jjeongni/QtProgramming/test_gui/event_log.db", this);
     qDebug() << "EventLogManager 초기화 완료";
 
@@ -161,7 +160,6 @@ MainWindow::MainWindow(QWidget *parent)
     //검색 버튼 클릭 시 슬롯 연결
     connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
     qDebug() << "검색 버튼 시그널 연결 완료";
-
 }
 
 void MainWindow::on_searchButton_clicked() {
@@ -470,13 +468,14 @@ QTabWidget::pane {
 //     QString currentTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm A"); // 년-월-일 시:분 AM/PM
 //     ui->timeLabel->setText(currentTime);
 // }
+
 // 시간 및 날짜 표시 업데이트 함수
 void MainWindow::updateTime() {
     QDateTime now = QDateTime::currentDateTime();
 
     // 한국어 요일 표시를 위해 QLocale 설정
     QLocale koreanLocale(QLocale::Korean, QLocale::SouthKorea);
-    QString currentDate = koreanLocale.toString(now, "yyyy년 MM월 dd일 ddd"); // 한국어 날짜와 요일
+    QString currentDate = koreanLocale.toString(now, "yyyy년 MM월 dd일 dddd"); // 한국어 날짜와 요일
     QString currentTime = now.toString("hh:mm A"); // 시간 형식 (AM/PM 포함)
 
     ui->timeLabel->setText(QString("%1 %2").arg(currentDate).arg(currentTime));
@@ -546,11 +545,14 @@ void MainWindow::updateWeather() {
                     QString base64Data = QString::fromLatin1(iconData.toBase64());
                     QString html = QString(
                                        "<html><body>"
+                                       "<span style='vertical-align:middle;'>"
                                        "<img src='data:image/png;base64,%1' width='32' height='32' style='vertical-align:middle;'>"
                                        " 날씨: %2°C, %3"
+                                       "</span>"
                                        "</body></html>"
-                                       ).arg(base64Data).arg(roundedTemp).arg(description);
-
+                                       ).arg(base64Data)
+                                       .arg(roundedTemp)
+                                       .arg(description);
                     ui->weatherLabel->setText(html);
                 } else {
                     ui->weatherLabel->setText(QString("날씨: %1°C, %2").arg(roundedTemp).arg(description));
@@ -588,6 +590,4 @@ void MainWindow::onJsonReadyRead()
 
     // VideoStreamPlayer의 데이터 처리 함수 호출
     player->parseObjectDetectionData(jsonData);
-
 }
-

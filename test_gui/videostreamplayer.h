@@ -61,7 +61,6 @@ public:
 signals:
     void frameReady(const QImage &frame);
     void objectDetected(const QString &timestamp, const QString &location, const QString &objectType);
-
 protected:
     void run() override;
 
