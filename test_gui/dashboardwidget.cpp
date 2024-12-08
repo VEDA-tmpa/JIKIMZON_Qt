@@ -136,7 +136,8 @@ void DashboardWidget::updateDetectedObjects(int frameId, const QString &timestam
     }
 
     // 이상 탐지 목록 업데이트
-    updateAnomalyList(frameId, objectCounts.size(), timestamp);
+    updateAnomalyList(frameId, objectCounts["biodegradable"] + objectCounts["cardboard"] + objectCounts["glass"] +
+                                   objectCounts["metal"] + objectCounts["paper"] + objectCounts["plastic"], timestamp);
 
     // 로그 출력
     qDebug() << "Frame" << frameId << ": Detected" << objectCounts[objectType]
@@ -273,15 +274,30 @@ void DashboardWidget::setupAnomalyList()
 // 이상 탐지 업데이트
 void DashboardWidget::updateAnomalyList(int frameId, int detectedObjectCount, const QString &timestamp)
 {
+    // 10개 이상의 객체가 탐지되었을 때만 알림과 리스트에 추가
     if (detectedObjectCount >= 10) {
-        QApplication::beep();
+        QApplication::beep();  // 알림 소리
+
+        // 알림 메시지 생성
         QString anomaly = QString("Anomaly Detected! Frame %1: %2 objects at %3")
                               .arg(frameId)
                               .arg(detectedObjectCount)
                               .arg(timestamp);
 
+        // 현재 리스트에 추가할 알림을 넣음
         QStringList currentList = anomalyListModel->stringList();
         currentList.append(anomaly);
+
+        // 모델에 업데이트된 리스트 설정
         anomalyListModel->setStringList(currentList);
+
+        // 디버깅 출력
+        qDebug() << "Anomaly detected. Frame:" << frameId
+                 << "Detected object count:" << detectedObjectCount
+                 << "Timestamp:" << timestamp;
+
+        // 리스트 뷰에 새로 추가된 항목을 강제로 갱신
+        anomalyListView->scrollTo(anomalyListModel->index(currentList.size() - 1));  // 리스트 뷰에서 새로 추가된 항목으로 스크롤 이동
     }
 }
+

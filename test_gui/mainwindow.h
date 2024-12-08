@@ -17,6 +17,7 @@
 #include "metadatadisplay.h"
 #include "eventlogmanager.h"
 #include "dashboardwidget.h"
+#include "calendarwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -62,6 +63,7 @@ private:
 
     MetaDataDisplay *metaData;
     DashboardWidget *dashboard;
+    CalendarWidget *calender;
 
     EventLogManager *eventLogManager; // EventLogManager 포인터 추가
     QStandardItemModel *model; // QTableView에 사용할 모델

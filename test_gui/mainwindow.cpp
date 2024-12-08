@@ -179,6 +179,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(player, &VideoStreamPlayer::dashobjectDetected,
             dashboard, &DashboardWidget::updateDetectedObjects);
 
+    // 캘린더 생성 및 추가
+    calender = new CalendarWidget(this);
+
+    if (ui->calenderContainer->layout()) {
+        ui->calenderContainer->layout()->addWidget(calender);
+    } else {
+        QVBoxLayout *layout = new QVBoxLayout(ui->calenderContainer);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->addWidget(calender);
+        ui->calenderContainer->setLayout(layout);
+    }
 }
 
 void MainWindow::on_searchButton_clicked() {
@@ -363,6 +374,31 @@ QTabWidget::pane {
     border: 1px solid #cccccc;
     border-top: none; /* 탭 아래쪽 경계 제거 */
 }
+/* QCalendarWidget */
+    QCalendarWidget {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        color: #000000;
+    }
+
+    QCalendarWidget QAbstractItemView {
+        selection-background-color: #d3e0fc;
+        selection-color: #000000;
+    }
+
+    QCalendarWidget QTableView {
+        background-color: #ffffff;
+    }
+
+    QCalendarWidget QHeaderView {
+        background-color: #f5f5f5;
+        border: none;
+    }
+
+    QCalendarWidget QTableView::item {
+        padding: 5px;
+        border: 1px solid #f0f0f0;
+    }
   )";
      qApp->setStyleSheet(lightModeStyle);
 
@@ -475,6 +511,32 @@ QTabWidget::pane {
     border: 1px solid #444444;
     border-top: none; /* 탭 아래쪽 경계 제거 */
 }
+
+  /* QCalendarWidget */
+    QCalendarWidget {
+        background-color: #2b2b2b;
+        border: 1px solid #444444;
+        color: #ffffff;
+    }
+
+    QCalendarWidget QAbstractItemView {
+        selection-background-color: #555555;
+        selection-color: #ffffff;
+    }
+
+    QCalendarWidget QTableView {
+        background-color: #2b2b2b;
+    }
+
+    QCalendarWidget QHeaderView {
+        background-color: #3b3b3b;
+        border: none;
+    }
+
+    QCalendarWidget QTableView::item {
+        padding: 5px;
+        border: 1px solid #444444;
+    }
     )";
     qApp->setStyleSheet(darkModeStyle);
 

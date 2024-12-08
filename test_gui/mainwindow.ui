@@ -294,9 +294,21 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
-    <widget class="QWidget" name="two">
+    <widget class="QWidget" name="aa">
+     <widget class="QWidget" name="metaDataContainer" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>20</y>
+        <width>411</width>
+        <height>671</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="bb">
      <widget class="QWidget" name="dashboardContainer" native="true">
       <property name="geometry">
        <rect>
@@ -308,13 +320,13 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="one">
-     <widget class="QWidget" name="metaDataContainer" native="true">
+    <widget class="QWidget" name="cc">
+     <widget class="QWidget" name="calenderContainer" native="true">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>20</y>
-        <width>411</width>
+        <x>10</x>
+        <y>10</y>
+        <width>391</width>
         <height>671</height>
        </rect>
       </property>
