@@ -1,5 +1,6 @@
 #include "calendarwidget.h"
 #include "ui_calendarwidget.h"
+#include <QCalendarWidget>
 
 CalendarWidget::CalendarWidget(QWidget *parent)
     : QWidget(parent)
@@ -29,7 +30,6 @@ CalendarWidget::~CalendarWidget()
 
 void CalendarWidget::setupCalendar() {
     // 캘린더 위젯 생성
-    // 캘린더 위젯 생성
     QCalendarWidget *calendar = new QCalendarWidget(this);
     calendar->setFirstDayOfWeek(Qt::Sunday); // 주의 첫 번째 날을 일요일로 설정
     calendar->setGridVisible(true);  // 그리드 보기 설정
@@ -55,37 +55,14 @@ void CalendarWidget::setupCalendar() {
     } else {
         qDebug() << "setupCalendar Query failed:" << query.lastError().text();  // 쿼리 실패 시 출력
     }
+    // 캘린더에 이벤트 필터 추가
+    calendar->installEventFilter(this);
 
     // 날짜 선택 시 호출되는 슬롯 연결
     connect(calendar, &QCalendarWidget::clicked, this, &CalendarWidget::onDateSelected);
 
     // 캘린더 위젯을 레이아웃에 추가
     ui->calendarLayout->addWidget(calendar);
-    calendar->setStyleSheet(R"(
-    QCalendarWidget {
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-
-    /* QCalendarWidget 헤더 스타일 */
-    QCalendarWidget QAbstractItemView::header {
-        background-color: #f5f5f5;  /* 헤더 배경색 */
-        color: #000000;  /* 헤더 텍스트 색 */
-        font-weight: bold;  /* 텍스트 굵게 */
-        padding: 5px;
-    }
-
-    QCalendarWidget QToolTip {
-        background-color: #ffffff;
-        color: #000000;
-    }
-
-    /* 날짜 셀 스타일 */
-    QCalendarWidget QDateText {
-        color: #000000;
-    }
-)");
-
 }
 
 void CalendarWidget::setupBarGraph() {

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SliderDialog</class>
+ <widget class="QWidget" name="SliderDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>409</width>
+    <height>309</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>VideoSetting</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget{
+    background-color: rgba(255, 255, 255, 180);  /* 배경 색상과 투명도 */
+    border-radius: 15px;        /* 모서리 둥글게 */
+}</string>
+  </property>
+  <widget class="QPushButton" name="okButton">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>260</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">/* OK 버튼 스타일 */
+QPushButton#okButton {
+    background-color: #D3D3D3;  /* 밝은 회색 */
+    color: #000000;             /* 글자색 검정 */
+    font-size: 13px;            /* 글자 크기 */
+    font-weight: bold;
+    border: 1px solid #A9A9A9;  /* 진한 회색 테두리 */
+    border-radius: 5px;         /* 모서리를 살짝 둥글게 */
+    padding: 5px 15px;          /* 버튼 안쪽 여백 */
+}
+
+/* OK 버튼 hover 효과 */
+QPushButton#okButton:hover {
+    background-color: #BEBEBE;  /* 더 진한 회색 */
+}</string>
+   </property>
+   <property name="text">
+    <string>Ok</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>260</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">/* Cancel 버튼 스타일 */
+QPushButton#cancelButton {
+    background-color: #D3D3D3;  /* 밝은 회색 */
+font-size: 13px;
+font-weight: bold;
+color: rgb(255, 120, 117);
+    border: 1px solid #A9A9A9;  /* 진한 회색 테두리 */
+    border-radius: 5px;         /* 모서리를 살짝 둥글게 */
+    padding: 5px 15px;          /* 버튼 안쪽 여백 */
+}
+
+/* Cancel 버튼 hover 효과 */
+QPushButton#cancelButton:hover {
+    background-color: #BEBEBE;  /* 더 진한 회색 */
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>50</y>
+     <width>371</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="styleSheet">
+       <string notr="true">font-size: 15px;
+font-weight: bold;
+color: #333333;
+ background-color: transparent;
+    border: none; /* 테두리 제거 */</string>
+      </property>
+      <property name="text">
+       <string>밝기</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="brightnessSlider">
+      <property name="styleSheet">
+       <string notr="true"> background-color: transparent;
+    border: none; /* 테두리 제거 */</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="styleSheet">
+       <string notr="true">font-size: 15px;
+font-weight: bold;
+color: #333333;
+ background-color: transparent;
+    border: none; /* 테두리 제거 */</string>
+      </property>
+      <property name="text">
+       <string>대비</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="contrastSlider">
+      <property name="styleSheet">
+       <string notr="true"> background-color: transparent;
+    border: none; /* 테두리 제거 */</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="styleSheet">
+       <string notr="true">font-size: 15px;
+font-weight: bold;
+color: #333333;
+ background-color: transparent;
+    border: none; /* 테두리 제거 */</string>
+      </property>
+      <property name="text">
+       <string>채도</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="saturationSlider">
+      <property name="styleSheet">
+       <string notr="true"> background-color: transparent;
+    border: none; /* 테두리 제거 */</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font-size: 20px;
+font-weight: bold;
+color: #333333;
+border: none;
+background-color: transparent;</string>
+   </property>
+   <property name="text">
+    <string>Video Setting</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

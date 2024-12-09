@@ -86,16 +86,16 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
         ui->iconLabel->setAlignment(Qt::AlignCenter);
     }
 
-    // // 테두리 색상 적용 (QSS 사용)
-    // QString style = QString(
-    //                     "QLabel {"
-    //                     "   background-color: #f0f0f0;"
-    //                     "   border: 3px solid %1;"  // 테두리 색상
-    //                     "   border-radius: 8px;"     // 모서리 둥글게 설정
-    //                     "   padding: 5px;"           // 패딩 추가
-    //                     "}").arg(borderColor);
+    // 테두리 색상 적용 (QSS 사용)
+    QString style = QString(
+                        "QLabel {"
+                        "   background-color: #f0f0f0;"
+                        "   border: 3px solid %1;"  // 테두리 색상
+                        "   border-radius: 8px;"     // 모서리 둥글게 설정
+                        "   padding: 5px;"           // 패딩 추가
+                        "}").arg(borderColor);
 
-    // ui->iconLabel->setStyleSheet(style); // 스타일 적용
+    ui->iconLabel->setStyleSheet(style); // 스타일 적용
 
     // 테두리 색상 애니메이션
     QPropertyAnimation *borderAnimation = new QPropertyAnimation(ui->iconLabel, "styleSheet", this);
@@ -125,9 +125,9 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
 
     borderAnimation->start(QAbstractAnimation::DeleteWhenStopped); // 애니메이션 실행
 
-    // connect(borderAnimation, &QPropertyAnimation::finished, [this, originalStyle]() {
-    //     ui->iconLabel->setStyleSheet(originalStyle);
-    // });
+    connect(borderAnimation, &QPropertyAnimation::finished, [this, originalStyle]() {
+        ui->iconLabel->setStyleSheet(originalStyle);
+    });
 
     // 이벤트 로그 추가 (시간 - 객체 종류 - 위치)
     // ui->eventLog->addItem(time + " - " + objectType + " - " + location);

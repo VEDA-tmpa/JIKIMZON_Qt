@@ -6,16 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
-    <height>657</height>
+    <width>881</width>
+    <height>607</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="6,5">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
    <item>
-    <layout class="QVBoxLayout" name="lineChartLayout"/>
+    <layout class="QVBoxLayout" name="lineChartLayout">
+     <property name="spacing">
+      <number>-1</number>
+     </property>
+    </layout>
    </item>
    <item>
     <layout class="QVBoxLayout" name="anomalyListLayout"/>

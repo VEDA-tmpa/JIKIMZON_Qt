@@ -1,8 +1,14 @@
 QT       += core gui network multimedia sql charts
 
+# 기본 QtQuick 모듈 추가
+QT += quick quickcontrols2
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
+
+# # QML 파일을 자동으로 포함하도록 설정
+# CONFIG += qml
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,27 +20,33 @@ SOURCES += \
     decryptor.cpp \
     deserializer.cpp \
     eventlogmanager.cpp \
+    eventlogwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     metadatadisplay.cpp \
+    sliderdialog.cpp \
     videostreamplayer.cpp
 
 HEADERS += \
     calendarwidget.h \
     dashboardwidget.h \
+    eventlogwidget.h \
     frame.h \
     decryptor.h \
     deserializer.h \
     eventlogmanager.h \
     mainwindow.h \
     metadatadisplay.h \
+    sliderdialog.h \
     videostreamplayer.h
 
 FORMS += \
     calendarwidget.ui \
     dashboardwidget.ui \
+    eventlogwidget.ui \
     mainwindow.ui \
-    metadatadisplay.ui
+    metadatadisplay.ui \
+    sliderdialog.ui
 
 
 RESOURCES += \

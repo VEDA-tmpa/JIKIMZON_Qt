@@ -12,12 +12,16 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSslSocket>
+#include <QGraphicsBlurEffect>
+#include <QWidget>
 
 #include "videostreamplayer.h"
 #include "metadatadisplay.h"
 #include "eventlogmanager.h"
 #include "dashboardwidget.h"
 #include "calendarwidget.h"
+#include "sliderdialog.h"
+#include "eventlogwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,10 +35,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void onsettingsButtonclicked();
+
 private slots:
     //이벤트로그
-    void on_searchButton_clicked();
-    void loadEventLogs();
     void onJsonReadyRead();
     //밤, 낮 모드 전환
     void toggleMode();
@@ -47,12 +51,9 @@ private slots:
     void updateWeather();
     void setupWeatherDisplay();
 
-    //스택위젯
-    void onLeftArrowClicked();
-    void onRightArrowClicked();
-
 private:
     Ui::MainWindow *ui;
+
     // QTcpSocket *tcpSocket;
     // QTcpSocket *jsonSocket;
     QSslSocket *frameSSLSocket;
@@ -66,7 +67,7 @@ private:
     CalendarWidget *calender;
 
     EventLogManager *eventLogManager; // EventLogManager 포인터 추가
-    QStandardItemModel *model; // QTableView에 사용할 모델
+    EventLogWidget *eventLogWidget; // EventLogWidget UI
 
     bool isNightMode; // 현재 모드 상태 (낮/밤)
 

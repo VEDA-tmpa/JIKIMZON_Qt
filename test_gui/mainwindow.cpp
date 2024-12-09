@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "metadatadisplay.h"
 #include "dashboardwidget.h"
+#include "sliderdialog.h"
 #include "frame.h"
 #include <QLayout>
 #include <QPalette>
@@ -17,6 +18,8 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QtMath> // qRound 사용을 위해 필요
+#include <QGraphicsDropShadowEffect>
+#include <QFrame>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,8 +29,19 @@ MainWindow::MainWindow(QWidget *parent)
     , player(new VideoStreamPlayer(this))  // 플레이어 초기화
 {
     ui->setupUi(this);
-    this->setWindowIcon(QIcon(":/resources/icon.png")); // 리소스 경로에 있는 아이콘 추가
-    this->setWindowTitle("JIKIM-ZON"); // 타이틀바 이름 설정
+
+    // 프레임에 그림자 효과를 적용하려면 아래와 같이 진행합니다.
+    QFrame* frame = new QFrame(this);
+    frame->setGeometry(100, 100, 200, 100);  // 프레임 위치와 크기 설정
+
+    // 그림자 효과 설정
+    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(this);
+    shadowEffect->setOffset(5, 5);  // 그림자의 x, y 이동 설정
+    shadowEffect->setBlurRadius(10);  // 그림자의 흐림 정도 설정
+    shadowEffect->setColor(QColor(0, 0, 0, 100));  // 그림자 색상과 투명도 설정
+
+    // 프레임에 그림자 효과 적용
+    frame->setGraphicsEffect(shadowEffect);
 
     // 시간 표시 설정
     setupTimeDisplay();
@@ -43,13 +57,16 @@ MainWindow::MainWindow(QWidget *parent)
     // 초기 모드는 Light Mode로 설정
     setLightMode();
 
-    //테마 버튼
-    connect(ui->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
+    // //테마 버튼
+    // connect(ui->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
 
     // // VideoStreamPlayer와 UI 연결
     // connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
     //     ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     // });
+
+    // "설정" 버튼 클릭 시 슬롯 연결
+    connect(ui->setting, &QPushButton::clicked, this, &MainWindow::onsettingsButtonclicked);
 
     connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
         // 비디오 스트림에서 받은 원본 프레임을 밝기, 대비, 채도 조정 함수에 전달하여 수정
@@ -60,31 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
 
         // 수정된 프레임을 비디오 위젯에 표시
         ui->videoLabel->setPixmap(QPixmap::fromImage(adjustedFrame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
-    });
-
-    ui->brightnessSlider->setMinimum(0);
-    ui->brightnessSlider->setMaximum(100);
-    ui->brightnessSlider->setValue(50);
-    brightness = 0;
-
-    ui->contrastSlider->setMinimum(0);
-    ui->contrastSlider->setMaximum(100);
-    ui->contrastSlider->setValue(50); // 초기값 설정
-    contrast = 0;
-
-    ui->saturationSlider->setMinimum(0);
-    ui->saturationSlider->setMaximum(100);
-    ui->saturationSlider->setValue(50); // 초기값 설정
-    saturation = 50;
-
-    connect(ui->brightnessSlider, &QSlider::valueChanged, this, [&](int value) {
-        brightness = value - 50; // 밝기는 -50~+50 범위로 설정
-    });
-    connect(ui->contrastSlider, &QSlider::valueChanged, this, [&](int value) {
-        contrast = value - 50; // 대비도 -50~+50 범위로 설정
-    });
-    connect(ui->saturationSlider, &QSlider::valueChanged, this, [&](int value) {
-        saturation = value; // 채도는 그대로 0~100 범위 유지
     });
 
     // SSL 인증서 설정
@@ -189,18 +181,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     player->setEventLogManager(eventLogManager);
 
-    // QTableView에 사용할 모델 생성
-    model = new QStandardItemModel(this);
-    ui->eventlogtableView->setModel(model); // 테이블 뷰에 모델 설정
-    qDebug() << "테이블 뷰 모델 설정 완료";
-
-    //검색 버튼 클릭 시 슬롯 연결
-    connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
-    qDebug() << "검색 버튼 시그널 연결 완료";
-
-    connect(ui->leftArrowButton, &QPushButton::clicked, this, &MainWindow::onLeftArrowClicked);
-    connect(ui->rightArrowButton, &QPushButton::clicked, this, &MainWindow::onRightArrowClicked);
-
     // Dashboard 생성 및 추가
     dashboard = new DashboardWidget(this);
 
@@ -226,85 +206,52 @@ MainWindow::MainWindow(QWidget *parent)
         layout->addWidget(calender);
         ui->calenderContainer->setLayout(layout);
     }
-}
 
-void MainWindow::on_searchButton_clicked() {
-    qDebug() << "on_searchButton_clicked 호출";
+    // EventLogWidget 객체 생성
+    eventLogWidget = new EventLogWidget(this);
 
-    QString searchTerm = ui->eventlineEdit->text(); // QLineEdit에서 검색어 가져오기
-    QString selectedValue = ui->eventcomboBox->currentText(); // 콤보박스에서 선택된 값 가져오기
-
-    qDebug() << "검색어: " << searchTerm << ", 선택값: " << selectedValue;
-
-    // 데이터베이스에서 해당 값을 검색
-    QString query = QString("SELECT * FROM event_logs WHERE %1 LIKE '%%2%'")
-                        .arg(selectedValue)
-                        .arg(searchTerm);
-
-    qDebug() << "Query: " << query;
-
-    model->clear(); // 이전 데이터 지우기
-    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
-
-    QSqlQuery sqlQuery(query);
-
-    if (sqlQuery.exec()) {
-        qDebug() << "SQL Query 실행 성공";
-        while (sqlQuery.next()) {
-            QList<QStandardItem*> rowItems;
-            for (int i = 0; i < sqlQuery.record().count(); ++i) {
-                rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
-            }
-            model->appendRow(rowItems); // 모델에 행 추가
-        }
-        qDebug() << "검색 결과 처리 완료";
+    // eventLogContainer가 기존 레이아웃을 가지고 있는지 확인하고, 없으면 새 레이아웃을 설정
+    if (ui->eventLogContainer->layout()) {
+        ui->eventLogContainer->layout()->addWidget(eventLogWidget);
     } else {
-        qDebug() << "SQL Query 실행 실패: " << sqlQuery.lastError().text();
-        QMessageBox::warning(this, "Error", "Failed to execute query: " + sqlQuery.lastError().text());
+        QVBoxLayout *layout = new QVBoxLayout(ui->eventLogContainer);
+        layout->setContentsMargins(0, 0, 0, 0);  // 여백 설정
+        layout->addWidget(eventLogWidget);
+        ui->eventLogContainer->setLayout(layout);
     }
+
+    // 5. 각 버튼 클릭 시 화면 전환
+    connect(ui->MButton, &QPushButton::clicked, this, [this]() {
+        ui->stackedWidget->setCurrentIndex(3);
+    });
+
+    connect(ui->RButton, &QPushButton::clicked, this, [this]() {
+        ui->stackedWidget->setCurrentIndex(0);  // 대시보드 화면으로 전환
+    });
+
+    connect(ui->CButton, &QPushButton::clicked, this, [this]() {
+        ui->stackedWidget->setCurrentIndex(1);  // 캘린더 화면으로 전환
+    });
+
+    connect(ui->EButton, &QPushButton::clicked, this, [this]() {
+        ui->stackedWidget->setCurrentIndex(2);  // 이벤트 로그 화면으로 전환
+    });
 }
-
-void MainWindow::loadEventLogs() {
-    qDebug() << "테이블 초기 데이터 로드 시작";
-
-    // 모델 초기화
-    model->clear();
-    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"});
-
-    // 데이터베이스 쿼리 실행
-    QSqlQuery query("SELECT * FROM event_logs");
-    if (!query.exec()) {
-        qDebug() << "event_logs 테이블 초기 데이터 로드 실패:" << query.lastError().text();
-        return;
-    }
-
-    while (query.next()) {
-        QList<QStandardItem*> rowItems;
-        for (int i = 0; i < query.record().count(); ++i) {
-            rowItems.append(new QStandardItem(query.value(i).toString()));
-        }
-        model->appendRow(rowItems);
-    }
-
-    ui->eventlogtableView->setModel(model);
-    qDebug() << "테이블 초기 데이터 로드 완료";
-}
-
 
 void MainWindow::toggleMode() {
     isNightMode = !isNightMode;
 
-    // opacity effect를 만들어서 아이콘을 변경하는 동안 부드러운 전환 효과를 줄 수 있습니다.
-    QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-    ui->btnToggleMode->setGraphicsEffect(effect);
+    // // opacity effect를 만들어서 아이콘을 변경하는 동안 부드러운 전환 효과를 줄 수 있습니다.
+    // QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
+    // ui->btnToggleMode->setGraphicsEffect(effect);
 
-    if (isNightMode) {
-        setDarkMode();
-        ui->btnToggleMode; // 밤 모드 아이콘
-    } else {
-        setLightMode();
-        ui->btnToggleMode; // 낮 모드 아이콘
-    }
+    // if (isNightMode) {
+    //     setDarkMode();
+    //     ui->btnToggleMode; // 밤 모드 아이콘
+    // } else {
+    //     setLightMode();
+    //     ui->btnToggleMode; // 낮 모드 아이콘
+    // }
 }
 
 void MainWindow::setLightMode() {
@@ -317,104 +264,6 @@ void MainWindow::setLightMode() {
     palette.setColor(QPalette::ButtonText, QColor("#000000"));
 
     qApp->setPalette(palette);
-
-    QString lightModeStyle = R"(
-/* QLabel */
-QLabel {
-    color: #000000;
-    font-size: 14px;
-}
-
-/* QListWidget */
-QListWidget {
-    background-color: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    color: #000000;
-}
-
-/* QTableView */
-QTableView {
-    background-color: #ffffff;
-    gridline-color: #dcdcdc;
-    border: 1px solid #e0e0e0;
-    color: #000000;
-    selection-background-color: #d3e0fc;
-    selection-color: #000000;
-}
-
-/* QLineEdit */
-QLineEdit {
-    background-color: #ffffff;
-    border: 1px solid #dcdcdc;
-    padding: 5px;
-    color: #000000;
-}
-
-/* QPushButton */
-QPushButton {
-    background-color: #e0e0e0;
-    border: 1px solid #b0b0b0;
-    padding: 5px;
-    color: #000000;
-}
-
-QPushButton:hover {
-    background-color: #d6d6d6;
-}
-
-QPushButton:pressed {
-    background-color: #c0c0c0;
-}
-
-/* QComboBox */
-QComboBox {
-    background-color: #ffffff;
-    border: 1px solid #dcdcdc;
-    padding: 5px;
-    color: #000000;
-}
-
-QComboBox::drop-down {
-    border-left: 1px solid #dcdcdc;
-    background-color: #e0e0e0;
-}
-/* 낮 모드 스타일 */
-QTabWidget {
-    background-color: #ffffff; /* 탭 배경 */
-    color: #000000; /* 텍스트 색상 */
-    border: 1px solid #cccccc;
-}
-
-QTabBar::tab {
-    background-color: #f5f5f5; /* 탭 색상 */
-    border: 1px solid #cccccc; /* 탭 경계 */
-    padding: 8px 15px; /* 여백 */
-    border-top-left-radius: 5px; /* 라운드 처리 */
-    border-top-right-radius: 5px;
-    color: #000000;
-}
-
-QTabBar::tab:selected {
-    background-color: #ffffff; /* 선택된 탭 색상 */
-    border-bottom: 1px solid #ffffff; /* 내용과 자연스럽게 연결 */
-    font-weight: bold; /* 선택된 탭 강조 */
-}
-
-QTabBar::tab:hover {
-    background-color: #e0e0e0; /* 탭 위에 마우스 올릴 때 */
-}
-
-/* 탭 내용 배경 */
-QTabWidget::pane {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    border-top: none; /* 탭 아래쪽 경계 제거 */
-}
-  )";
-     qApp->setStyleSheet(lightModeStyle);
-
-    // metadataDisplay에만 개별 스타일 적용
-    ui->metaDataContainer->setStyleSheet("background-color: #f5f5f5; color: #000000; border: 1px solid #e0e0e0;");
 }
 
 void MainWindow::setDarkMode() {
@@ -427,106 +276,6 @@ void MainWindow::setDarkMode() {
     palette.setColor(QPalette::ButtonText, QColor("#ffffff"));
 
     qApp->setPalette(palette);
-
-    // QSS 적용
-    QString darkModeStyle = R"(
-/* QLabel */
-QLabel {
-    color: #ffffff;
-    font-size: 14px;
-}
-
-/* QListWidget */
-QListWidget {
-    background-color: #3b3b3b;
-    border: 1px solid #444444;
-    color: #ffffff;
-}
-
-/* QTableView */
-QTableView {
-    background-color: #2b2b2b;
-    gridline-color: #444444;
-    border: 1px solid #444444;
-    color: #ffffff;
-    selection-background-color: #555555;
-    selection-color: #ffffff;
-}
-
-/* QLineEdit */
-QLineEdit {
-    background-color: #3b3b3b;
-    border: 1px solid #444444;
-    padding: 5px;
-    color: #ffffff;
-}
-
-/* QPushButton */
-QPushButton {
-    background-color: #444444;
-    border: 1px solid #555555;
-    padding: 5px;
-    color: #ffffff;
-}
-
-QPushButton:hover {
-    background-color: #555555;
-}
-
-QPushButton:pressed {
-    background-color: #666666;
-}
-
-/* QComboBox */
-QComboBox {
-    background-color: #3b3b3b;
-    border: 1px solid #444444;
-    padding: 5px;
-    color: #ffffff;
-}
-
-QComboBox::drop-down {
-    border-left: 1px solid #444444;
-    background-color: #555555;
-}
-
-/* 밤 모드 스타일 */
-QTabWidget {
-    background-color: #2b2b2b; /* 탭 배경 */
-    color: #ffffff; /* 텍스트 색상 */
-    border: 1px solid #444444;
-}
-
-QTabBar::tab {
-    background-color: #3b3b3b; /* 탭 색상 */
-    border: 1px solid #444444; /* 탭 경계 */
-    padding: 8px 15px; /* 여백 */
-    border-top-left-radius: 5px; /* 라운드 처리 */
-    border-top-right-radius: 5px;
-    color: #ffffff;
-}
-
-QTabBar::tab:selected {
-    background-color: #2b2b2b; /* 선택된 탭 색상 */
-    border-bottom: 1px solid #2b2b2b; /* 내용과 자연스럽게 연결 */
-    font-weight: bold; /* 선택된 탭 강조 */
-}
-
-QTabBar::tab:hover {
-    background-color: #444444; /* 탭 위에 마우스 올릴 때 */
-}
-
-/* 탭 내용 배경 */
-QTabWidget::pane {
-    background-color: #3b3b3b;
-    border: 1px solid #444444;
-    border-top: none; /* 탭 아래쪽 경계 제거 */
-}
-    )";
-    qApp->setStyleSheet(darkModeStyle);
-
-    // // metadataDisplay에만 개별 스타일 적용
-    ui->metaDataContainer->setStyleSheet("background-color: #3b3b3b; color: #000000; border: 1px solid #444444;");
 }
 
 // // 시간 표시 업데이트 함수
@@ -647,6 +396,27 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::onsettingsButtonclicked()
+{
+    SliderDialog dialog(this);
+
+    // 현재 밝기, 대비, 채도 값을 팝업 창에 전달
+    dialog.setBrightness(brightness + 50);  // -50 ~ 50 값을 0 ~ 100으로 변환
+    dialog.setContrast(contrast + 50);
+    dialog.setSaturation(saturation);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        // 팝업 창에서 값 가져오기
+        brightness = dialog.getBrightness() - 50;  // 다시 -50 ~ 50 범위로 변환
+        contrast = dialog.getContrast() - 50;
+        saturation = dialog.getSaturation();
+
+        qDebug() << "New Brightness:" << brightness;
+        qDebug() << "New Contrast:" << contrast;
+        qDebug() << "New Saturation:" << saturation;
+    }
+}
+
 void MainWindow::onJsonReadyRead()
 {
     QByteArray jsonData = jsonSSLSocket->readAll();
@@ -656,18 +426,4 @@ void MainWindow::onJsonReadyRead()
 
     // VideoStreamPlayer의 데이터 처리 함수 호출
     player->parseObjectDetectionData(jsonData);
-}
-
-void MainWindow::onLeftArrowClicked()
-{
-    // 이전 페이지로 이동
-    int currentIndex = ui->stackedWidget->currentIndex();
-    ui->stackedWidget->setCurrentIndex((currentIndex - 1 + ui->stackedWidget->count()) % ui->stackedWidget->count());
-}
-
-void MainWindow::onRightArrowClicked()
-{
-    // 다음 페이지로 이동
-    int currentIndex = ui->stackedWidget->currentIndex();
-    ui->stackedWidget->setCurrentIndex((currentIndex + 1) % ui->stackedWidget->count());
 }
