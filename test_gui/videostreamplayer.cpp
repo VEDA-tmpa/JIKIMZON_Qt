@@ -547,16 +547,36 @@ QImage VideoStreamPlayer::adjustContrast(QImage image, int value)
     return image;
 }
 
+// QImage VideoStreamPlayer::adjustSaturation(QImage image, int value)
+// {
+//     // 채도 값에 따른 조정 로직
+//     for (int y = 0; y < image.height(); ++y) {
+//         for (int x = 0; x < image.width(); ++x) {
+//             QColor color = image.pixelColor(x, y);
+//             int average = (color.red() + color.green() + color.blue()) / 3;
+//             color.setRed(qBound(0, average + (color.red() - average) * value / 100, 255));
+//             color.setGreen(qBound(0, average + (color.green() - average) * value / 100, 255));
+//             color.setBlue(qBound(0, average + (color.blue() - average) * value / 100, 255));
+//             image.setPixelColor(x, y, color);
+//         }
+//     }
+//     return image;
+// }
+
 QImage VideoStreamPlayer::adjustSaturation(QImage image, int value)
 {
     // 채도 값에 따른 조정 로직
+    float saturationFactor = static_cast<float>(value) / 100.0f;
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
             QColor color = image.pixelColor(x, y);
             int average = (color.red() + color.green() + color.blue()) / 3;
-            color.setRed(qBound(0, average + (color.red() - average) * value / 100, 255));
-            color.setGreen(qBound(0, average + (color.green() - average) * value / 100, 255));
-            color.setBlue(qBound(0, average + (color.blue() - average) * value / 100, 255));
+
+            // qBound에 전달하기 전에 값을 int로 명시적으로 변환
+            color.setRed(qBound(0, static_cast<int>(average + (color.red() - average) * saturationFactor), 255));
+            color.setGreen(qBound(0, static_cast<int>(average + (color.green() - average) * saturationFactor), 255));
+            color.setBlue(qBound(0, static_cast<int>(average + (color.blue() - average) * saturationFactor), 255));
+
             image.setPixelColor(x, y, color);
         }
     }

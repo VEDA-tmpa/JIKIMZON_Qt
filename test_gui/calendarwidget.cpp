@@ -12,7 +12,7 @@ CalendarWidget::CalendarWidget(QWidget *parent)
 
     // 데이터베이스 연결 초기화
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("/Volumes/jjeongni/QtProgramming/test_gui/event_log.db");
+    db.setDatabaseName("/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test_gui/event_log.db");
 
     if (!db.open()) {
         qDebug() << "Error: " << db.lastError().text();
@@ -53,7 +53,7 @@ void CalendarWidget::setupCalendar() {
             calendar->setDateTextFormat(calendarDate, format);  // 캘린더 날짜에 툴팁 설정
         }
     } else {
-        qDebug() << "Query failed:" << query.lastError().text();  // 쿼리 실패 시 출력
+        qDebug() << "setupCalendar Query failed:" << query.lastError().text();  // 쿼리 실패 시 출력
     }
 
     // 날짜 선택 시 호출되는 슬롯 연결
@@ -89,52 +89,21 @@ void CalendarWidget::setupCalendar() {
 }
 
 void CalendarWidget::setupBarGraph() {
-
-    // 임시 데이터 (날짜별 탐지 객체 수 예시)
-    QList<int> sampleData = {5, 10, 15, 30, 45};  // 예시로 5일 간의 탐지 객체 수
-
-    // 그래프 생성 코드
-    QBarSet *set = new QBarSet("탐지 객체 수");
-
-    // 예시 데이터를 설정
-    for (int value : sampleData) {
-        *set << value;  // 각 날짜에 해당하는 탐지 객체 수 추가
-    }
-
-    QBarSeries *barSeries = new QBarSeries();
-    barSeries->append(set);
-
     QChart *chart = new QChart();
-    chart->addSeries(barSeries);
     chart->setTitle("날짜별 탐지 객체 수");
 
-    // QValueAxis를 사용하여 Y축 범위 수동 설정
     QValueAxis *axisY = new QValueAxis();
-    axisY->setRange(0, 50);  // Y축 범위 설정 (최대 값은 필요에 맞게 설정)
-    axisY->setTickInterval(1);  // Y축 간격을 1로 설정하여 0.5 단위가 없도록 함
-
-    chart->setAxisY(axisY, barSeries);  // Y축을 수동으로 설정
-
-    // 기본 축 생성 없이 Y축을 수동으로 설정했기 때문에 createDefaultAxes는 호출하지 않음
-    chart->createDefaultAxes();  // X축은 자동으로 생성
-
-    // X축을 날짜로 설정 (예시로 간단한 날짜 배열 사용)
-    QCategoryAxis *axisX = new QCategoryAxis();
-    axisX->append("12-05", 0);
-    axisX->append("12-06", 1);
-    axisX->append("12-07", 2);
-    axisX->append("12-08", 3);
-    axisX->append("12-09", 4);  // 날짜 예시 추가
-    chart->setAxisX(axisX, barSeries);  // X축 설정
+    axisY->setRange(0, 50);
+    axisY->setTickInterval(1);
 
     QChartView *chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
 
-    ui->barGraphLayout->addWidget(chartView);  // .ui에 설정된 레이아웃에 추가
+    ui->barGraphLayout->addWidget(chartView);
 }
 
 void CalendarWidget::onDateSelected(const QDate &date) {
-    QString selectedDate = date.toString("yyyy-MM-dd");
+    QString selectedDate = date.toString("yyyyMMdd");
     qDebug() << "Selected Date:" << selectedDate;
 
     updateBarGraphForDate(selectedDate);  // 선택한 날짜에 따라 막대그래프 갱신
@@ -143,20 +112,30 @@ void CalendarWidget::onDateSelected(const QDate &date) {
 void CalendarWidget::updateBarGraphForDate(const QString &date) {
     qDebug() << "Updating bar graph for date:" << date;
 
-    // 데이터베이스에서 선택된 날짜의 탐지 객체를 조회하는 쿼리
-    QSqlQuery query;
-    query.prepare("SELECT object_type, count(*) FROM detections WHERE timestamp LIKE :date GROUP BY object_type");
-    query.bindValue(":date", date + "%");  // 날짜 앞부분을 사용하여 시간대별 탐지 필터링
+    // QMap에 objectType별 개수를 저장
+    QMap<QString, int> objectCounts;
 
+    // 데이터베이스 쿼리 준비
+    QSqlQuery query;
+    QString queryString = "SELECT object_class, COUNT(*) FROM event_logs WHERE timestamp LIKE :datePattern GROUP BY object_class";
+
+    // 쿼리 준비 및 실행
+    query.prepare(queryString);
+
+    // 날짜 패턴에 "%"를 추가하여 바인딩
+    QString datePattern = date + "%"; // 예: "20241209%"
+    query.bindValue(":datePattern", datePattern);
+
+    // 쿼리 실행 및 결과 확인
     if (!query.exec()) {
         qDebug() << "Query failed:" << query.lastError().text();
         return;
     }
 
-    QMap<QString, int> objectCounts;
+    // 결과를 QMap에 저장
     while (query.next()) {
-        QString objectType = query.value(0).toString();
-        int count = query.value(1).toInt();
+        QString objectType = query.value(0).toString(); // object_type 열
+        int count = query.value(1).toInt();            // COUNT(*) 열
         objectCounts[objectType] = count;
     }
 

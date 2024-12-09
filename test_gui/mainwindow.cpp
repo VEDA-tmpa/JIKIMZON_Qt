@@ -46,51 +46,53 @@ MainWindow::MainWindow(QWidget *parent)
     //테마 버튼
     connect(ui->btnToggleMode, &QPushButton::clicked, this, &MainWindow::toggleMode);
 
-    // VideoStreamPlayer와 UI 연결
+    // // VideoStreamPlayer와 UI 연결
+    // connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
+    //     ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+    // });
+
     connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
-        ui->videoLabel->setPixmap(QPixmap::fromImage(frame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
+        // 비디오 스트림에서 받은 원본 프레임을 밝기, 대비, 채도 조정 함수에 전달하여 수정
+        QImage adjustedFrame = frame; // 프레임을 그대로 복사하여 시작
+        adjustedFrame = player->adjustBrightness(adjustedFrame, brightness);
+        adjustedFrame = player->adjustContrast(adjustedFrame, contrast);
+        adjustedFrame = player->adjustSaturation(adjustedFrame, saturation);
+
+        // 수정된 프레임을 비디오 위젯에 표시
+        ui->videoLabel->setPixmap(QPixmap::fromImage(adjustedFrame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
     });
 
-    // connect(player, &VideoStreamPlayer::frameReady, this, [&](const QImage &frame) {
-    //     // 비디오 스트림에서 받은 원본 프레임을 밝기, 대비, 채도 조정 함수에 전달하여 수정
-    //     QImage adjustedFrame = frame; // 프레임을 그대로 복사하여 시작
-    //     adjustedFrame = player->adjustBrightness(adjustedFrame, brightness);
-    //     adjustedFrame = player->adjustContrast(adjustedFrame, contrast);
-    //     adjustedFrame = player->adjustSaturation(adjustedFrame, saturation);
+    ui->brightnessSlider->setMinimum(0);
+    ui->brightnessSlider->setMaximum(100);
+    ui->brightnessSlider->setValue(50);
+    brightness = 0;
 
-    //     // 수정된 프레임을 비디오 위젯에 표시
-    //     ui->videoLabel->setPixmap(QPixmap::fromImage(adjustedFrame).scaled(ui->videoLabel->size(), Qt::KeepAspectRatio));
-    // });
+    ui->contrastSlider->setMinimum(0);
+    ui->contrastSlider->setMaximum(100);
+    ui->contrastSlider->setValue(50); // 초기값 설정
+    contrast = 0;
 
-    // ui->brightnessSlider->setMinimum(0);
-    // ui->brightnessSlider->setMaximum(100);
-    // ui->brightnessSlider->setValue(50); // 초기값 설정
+    ui->saturationSlider->setMinimum(0);
+    ui->saturationSlider->setMaximum(100);
+    ui->saturationSlider->setValue(50); // 초기값 설정
+    saturation = 50;
 
-    // ui->contrastSlider->setMinimum(0);
-    // ui->contrastSlider->setMaximum(100);
-    // ui->contrastSlider->setValue(50); // 초기값 설정
-
-    // ui->saturationSlider->setMinimum(0);
-    // ui->saturationSlider->setMaximum(100);
-    // ui->saturationSlider->setValue(50); // 초기값 설정
-
-    // // 슬라이더 값이 변경될 때
-    // connect(ui->brightnessSlider, &QSlider::valueChanged, this, [&](int value) {
-    //     brightness = value / 100.0f; // 0.0 ~ 1.0 범위로 변환
-    // });
-    // connect(ui->contrastSlider, &QSlider::valueChanged, this, [&](int value) {
-    //     contrast = value / 100.0f; // 0.0 ~ 1.0 범위로 변환
-    // });
-    // connect(ui->saturationSlider, &QSlider::valueChanged, this, [&](int value) {
-    //     saturation = value / 100.0f; // 0.0 ~ 1.0 범위로 변환
-    // });
+    connect(ui->brightnessSlider, &QSlider::valueChanged, this, [&](int value) {
+        brightness = value - 50; // 밝기는 -50~+50 범위로 설정
+    });
+    connect(ui->contrastSlider, &QSlider::valueChanged, this, [&](int value) {
+        contrast = value - 50; // 대비도 -50~+50 범위로 설정
+    });
+    connect(ui->saturationSlider, &QSlider::valueChanged, this, [&](int value) {
+        saturation = value; // 채도는 그대로 0~100 범위 유지
+    });
 
     // SSL 인증서 설정
     sslConfig = QSslConfiguration::defaultConfiguration();
     sslConfig.setProtocol(QSsl::TlsV1_3);
     sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
 
-    QFile certFile("/home/sihyeon/workspace/JIKIMZON_Qt/test_gui/server.cert");
+    QFile certFile(":/certs/server.cert");
     if (!certFile.open(QIODevice::ReadOnly)) {
         qDebug() << "Failed to open certificate file";
     } 
@@ -121,7 +123,7 @@ MainWindow::MainWindow(QWidget *parent)
         frameSSLSocket->ignoreSslErrors();
     });
     
-    frameSSLSocket->connectToHostEncrypted("192.168.35.221", 1234);
+    frameSSLSocket->connectToHostEncrypted("192.168.50.14", 1234);
     if (!frameSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << frameSSLSocket->errorString();
     }
@@ -140,7 +142,7 @@ MainWindow::MainWindow(QWidget *parent)
         jsonSSLSocket->ignoreSslErrors();
     });
 
-    jsonSSLSocket->connectToHostEncrypted("192.168.35.221", 4321);
+    jsonSSLSocket->connectToHostEncrypted("192.168.50.14", 4321);
     if (!jsonSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << jsonSSLSocket->errorString();
     }
@@ -182,7 +184,7 @@ MainWindow::MainWindow(QWidget *parent)
             metaData,
             &MetaDataDisplay::updateMetaData);
 
-    eventLogManager = new EventLogManager("/Volumes/jjeongni/QtProgramming/test_gui/event_log.db", this);
+    eventLogManager = new EventLogManager("/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test_gui/event_log.db", this);
     qDebug() << "EventLogManager 초기화 완료";
 
     player->setEventLogManager(eventLogManager);

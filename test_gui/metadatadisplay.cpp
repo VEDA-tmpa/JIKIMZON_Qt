@@ -23,8 +23,6 @@ MetaDataDisplay::MetaDataDisplay(QWidget *parent)
     // 기존 UI에 새 레이아웃 추가
     ui->chartContainer->setLayout(chartLayout);
 
-    // 차트 업데이트
-    updateChart();
 }
 
 MetaDataDisplay::~MetaDataDisplay()
@@ -156,6 +154,9 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
 
     // 객체 수 업데이트
     objectCounts[objectType]++;
+
+    // 차트 업데이트
+    updateChart();
 }
 
 void MetaDataDisplay::updateChart()
@@ -167,14 +168,14 @@ void MetaDataDisplay::updateChart()
         qDebug() << "Category:" << it.key() << "Count:" << it.value();
     }
 
-    // 테스트를 위한 예시 데이터
-    objectCounts.clear();  // 기존 데이터 초기화
-    objectCounts["biodegradable"] = 10;  // 생분해성 10개
-    objectCounts["cardboard"] = 5;       // 종이박스 5개
-    objectCounts["glass"] = 7;           // 유리 7개
-    objectCounts["metal"] = 3;           // 금속 3개
-    objectCounts["paper"] = 8;           // 종이 8개
-    objectCounts["plastic"] = 12;        // 플라스틱 12개
+    // // 테스트를 위한 예시 데이터
+    // objectCounts.clear();  // 기존 데이터 초기화
+    // objectCounts["biodegradable"] = 10;  // 생분해성 10개
+    // objectCounts["cardboard"] = 5;       // 종이박스 5개
+    // objectCounts["glass"] = 7;           // 유리 7개
+    // objectCounts["metal"] = 3;           // 금속 3개
+    // objectCounts["paper"] = 8;           // 종이 8개
+    // objectCounts["plastic"] = 12;        // 플라스틱 12개
 
     // 도넛 그래프 시리즈 설정
     QPieSeries *series = new QPieSeries();

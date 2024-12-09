@@ -33,9 +33,9 @@ DashboardWidget::DashboardWidget(QWidget *parent)
     setupAnomalyList();
 
     // 타이머 설정 (1초 간격으로 차트 데이터 업데이트)
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &DashboardWidget::updateChartData);
-    timer->start(1000); // 1000ms = 1초 간격
+    // timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, &DashboardWidget::updateChartData);
+    // timer->start(1000); // 1000ms = 1초 간격
 }
 
 DashboardWidget::~DashboardWidget()
@@ -46,19 +46,19 @@ DashboardWidget::~DashboardWidget()
 // 차트 데이터 업데이트
 void DashboardWidget::updateChartData() {
     // 현재 시간 가져오기
-    QDateTime currentTime = QDateTime::currentDateTime();
+    // QDateTime currentTime = QDateTime::currentDateTime();
 
-    // 가상 데이터 생성 (실제 데이터 입력으로 변경 가능)
-    QList<QString> objectLabels;
-    objectLabels << "biodegradable" << "cardboard" << "glass"; // 레이블 데이터
+    // // // 가상 데이터 생성 (실제 데이터 입력으로 변경 가능)
+    // // QList<QString> objectLabels;
+    // // objectLabels << "biodegradable" << "cardboard" << "glass"; // 레이블 데이터
 
-    // 프레임 ID 증가
-    frameId++;
+    // // 프레임 ID 증가
+    // frameId++;
 
-    // 객체 탐지 데이터 업데이트
-    for (const QString &label : objectLabels) {
-        updateDetectedObjects(frameId, currentTime.toString("HH:mm:ss"), label);
-    }
+    // // 객체 탐지 데이터 업데이트
+    // for (const QString &label : objectLabels) {
+    //     updateDetectedObjects(frameId, currentTime.toString("HH:mm:ss"), label);
+    // }
 }
 
 // 탐지 객체 업데이트
@@ -275,11 +275,11 @@ void DashboardWidget::setupAnomalyList()
 void DashboardWidget::updateAnomalyList(int frameId, int detectedObjectCount, const QString &timestamp)
 {
     // 10개 이상의 객체가 탐지되었을 때만 알림과 리스트에 추가
-    if (detectedObjectCount >= 10) {
+    if ((detectedObjectCount % 10) == 0) {
         QApplication::beep();  // 알림 소리
 
         // 알림 메시지 생성
-        QString anomaly = QString("Anomaly Detected! Frame %1: %2 objects at %3")
+        QString anomaly = QString("Frame %1: %2 objects at %3")
                               .arg(frameId)
                               .arg(detectedObjectCount)
                               .arg(timestamp);
