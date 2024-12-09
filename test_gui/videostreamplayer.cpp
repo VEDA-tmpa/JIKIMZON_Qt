@@ -546,7 +546,6 @@ QImage VideoStreamPlayer::adjustContrast(QImage image, int value)
     }
     return image;
 }
-
 // QImage VideoStreamPlayer::adjustSaturation(QImage image, int value)
 // {
 //     // 채도 값에 따른 조정 로직
