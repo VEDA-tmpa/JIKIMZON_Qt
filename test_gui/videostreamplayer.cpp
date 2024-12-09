@@ -26,6 +26,9 @@ struct HeaderStruct {
     uint8_t padding1[3];
     char timestamp[19];
     uint8_t padding2[1];
+    uint8_t gopStartFlag;
+    uint8_t gopSize;     
+    uint8_t padding3[2];
 };
 #pragma pack(pop)
 
