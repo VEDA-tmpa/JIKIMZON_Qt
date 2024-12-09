@@ -143,7 +143,6 @@ void CalendarWidget::updateBarGraphForDate(const QString &date) {
     QBarSeries *series = new QBarSeries();
     QStringList categories;
     QMap<QString, QString> emojis;
-    QMap<QString, QColor> colors;
 
     // 이모티콘과 색상 설정
     emojis["biodegradable"] = "🌱";
@@ -153,14 +152,12 @@ void CalendarWidget::updateBarGraphForDate(const QString &date) {
     emojis["paper"] = "📄";
     emojis["plastic"] = "🧴";
 
-    colors["biodegradable"] = QColor(138, 201, 38);
-    colors["cardboard"] = QColor(255, 89, 94);
-    colors["glass"] = QColor(25, 130, 196);
-    colors["metal"] = QColor(251, 133, 0);
-    colors["paper"] = QColor(255, 202, 58);
-    colors["plastic"] = QColor(106, 76, 147);
+    // 핑크 계열 색상 설정
+    QColor lightPink = QColor(245, 181, 185); // 연한 핑크
 
     QBarSet *set = new QBarSet("Objects");
+
+    set->setColor(lightPink); // 막대 색상 설정
 
     int maxValue = 0;
     for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
