@@ -13,6 +13,11 @@
 #include <QStringListModel>
 #include <QMap>
 
+#include <QtCharts/QChart>
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+
     namespace Ui {
     class DashboardWidget;
 }
@@ -50,9 +55,9 @@ private:
 
     // UI 요소
     QTimer *timer;                            // 데이터 업데이트 타이머
-    QChart *chart;                            // 차트
-    QChartView *chartView;                    // 차트 뷰
-    QMap<QString, QLineSeries *> objectSeries; // 객체 유형별 데이터 시리즈
+    QtCharts::QChart *chart;                            // 차트
+    QtCharts::QChartView *chartView;                    // 차트 뷰
+    QMap<QString, QtCharts::QLineSeries *> objectSeries; // 객체 유형별 데이터 시리즈
     QMap<QString, int> objectCounts;          // 객체 유형별 탐지 카운트
 
     // 이상 탐지 리스트

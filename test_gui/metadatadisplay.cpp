@@ -12,8 +12,8 @@ MetaDataDisplay::MetaDataDisplay(QWidget *parent)
     ui->setupUi(this);
 
     // 차트 초기화
-    QChart *chart = new QChart();
-    chartView = new QChartView(chart);
+    QtCharts::QChart *chart = new QtCharts::QChart();
+    chartView = new QtCharts::QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
 
     // 새로운 QVBoxLayout 생성
@@ -178,7 +178,7 @@ void MetaDataDisplay::updateChart()
     // objectCounts["plastic"] = 12;        // 플라스틱 12개
 
     // 도넛 그래프 시리즈 설정
-    QPieSeries *series = new QPieSeries();
+    QtCharts::QPieSeries *series = new QtCharts::QPieSeries();
 
     QMap<QString, QString> emojis;
     QMap<QString, QColor> colors;
@@ -212,7 +212,7 @@ void MetaDataDisplay::updateChart()
         QString label = emojis.value(category) + " " + QString::number(count);
 
         // 도넛 그래프에 추가
-        QPieSlice *slice = series->append(label, count);
+        QtCharts::QPieSlice *slice = series->append(label, count);
         slice->setBrush(colors.value(category));  // 색상 설정
         slice->setLabelVisible(true);  // 라벨 표시
 
@@ -223,11 +223,11 @@ void MetaDataDisplay::updateChart()
     }
 
     // 기존 chartView에 새로운 차트 설정
-    QChart *chart = chartView->chart();
+    QtCharts::QChart *chart = chartView->chart();
     chart->removeAllSeries(); // 기존 시리즈 제거
     chart->addSeries(series);
     chart->setTitle("탐지된 객체 종류 비율");
-    chart->setAnimationOptions(QChart::SeriesAnimations);
+    chart->setAnimationOptions(QtCharts::QChart::SeriesAnimations);
 
     // 범례 숨기기
     chart->legend()->setVisible(false);

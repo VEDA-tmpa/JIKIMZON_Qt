@@ -114,15 +114,15 @@ void DashboardWidget::updateDetectedObjects(int frameId, const QString &timestam
     for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
         // 객체 유형별로 시리즈 생성 (최초 한 번만 생성)
         if (!objectSeries.contains(it.key())) {
-            QLineSeries *series = new QLineSeries();
+            QtCharts::QLineSeries *series = new QtCharts::QLineSeries();
             series->setName(it.key());
             objectSeries[it.key()] = series;
             chart->addSeries(series);
 
             // X, Y축을 시리즈에 맞게 설정
-            QValueAxis *axisX = new QValueAxis();
+            QtCharts::QValueAxis *axisX = new QtCharts::QValueAxis();
             axisX->setRange(0, 60); // X축 0~60초
-            QValueAxis *axisY = new QValueAxis();
+            QtCharts::QValueAxis *axisY = new QtCharts::QValueAxis();
             axisY->setRange(0, 15); // Y축 0~15
             chart->addAxis(axisX, Qt::AlignBottom);
             series->attachAxis(axisX);
@@ -163,13 +163,13 @@ QColor DashboardWidget::getObjectLineColor(const QString &objectType)
 // 선형 차트 설정
 void DashboardWidget::setupLineChart()
 {
-    chart = new QChart();
+    chart = new QtCharts::QChart();
     chart->setTitle("Real-time Object Detection Counts");
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
 
     // X축 (시간)
-    QValueAxis *axisX = new QValueAxis();
+    QtCharts::QValueAxis *axisX = new QtCharts::QValueAxis();
     axisX->setTitleText("Time (s)");
      axisX->setRange(0, 60);       // 최근 60초만 표시
     axisX->setLabelFormat("%d"); // 숫자로 표시
@@ -177,7 +177,7 @@ void DashboardWidget::setupLineChart()
     chart->addAxis(axisX, Qt::AlignBottom);
 
     // Y축 (객체 개수)
-    QValueAxis *axisY = new QValueAxis();
+    QtCharts::QValueAxis *axisY = new QtCharts::QValueAxis();
     axisY->setTitleText("Count");
     axisY->setRange(0, 50);       // 초기 범위 설정
     axisY->setLabelFormat("%d"); // 정수로 표시
@@ -187,7 +187,7 @@ void DashboardWidget::setupLineChart()
     // 객체 유형별 시리즈 추가
     QStringList objectTypes = {"biodegradable", "cardboard", "glass", "metal", "paper", "plastic"};
     for (const QString &type : objectTypes) {
-        QLineSeries *series = new QLineSeries();
+        QtCharts::QLineSeries *series = new QtCharts::QLineSeries();
 
         // 객체 유형에 따라 이모지 설정
         QString emoji;
@@ -219,7 +219,7 @@ void DashboardWidget::setupLineChart()
     }
 
     // QChartView 초기화 및 레이아웃 추가
-    chartView = new QChartView(chart);
+    chartView = new QtCharts::QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
     ui->lineChartLayout->addWidget(chartView);
 }
@@ -233,7 +233,7 @@ void DashboardWidget::updateLineChart(const QString &objectType, int detectedObj
         return;
     }
 
-    QLineSeries *series = objectSeries[objectType];
+    QtCharts::QLineSeries *series = objectSeries[objectType];
 
     // 객체 유형별 시간 관리
     if (!objectTimeMap.contains(objectType)) {
@@ -248,8 +248,8 @@ void DashboardWidget::updateLineChart(const QString &objectType, int detectedObj
     series->setColor(lineColor);
 
     // X축 및 Y축 동적 범위 업데이트
-    QValueAxis *axisX = qobject_cast<QValueAxis *>(chart->axes(Qt::Horizontal).first());
-    QValueAxis *axisY = qobject_cast<QValueAxis *>(chart->axes(Qt::Vertical).first());
+    QtCharts::QValueAxis *axisX = qobject_cast<QtCharts::QValueAxis *>(chart->axes(Qt::Horizontal).first());
+    QtCharts::QValueAxis *axisY = qobject_cast<QtCharts::QValueAxis *>(chart->axes(Qt::Vertical).first());
 
     if (axisX) {
         // X축을 0에서 시작하도록 설정

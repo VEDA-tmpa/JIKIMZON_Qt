@@ -35,7 +35,7 @@ private:
     Ui::MetaDataDisplay *ui;
 
     QMap<QString, int> objectCounts;
-    QChartView *chartView;
+    QtCharts::QChartView *chartView;
 
 };
 
