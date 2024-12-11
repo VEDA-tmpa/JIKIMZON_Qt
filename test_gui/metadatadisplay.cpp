@@ -12,17 +12,22 @@ MetaDataDisplay::MetaDataDisplay(QWidget *parent)
     ui->setupUi(this);
 
     // 차트 초기화
-    QtCharts::QChart *chart = new QtCharts::QChart();
-    chartView = new QtCharts::QChartView(chart);
+    QChart *chart = new QChart();
+    chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
 
-    // 새로운 QVBoxLayout 생성
-    QVBoxLayout *chartLayout = new QVBoxLayout();
-    chartLayout->addWidget(chartView);
+    chart->setTitle("🔍 탐지된 객체 비율");
+    QFont titleFont;
+    titleFont.setBold(true);
+    titleFont.setPointSize(14);
+    chart->setTitleFont(titleFont);
+    chart->setTitleBrush(QBrush(Qt::darkGray));
 
     // 기존 UI에 새 레이아웃 추가
-    ui->chartContainer->setLayout(chartLayout);
+    ui->chartLayout->addWidget(chartView);
 
+    // 차트 업데이트
+    // updateChart();
 }
 
 MetaDataDisplay::~MetaDataDisplay()
@@ -34,16 +39,31 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
 
     qDebug() << "MetaDataDisplay::updateMetaData";
 
-    // 시간 문자열 추출
-    QString timeOnly = time.section('_', 1, 1)    // 날짜와 시간 구분: "_" 기준으로 두 번째 부분 추출
-                           .section('.', 0, 0);    // 밀리초 제거: "." 기준으로 첫 번째 부분 추출
+    // // 시간 문자열 추출
+    // QString timeOnly = time.section('_', 1, 1)    // 날짜와 시간 구분: "_" 기준으로 두 번째 부분 추출
+    //                        .section('.', 0, 0);    // 밀리초 제거: "." 기준으로 첫 번째 부분 추출
 
-    // 시간 포맷 변경 (HH:MM:SS로 보기 좋게 변환)
-    timeOnly.insert(2, ":").insert(5, ":"); // "114616" -> "11:46:16"
+    // // 시간 포맷 변경 (HH:MM:SS로 보기 좋게 변환)
+    // timeOnly.insert(2, ":").insert(5, ":"); // "114616" -> "11:46:16"
 
 
-    // UI 레이블에 메타데이터 업데이트
+    // 시간 문자열 추출 및 포맷 변경 (HH:MM)
+    QString timeOnly = time.section('_', 1, 1).section('.', 0, 0); // 날짜 제거, 밀리초 제거
+    QString timeMinuteOnly = timeOnly.left(4); // "114616" -> "1146"
+    timeMinuteOnly.insert(2, ":");           // "1146" -> "11:46"
+
+    // 중복 데이터 체크 (시간 + 객체 유형 기준)
+    QString metaDataKey = time + objectType;
+
+    if (processedMetaData.contains(metaDataKey)) {
+        qDebug() << "중복 데이터입니다. 업데이트를 건너뜁니다.";
+        return;
+    }
+    processedMetaData.insert(metaDataKey); // 중복 데이터로 추가
+
+    // // UI 레이블에 메타데이터 업데이트
     ui->timeLabel->setText("시간: " + time);
+    // ui->timeLabel->setText("시간: " + timeMinuteOnly);
     ui->locationLabel->setText("위치: " + location);
     ui->typeLabel->setText("객체 종류: " + objectType);
 
@@ -146,11 +166,27 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
         emoji = "🧴"; // 플라스틱
     }
 
+    // // 로그 메시지 생성
+    // QString logMessage = QString("%1   %2 %3 (%4)").arg(timeMinuteOnly, emoji, objectType, location);
+
     // 로그 메시지 생성
-    QString logMessage = QString("%1   %2 %3 (%4)").arg(timeOnly, emoji, objectType, location);
+    QString logMessage = QString("%1   %2  %3").arg(timeMinuteOnly, emoji, objectType);
 
     // QListWidget에 추가
     ui->eventLog->addItem(logMessage);
+
+
+    // // 객체 수 업데이트 (분 단위로 카운트)
+    // QString currentMinute = timeMinuteOnly; // HH:MM 형식
+    // objectCounts[currentMinute][objectType]++; // 분 단위로 객체 타입별 카운트 증가
+
+    // // 현재 시간(분 단위) 체크
+    // if (lastUpdatedMinute != currentMinute) {
+    //     lastUpdatedMinute = currentMinute;
+
+    //     // 차트 업데이트
+    //     updateChart();
+    // }
 
     // 객체 수 업데이트
     objectCounts[objectType]++;
@@ -161,24 +197,32 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
 
 void MetaDataDisplay::updateChart()
 {
-    qDebug() << "Updating chart. Object counts:" << objectCounts;
+    qDebug() << "Updating chart. Current minute counts:" << objectCounts;
 
-    // objectCounts의 내용 확인
-    for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
-        qDebug() << "Category:" << it.key() << "Count:" << it.value();
-    }
-
-    // // 테스트를 위한 예시 데이터
+    // // // 테스트를 위한 예시 데이터
     // objectCounts.clear();  // 기존 데이터 초기화
-    // objectCounts["biodegradable"] = 10;  // 생분해성 10개
-    // objectCounts["cardboard"] = 5;       // 종이박스 5개
-    // objectCounts["glass"] = 7;           // 유리 7개
-    // objectCounts["metal"] = 3;           // 금속 3개
-    // objectCounts["paper"] = 8;           // 종이 8개
-    // objectCounts["plastic"] = 12;        // 플라스틱 12개
+    // objectCounts["biodegradable"] = 0;  // 생분해성 10개
+    // objectCounts["cardboard"] = 0;       // 종이박스 5개
+    // objectCounts["glass"] = 0;           // 유리 7개
+    // objectCounts["metal"] = 0;           // 금속 3개
+    // objectCounts["paper"] = 0;           // 종이 8개
+    // objectCounts["plastic"] = 0;        // 플라스틱 12개
+
+    // // 현재 시간의 데이터만 가져오기
+    // QString currentMinute = lastUpdatedMinute;  // updateMetaData에서 갱신된 lastUpdatedMinute 사용
+    // if (!objectCounts.contains(currentMinute)) {
+    //     qDebug() << "No data for the current minute:" << currentMinute;
+    //     return;
+    // }
+
+    // // 현재 시간에 해당하는 객체 데이터를 가져옴
+    // QMap<QString, int> currentCounts = objectCounts[currentMinute];
+
+    // qDebug() << "Current counts:" << currentCounts;
+
 
     // 도넛 그래프 시리즈 설정
-    QtCharts::QPieSeries *series = new QtCharts::QPieSeries();
+    QPieSeries *series = new QPieSeries();
 
     QMap<QString, QString> emojis;
     QMap<QString, QColor> colors;
@@ -198,12 +242,12 @@ void MetaDataDisplay::updateChart()
     colors["paper"] = QColor(255, 202, 58);
     colors["plastic"] = QColor(106, 76, 147);
 
-    // 탐지된 객체에 대해 비율을 도넛 그래프에 추가
     int totalCount = 0;
     for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
         totalCount += it.value();
     }
 
+    // 탐지된 객체에 대해 비율을 도넛 그래프에 추가
     for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
         QString category = it.key();
         int count = it.value();
@@ -212,7 +256,7 @@ void MetaDataDisplay::updateChart()
         QString label = emojis.value(category) + " " + QString::number(count);
 
         // 도넛 그래프에 추가
-        QtCharts::QPieSlice *slice = series->append(label, count);
+        QPieSlice *slice = series->append(label, count);
         slice->setBrush(colors.value(category));  // 색상 설정
         slice->setLabelVisible(true);  // 라벨 표시
 
@@ -222,12 +266,30 @@ void MetaDataDisplay::updateChart()
                             .arg(static_cast<int>(count * 100.0 / totalCount)));
     }
 
+    connect(series, &QPieSeries::hovered, this, [=](QPieSlice *slice, bool state) {
+        if (state) {
+            slice->setExploded(true);  // 강조 효과
+            slice->setLabelColor(Qt::black);
+        } else {
+            slice->setExploded(false);
+        }
+    });
+
     // 기존 chartView에 새로운 차트 설정
-    QtCharts::QChart *chart = chartView->chart();
+    QChart *chart = chartView->chart();
     chart->removeAllSeries(); // 기존 시리즈 제거
     chart->addSeries(series);
-    chart->setTitle("탐지된 객체 종류 비율");
-    chart->setAnimationOptions(QtCharts::QChart::SeriesAnimations);
+    chart->setAnimationOptions(QChart::SeriesAnimations);
+
+    // 마우스 호버 상태에 따른 강조 효과 추가
+    connect(series, &QPieSeries::hovered, this, [=](QPieSlice *slice, bool state) {
+        if (state) {
+            slice->setExploded(true);  // 강조 효과
+            slice->setLabelColor(Qt::black); // 라벨 색상 강조
+        } else {
+            slice->setExploded(false); // 기본 상태
+        }
+    });
 
     // 범례 숨기기
     chart->legend()->setVisible(false);
@@ -236,4 +298,7 @@ void MetaDataDisplay::updateChart()
     series->setHoleSize(0.35);  // 가운데 비율을 설정 (0.35는 기본 값)
 
     chartView->update();  // 차트 뷰 갱신
+
+    // 기존 UI에 새 레이아웃 추가
+    ui->chartLayout->addWidget(chartView);
 }

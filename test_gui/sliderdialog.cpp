@@ -19,7 +19,7 @@ SliderDialog::SliderDialog(QWidget *parent)
 
     ui->saturationSlider->setMinimum(0);
     ui->saturationSlider->setMaximum(100);
-    ui->saturationSlider->setValue(50);
+    ui->saturationSlider->setValue(0);
 
     // 버튼 연결
     // 확인 버튼 클릭 시 다이얼로그 종료

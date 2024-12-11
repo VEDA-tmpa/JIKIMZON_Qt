@@ -11,14 +11,7 @@ CalendarWidget::CalendarWidget(QWidget *parent)
     setupBarGraph();
     setupCalendar();
 
-    // 데이터베이스 연결 초기화
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test_gui/event_log.db");
-
-    if (!db.open()) {
-        qDebug() << "Error: " << db.lastError().text();
-        return;
-    }
+    QSqlDatabase db = QSqlDatabase::database("MainConnection");
 }
 
 CalendarWidget::~CalendarWidget()
@@ -33,8 +26,6 @@ void CalendarWidget::setupCalendar() {
     QCalendarWidget *calendar = new QCalendarWidget(this);
     calendar->setFirstDayOfWeek(Qt::Sunday); // 주의 첫 번째 날을 일요일로 설정
     calendar->setGridVisible(true);  // 그리드 보기 설정
-    calendar->setMinimumWidth(300);  // 너비를 충분히 넓게 설정
-    calendar->setMinimumHeight(300); // 높이도 설정
     calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader); // 주 번호 숨기기
 
     // 데이터베이스에서 날짜별 탐지 수를 조회하는 쿼리
@@ -68,6 +59,10 @@ void CalendarWidget::setupCalendar() {
 void CalendarWidget::setupBarGraph() {
     QChart *chart = new QChart();
     chart->setTitle("날짜별 탐지 객체 수");
+    // 차트 배경 모서리 둥글게
+    chart->setBackgroundRoundness(10); // 둥글기 정도를 0~20 사이로 설정 (10은 적당한 둥글기)
+    // 차트의 투명도 및 스타일 조정 (선택 사항)
+    chart->setBackgroundBrush(QBrush(QColor(255, 255, 255, 100))); // 배경 투명도 설정
 
     QValueAxis *axisY = new QValueAxis();
     axisY->setRange(0, 50);
@@ -130,7 +125,7 @@ void CalendarWidget::updateBarGraphForDate(const QString &date) {
     emojis["plastic"] = "🧴";
 
     // 핑크 계열 색상 설정
-    QColor lightPink = QColor(245, 181, 185); // 연한 핑크
+    QColor lightPink = QColor(168, 197, 218);
 
     QBarSet *set = new QBarSet("Objects");
 

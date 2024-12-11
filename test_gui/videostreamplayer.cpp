@@ -336,13 +336,194 @@ bool VideoStreamPlayer::isStopped() const
 // }
 
 
-//마지막 값 똑같이 찍힌것(엣지랑)
+// //마지막 값 똑같이 찍힌것(엣지랑)
+// void VideoStreamPlayer::run()
+// {
+//     QByteArray buffer;
+//     QByteArray headerBuffer(sizeof(HeaderStruct), 0);
+
+//     // FFmpeg 초기화
+//     avformat_network_init();
+//     SwsContext *swsContext = nullptr;
+
+//     const AVCodec *codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+//     if (!codec) {
+//         qDebug() << "H.264 codec not found!";
+//         return;
+//     }
+
+//     AVCodecContext *codecContext = avcodec_alloc_context3(codec);
+//     if (!codecContext) {
+//         qDebug() << "Failed to allocate codec context!";
+//         return;
+//     }
+
+//     if (avcodec_open2(codecContext, codec, nullptr) < 0) {
+//         qDebug() << "Failed to open codec!";
+//         avcodec_free_context(&codecContext);
+//         return;
+//     }
+
+//     // codecContext->flags2 |= AV_CODEC_FLAG2_FAST;
+
+//     AVFrame *frame = av_frame_alloc();
+//     if (!frame) {
+//         qDebug() << "Failed to allocate frame!";
+//         avcodec_free_context(&codecContext);
+//         return;
+//     }
+
+//     while (!stop) {
+//         if (pause) {
+//             if (currentFrameIndex >= 0 && currentFrameIndex < frameHistory.size()) {
+//                 QImage frame = frameHistory[currentFrameIndex];
+//                 if (!frame.isNull()) {
+//                     emit frameReady(frame);
+//                 }
+//             }
+//             msleep(150);
+//             continue;
+//         }
+
+//         if (sslSocket && sslSocket->bytesAvailable() > 0) {
+
+//             buffer.clear();
+            
+//             // 헤더 읽기
+//             while (buffer.size() < sizeof(HeaderStruct)) {
+//                 buffer.append(sslSocket->read(sizeof(HeaderStruct) - buffer.size()));
+//             }
+
+//             // 헤더 파싱
+//             memcpy(headerBuffer.data(), buffer.data(), sizeof(HeaderStruct));
+//             HeaderStruct *header = reinterpret_cast<HeaderStruct*>(headerBuffer.data());
+
+//             // 엔디안 문제 해결: 바디 크기, 이미지 크기 등을 BigEndian에서 LittleEndian으로 변환
+//             header->frameId = qFromBigEndian(header->frameId);
+//             header->bodySize = qFromBigEndian(header->bodySize);
+//             header->imageWidth = qFromBigEndian(header->imageWidth);
+//             header->imageHeight = qFromBigEndian(header->imageHeight);
+
+//             uint32_t bodySize = header->bodySize;
+//             buffer.remove(0, sizeof(HeaderStruct));  // 헤더 제거
+//             qDebug() << "Received frame with ID:" << header->frameId << ", Body size:" << bodySize;
+
+//             // 데이터 읽기
+//             while (buffer.size() < bodySize) {
+//                 buffer.append(sslSocket->read(bodySize - buffer.size()));
+//             }
+
+//             QByteArray encryptedData = buffer.left(bodySize);
+//             buffer.remove(0, bodySize);
+
+//             // // 데이터 복호화
+//             // QByteArray decryptedData = decryptor.decrypt(encryptedData);
+//             // if (decryptedData.isEmpty()) {
+//             //     qDebug() << "Decryption failed.";
+//             //     continue;
+//             // }
+//             // qDebug() << "Decryption successful. Data size:" << decryptedData.size();
+//             // qDebug() << "Decrypted data snippet (hex):" << decryptedData.mid(0, 20).toHex();
+
+//             // NAL 유닛 분리
+//             QByteArray startCode = QByteArray::fromHex("00000001");
+//             QList<QByteArray> nalUnits;
+//             int pos = 0;
+//             while ((pos = encryptedData.indexOf(startCode, pos)) != -1) {
+//                 int nextPos = encryptedData.indexOf(startCode, pos + startCode.size());
+//                 if (nextPos == -1) {
+//                     nalUnits.append(encryptedData.mid(pos));
+//                     break;
+//                 } else {
+//                     nalUnits.append(encryptedData.mid(pos, nextPos - pos));
+//                 }
+//                 pos = nextPos;
+//             }
+
+//             qDebug() << "Number of NAL Units:" << nalUnits.size();
+//             for (int i = 0; i < nalUnits.size(); ++i) {
+//                 qDebug() << "NAL Unit" << i << "Size:" << nalUnits[i].size();
+//             }
+
+//             // 디코딩
+//             for (const QByteArray &nal : nalUnits) {
+//                 AVPacket packet;
+//                 av_init_packet(&packet);
+//                 packet.data = (uint8_t*)nal.data();
+//                 packet.size = nal.size();
+
+//                 int sendResult = avcodec_send_packet(codecContext, &packet);
+//                 if (sendResult < 0) {
+//                     char errBuf[256];
+//                     av_strerror(sendResult, errBuf, sizeof(errBuf));
+//                     qDebug() << "Error sending packet to decoder:" << errBuf;
+//                     continue;
+//                 }
+
+//                 while (avcodec_receive_frame(codecContext, frame) >= 0) {
+
+//                     // qDebug() << "Decoded frame PTS:" << frame->pts;
+//                     double pts_seconds = frame->pts * av_q2d(frame->time_base);
+//                     qDebug() << "Decoded frame PTS (seconds):" << pts_seconds;
+
+//                     if (!swsContext) {
+//                         swsContext = sws_getContext(frame->width, frame->height, codecContext->pix_fmt,
+//                                                     frame->width, frame->height, AV_PIX_FMT_RGB24,
+//                                                     SWS_BILINEAR, nullptr, nullptr, nullptr);
+//                         if (!swsContext) {
+//                             qDebug() << "Failed to initialize SWS context!";
+//                             break;
+//                         }
+//                     }
+
+//                     uint8_t *rgbBuffer = new uint8_t[frame->width * frame->height * 3];
+//                     uint8_t *rgbData[1] = { rgbBuffer };
+//                     int rgbStride[1] = { frame->width * 3 };
+
+//                     int result = sws_scale(swsContext, frame->data, frame->linesize, 0, frame->height, rgbData, rgbStride);
+//                     if (result < 0) {
+//                         qDebug() << "sws_scale failed. Result:" << result;
+//                     } else {
+//                         QImage img(rgbBuffer, frame->width, frame->height, QImage::Format_RGB888);
+//                         if (!img.isNull()) {
+//                             qDebug() << "Frame successfully converted to QImage.";
+
+//                             QTime time;
+//                             QString timestamp(header->timestamp);
+//                             str2time(timestamp, time);
+//                             addOverlayToFrame(time, img);     // overlay
+
+//                             frameHistory.push_back(img);
+//                             currentFrameIndex = header->frameId;
+
+//                             emit frameReady(img);
+//                         }
+//                         else
+//                         {
+//                             qDebug() << "Converted QImage is null.";
+//                         }
+//                     }
+//                     delete[] rgbBuffer;
+//                 }
+//             }
+//         }
+//         msleep(150);
+//     }
+
+//     // FFmpeg 리소스 해제
+//     if (swsContext) {
+//         sws_freeContext(swsContext);
+//     }
+//     av_frame_free(&frame);
+//     avcodec_free_context(&codecContext);
+// }
+
 void VideoStreamPlayer::run()
 {
     QByteArray buffer;
     QByteArray headerBuffer(sizeof(HeaderStruct), 0);
 
-    // FFmpeg 초기화
+    // FFmpeg initialization
     avformat_network_init();
     SwsContext *swsContext = nullptr;
 
@@ -364,9 +545,54 @@ void VideoStreamPlayer::run()
         return;
     }
 
+    codecContext->flags |= AV_CODEC_FLAG_LOW_DELAY;
+    //저지연(low latency) 모드 활성화, 실시간 스트리밍에서 유용.
+
+    codecContext->thread_count = 1; // Use a single thread for lower latency
+    //디코딩을 단일 스레드로 설정하여 스레드 간 동기화 비용 감소.
+
+    codecContext->flags2 |= AV_CODEC_FLAG2_FAST;
+    //빠른 디코딩을 위해 정확도를 일부 희생. 실시간 처리에서 유용.
+
+    // Skip settings
+    codecContext->skip_frame = AVDISCARD_BIDIR;
+    //양방향(B-frame) 프레임을 스킵하여 디코딩 속도 향상.
+
+    // codecContext->skip_idct = AVDISCARD_ALL;
+    // IDCT(역이산코사인변환) 단계를 건너뜀. 디코딩 품질 저하 가능.
+
+    // codecContext->skip_loop_filter = AVDISCARD_ALL;
+    // 디블로킹 필터를 비활성화하여 속도를 높임. 화질 저하 가능.
+
+    // Optional settings for H.264/H.265
+    // av_opt_set(codecContext->priv_data, "preset", "ultrafast", 0);
+    //"ultrafast" 프리셋: 속도 우선 설정, 품질 및 압축 효율 일부 희생.
+
+    // av_opt_set(codecContext->priv_data, "tune", "zerolatency", 0);
+    //"zerolatency" 튜닝: 저지연 환경 최적화. 주로 실시간 스트리밍에 사용.
+
+    // Error tolerance
+    codecContext->err_recognition = AV_EF_COMPLIANT | AV_EF_IGNORE_ERR;
+    //오류 인식을 설정. 허용 가능한 오류를 무시하고 디코딩 지속.
+
+    // Timing and buffer
+    // codecContext->rc_buffer_size = 0;
+    //비트레이트 제어를 위한 버퍼 크기. 0은 무제한 버퍼 사용.
+
+    // codecContext->pkt_timebase = (AVRational){1, 1000};
+    // 패킷의 시간 단위를 설정. {1, 1000}은 밀리초 기준으로 설정.
+
     AVFrame *frame = av_frame_alloc();
     if (!frame) {
         qDebug() << "Failed to allocate frame!";
+        avcodec_free_context(&codecContext);
+        return;
+    }
+
+    AVCodecParserContext *parser = av_parser_init(AV_CODEC_ID_H264);
+    if (!parser) {
+        qDebug() << "Failed to initialize H.264 parser!";
+        av_frame_free(&frame);
         avcodec_free_context(&codecContext);
         return;
     }
@@ -384,29 +610,28 @@ void VideoStreamPlayer::run()
         }
 
         if (sslSocket && sslSocket->bytesAvailable() > 0) {
-            
+
             buffer.clear();
-            
-            // 헤더 읽기
+
+            // Read header
             while (buffer.size() < sizeof(HeaderStruct)) {
                 buffer.append(sslSocket->read(sizeof(HeaderStruct) - buffer.size()));
             }
 
-            // 헤더 파싱
+            // Parse header
             memcpy(headerBuffer.data(), buffer.data(), sizeof(HeaderStruct));
-            HeaderStruct *header = reinterpret_cast<HeaderStruct*>(headerBuffer.data());
+            HeaderStruct *header = reinterpret_cast<HeaderStruct *>(headerBuffer.data());
 
-            // 엔디안 문제 해결: 바디 크기, 이미지 크기 등을 BigEndian에서 LittleEndian으로 변환
             header->frameId = qFromBigEndian(header->frameId);
             header->bodySize = qFromBigEndian(header->bodySize);
             header->imageWidth = qFromBigEndian(header->imageWidth);
             header->imageHeight = qFromBigEndian(header->imageHeight);
 
             uint32_t bodySize = header->bodySize;
-            buffer.remove(0, sizeof(HeaderStruct));  // 헤더 제거
+            buffer.remove(0, sizeof(HeaderStruct));
             qDebug() << "Received frame with ID:" << header->frameId << ", Body size:" << bodySize;
 
-            // 데이터 읽기
+            // Read data
             while (buffer.size() < bodySize) {
                 buffer.append(sslSocket->read(bodySize - buffer.size()));
             }
@@ -414,104 +639,83 @@ void VideoStreamPlayer::run()
             QByteArray encryptedData = buffer.left(bodySize);
             buffer.remove(0, bodySize);
 
-            // // 데이터 복호화
-            // QByteArray decryptedData = decryptor.decrypt(encryptedData);
-            // if (decryptedData.isEmpty()) {
-            //     qDebug() << "Decryption failed.";
-            //     continue;
-            // }
-            // qDebug() << "Decryption successful. Data size:" << decryptedData.size();
-            // qDebug() << "Decrypted data snippet (hex):" << decryptedData.mid(0, 20).toHex();
+            uint8_t *data = reinterpret_cast<uint8_t *>(encryptedData.data());
+            int dataSize = encryptedData.size();
+            AVPacket packet;
+            av_init_packet(&packet);
 
-            // NAL 유닛 분리
-            QByteArray startCode = QByteArray::fromHex("00000001");
-            QList<QByteArray> nalUnits;
-            int pos = 0;
-            while ((pos = encryptedData.indexOf(startCode, pos)) != -1) {
-                int nextPos = encryptedData.indexOf(startCode, pos + startCode.size());
-                if (nextPos == -1) {
-                    nalUnits.append(encryptedData.mid(pos));
+            while (dataSize > 0) {
+                int bytesParsed = av_parser_parse2(parser, codecContext, &packet.data, &packet.size,
+                                                   data, dataSize, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+                if (bytesParsed < 0) {
+                    qDebug() << "Error while parsing NAL unit.";
                     break;
-                } else {
-                    nalUnits.append(encryptedData.mid(pos, nextPos - pos));
                 }
-                pos = nextPos;
-            }
+                data += bytesParsed;
+                dataSize -= bytesParsed;
 
-            qDebug() << "Number of NAL Units:" << nalUnits.size();
-            for (int i = 0; i < nalUnits.size(); ++i) {
-                qDebug() << "NAL Unit" << i << "Size:" << nalUnits[i].size();
-            }
+                // Decode packet
+                if (packet.size > 0) {
+                    int sendResult = avcodec_send_packet(codecContext, &packet);
+                    if (sendResult < 0) {
+                        char errBuf[256];
+                        av_strerror(sendResult, errBuf, sizeof(errBuf));
+                        qDebug() << "Error sending packet to decoder:" << errBuf;
+                        continue;
+                    }
 
-            // 디코딩
-            for (const QByteArray &nal : nalUnits) {
-                AVPacket packet;
-                av_init_packet(&packet);
-                packet.data = (uint8_t*)nal.data();
-                packet.size = nal.size();
+                    while (avcodec_receive_frame(codecContext, frame) >= 0) {
+                        double pts_seconds = frame->pts * av_q2d(codecContext->time_base);
+                        double currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
+                        double delay = pts_seconds - currentTime;
 
-                int sendResult = avcodec_send_packet(codecContext, &packet);
-                if (sendResult < 0) {
-                    char errBuf[256];
-                    av_strerror(sendResult, errBuf, sizeof(errBuf));
-                    qDebug() << "Error sending packet to decoder:" << errBuf;
-                    continue;
-                }
+                        if (delay > 0) {
+                            QThread::msleep(static_cast<int>(delay * 1000));
+                        }
 
-                while (avcodec_receive_frame(codecContext, frame) >= 0) {
-
-                    // qDebug() << "Decoded frame PTS:" << frame->pts;
-                    double pts_seconds = frame->pts * av_q2d(frame->time_base);
-                    qDebug() << "Decoded frame PTS (seconds):" << pts_seconds;
-
-                    if (!swsContext) {
-                        swsContext = sws_getContext(frame->width, frame->height, codecContext->pix_fmt,
-                                                    frame->width, frame->height, AV_PIX_FMT_RGB24,
-                                                    SWS_BILINEAR, nullptr, nullptr, nullptr);
                         if (!swsContext) {
-                            qDebug() << "Failed to initialize SWS context!";
-                            break;
+                            swsContext = sws_getContext(frame->width, frame->height, codecContext->pix_fmt,
+                                                        frame->width, frame->height, AV_PIX_FMT_RGB24,
+                                                        SWS_BILINEAR, nullptr, nullptr, nullptr);
+                            if (!swsContext) {
+                                qDebug() << "Failed to initialize SWS context!";
+                                break;
+                            }
+                        }
+
+                        std::unique_ptr<uint8_t[]> rgbBuffer(new uint8_t[frame->width * frame->height * 3]);
+                        uint8_t *rgbData[1] = {rgbBuffer.get()};
+                        int rgbStride[1] = {frame->width * 3};
+
+                        int result = sws_scale(swsContext, frame->data, frame->linesize, 0, frame->height, rgbData, rgbStride);
+                        if (result < 0) {
+                            qDebug() << "sws_scale failed. Result:" << result;
+                        } else {
+                            QImage img(rgbData[0], frame->width, frame->height, QImage::Format_RGB888);
+                            if (!img.isNull()) {
+                                QTime time;
+                                QString timestamp(header->timestamp);
+                                str2time(timestamp, time);
+                                addOverlayToFrame(time, img);
+
+                                frameHistory.push_back(img);
+                                currentFrameIndex = header->frameId;
+
+                                emit frameReady(img);
+                            }
                         }
                     }
-
-                    uint8_t *rgbBuffer = new uint8_t[frame->width * frame->height * 3];
-                    uint8_t *rgbData[1] = { rgbBuffer };
-                    int rgbStride[1] = { frame->width * 3 };
-
-                    int result = sws_scale(swsContext, frame->data, frame->linesize, 0, frame->height, rgbData, rgbStride);
-                    if (result < 0) {
-                        qDebug() << "sws_scale failed. Result:" << result;
-                    } else {
-                        QImage img(rgbBuffer, frame->width, frame->height, QImage::Format_RGB888);
-                        if (!img.isNull()) {
-                            qDebug() << "Frame successfully converted to QImage.";
-
-                            QTime time;
-                            QString timestamp(header->timestamp);
-                            str2time(timestamp, time);
-                            addOverlayToFrame(time, img);     // overlay
-
-                            frameHistory.push_back(img);
-                            currentFrameIndex = header->frameId;
-
-                            emit frameReady(img);
-                        }
-                        else
-                        {
-                            qDebug() << "Converted QImage is null.";
-                        }
-                    }
-                    delete[] rgbBuffer;
                 }
             }
         }
         msleep(150);
     }
 
-    // FFmpeg 리소스 해제
+    // Cleanup
     if (swsContext) {
         sws_freeContext(swsContext);
     }
+    av_parser_close(parser);
     av_frame_free(&frame);
     avcodec_free_context(&codecContext);
 }
@@ -621,7 +825,7 @@ void VideoStreamPlayer::parseObjectDetectionData(QByteArray &jsonData)
         detectedTime.append(time);
 
         // // 메타데이터 업데이트
-        QString location = QString("위치: (%1, %2)").arg(x).arg(y);
+        QString location = QString("(%1, %2)").arg(x).arg(y);
         emit objectDetected(timestamp, location, className); // 메타데이터 표시 업데이트
 
         emit dashobjectDetected(frameId, timestamp, className);

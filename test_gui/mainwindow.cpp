@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(this);
     shadowEffect->setOffset(5, 5);  // 그림자의 x, y 이동 설정
     shadowEffect->setBlurRadius(10);  // 그림자의 흐림 정도 설정
-    shadowEffect->setColor(QColor(0, 0, 0, 100));  // 그림자 색상과 투명도 설정
+    shadowEffect->setColor(QColor(0, 0, 0, 150));  // 그림자 색상과 투명도 설정
 
     // 프레임에 그림자 효과 적용
     frame->setGraphicsEffect(shadowEffect);
@@ -115,10 +115,13 @@ MainWindow::MainWindow(QWidget *parent)
         frameSSLSocket->ignoreSslErrors();
     });
     
-    frameSSLSocket->connectToHostEncrypted("192.168.50.14", 1234);
+    frameSSLSocket->connectToHostEncrypted("192.168.50.14", 12345);
     if (!frameSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << frameSSLSocket->errorString();
     }
+
+    // 스트림 시작
+    player->startStream(frameSSLSocket, 1280, 720, 1280 * 720 * 3);
 
     //json ssl 소켓 연결
     jsonSSLSocket->setPeerVerifyMode(QSslSocket::VerifyNone);
@@ -134,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
         jsonSSLSocket->ignoreSslErrors();
     });
 
-    jsonSSLSocket->connectToHostEncrypted("192.168.50.14", 4321);
+    jsonSSLSocket->connectToHostEncrypted("192.168.50.14", 54321);
     if (!jsonSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << jsonSSLSocket->errorString();
     }
@@ -156,9 +159,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->backwardButton, &QPushButton::clicked, player, &VideoStreamPlayer::goBackward);
     connect(ui->forwardButton, &QPushButton::clicked, player, &VideoStreamPlayer::goForward);
 
-    // 스트림 시작
-    player->startStream(frameSSLSocket, 1280, 720, 1280 * 720 * 3);
-
     // MetaDataDisplay 생성
     metaData = new MetaDataDisplay(this);
 
@@ -176,10 +176,20 @@ MainWindow::MainWindow(QWidget *parent)
             metaData,
             &MetaDataDisplay::updateMetaData);
 
+    //데베
     eventLogManager = new EventLogManager("/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test_gui/event_log.db", this);
     qDebug() << "EventLogManager 초기화 완료";
 
     player->setEventLogManager(eventLogManager);
+
+    // QTableView에 사용할 모델 생성
+    model = new QStandardItemModel(this);
+    ui->tableView->setModel(model); // 테이블 뷰에 모델 설정
+    qDebug() << "테이블 뷰 모델 설정 완료";
+
+    //검색 버튼 클릭 시 슬롯 연결
+    connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
+    qDebug() << "검색 버튼 시그널 연결 완료";
 
     // Dashboard 생성 및 추가
     dashboard = new DashboardWidget(this);
@@ -207,19 +217,6 @@ MainWindow::MainWindow(QWidget *parent)
         ui->calenderContainer->setLayout(layout);
     }
 
-    // EventLogWidget 객체 생성
-    eventLogWidget = new EventLogWidget(this);
-
-    // eventLogContainer가 기존 레이아웃을 가지고 있는지 확인하고, 없으면 새 레이아웃을 설정
-    if (ui->eventLogContainer->layout()) {
-        ui->eventLogContainer->layout()->addWidget(eventLogWidget);
-    } else {
-        QVBoxLayout *layout = new QVBoxLayout(ui->eventLogContainer);
-        layout->setContentsMargins(0, 0, 0, 0);  // 여백 설정
-        layout->addWidget(eventLogWidget);
-        ui->eventLogContainer->setLayout(layout);
-    }
-
     // 5. 각 버튼 클릭 시 화면 전환
     connect(ui->MButton, &QPushButton::clicked, this, [this]() {
         ui->stackedWidget->setCurrentIndex(3);
@@ -236,6 +233,73 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->EButton, &QPushButton::clicked, this, [this]() {
         ui->stackedWidget->setCurrentIndex(2);  // 이벤트 로그 화면으로 전환
     });
+
+    // if (!frameSSLSocket->waitForReadyRead(10000)) {
+    //     qDebug() << "[mainwindow] SSL wait for ready read: " << frameSSLSocket->errorString();
+    //     return;
+    // }
+}
+
+void MainWindow::on_searchButton_clicked() {
+    qDebug() << "on_searchButton_clicked 호출";
+
+    QString searchTerm = ui->eventlineEdit->text(); // QLineEdit에서 검색어 가져오기
+    QString selectedValue = ui->eventcomboBox->currentText(); // 콤보박스에서 선택된 값 가져오기
+
+    qDebug() << "검색어: " << searchTerm << ", 선택값: " << selectedValue;
+
+    // 데이터베이스에서 해당 값을 검색
+    QString query = QString("SELECT * FROM event_logs WHERE %1 LIKE '%%2%'")
+                        .arg(selectedValue)
+                        .arg(searchTerm);
+
+    qDebug() << "Query: " << query;
+
+    model->clear(); // 이전 데이터 지우기
+    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"}); // 헤더 설정
+
+    QSqlQuery sqlQuery(query);
+
+    if (sqlQuery.exec()) {
+        qDebug() << "SQL Query 실행 성공";
+        while (sqlQuery.next()) {
+            QList<QStandardItem*> rowItems;
+            for (int i = 0; i < sqlQuery.record().count(); ++i) {
+                rowItems.append(new QStandardItem(sqlQuery.value(i).toString()));
+            }
+            model->appendRow(rowItems); // 모델에 행 추가
+        }
+        qDebug() << "검색 결과 처리 완료";
+    } else {
+        qDebug() << "SQL Query 실행 실패: " << sqlQuery.lastError().text();
+        QMessageBox::warning(this, "Error", "Failed to execute query: " + sqlQuery.lastError().text());
+    }
+}
+
+void MainWindow::loadEventLogs() {
+    qDebug() << "테이블 초기 데이터 로드 시작";
+
+    // 모델 초기화
+    model->clear();
+    model->setHorizontalHeaderLabels({"ID", "Frame ID", "Timestamp", "Object Class", "X", "Y", "Width", "Height"});
+
+    // 데이터베이스 쿼리 실행
+    QSqlQuery query("SELECT * FROM event_logs");
+    if (!query.exec()) {
+        qDebug() << "event_logs 테이블 초기 데이터 로드 실패:" << query.lastError().text();
+        return;
+    }
+
+    while (query.next()) {
+        QList<QStandardItem*> rowItems;
+        for (int i = 0; i < query.record().count(); ++i) {
+            rowItems.append(new QStandardItem(query.value(i).toString()));
+        }
+        model->appendRow(rowItems);
+    }
+
+    ui->tableView->setModel(model);
+    qDebug() << "테이블 초기 데이터 로드 완료";
 }
 
 void MainWindow::toggleMode() {

@@ -12,6 +12,7 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QMap>
+#include <QListWidget>
 
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
@@ -55,13 +56,14 @@ private:
 
     // UI 요소
     QTimer *timer;                            // 데이터 업데이트 타이머
-    QtCharts::QChart *chart;                            // 차트
-    QtCharts::QChartView *chartView;                    // 차트 뷰
-    QMap<QString, QtCharts::QLineSeries *> objectSeries; // 객체 유형별 데이터 시리즈
+    QChart *chart;                            // 차트
+    QChartView *chartView;                    // 차트 뷰
+    QMap<QString, QLineSeries *> objectSeries; // 객체 유형별 데이터 시리즈
     QMap<QString, int> objectCounts;          // 객체 유형별 탐지 카운트
 
     // 이상 탐지 리스트
     QListView *anomalyListView;               // 이상 탐지 리스트 뷰
+    QListWidget *anomalyListWidget;
     QStringListModel *anomalyListModel;       // 이상 탐지 리스트 모델
 
     int frameId;                              // 프레임 ID

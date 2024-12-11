@@ -20,7 +20,6 @@ SOURCES += \
     decryptor.cpp \
     deserializer.cpp \
     eventlogmanager.cpp \
-    eventlogwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     metadatadisplay.cpp \
@@ -30,7 +29,6 @@ SOURCES += \
 HEADERS += \
     calendarwidget.h \
     dashboardwidget.h \
-    eventlogwidget.h \
     frame.h \
     decryptor.h \
     deserializer.h \
@@ -43,7 +41,6 @@ HEADERS += \
 FORMS += \
     calendarwidget.ui \
     dashboardwidget.ui \
-    eventlogwidget.ui \
     mainwindow.ui \
     metadatadisplay.ui \
     sliderdialog.ui

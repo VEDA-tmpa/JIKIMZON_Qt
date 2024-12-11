@@ -33,6 +33,7 @@ extern "C" {
 #include <libavutil/avutil.h>
 #include <libavutil/opt.h>
 #include <libavutil/error.h>
+#include <libavutil/rational.h>
 }
 
 class VideoStreamPlayer : public QThread

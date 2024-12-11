@@ -27,6 +27,10 @@ public:
 
 private:
     Ui::SliderDialog *ui;
+
+    float brightness = 0.0f;
+    float contrast = 1.0f;
+    float saturation = 1.0f;
 };
 
 #endif // SLIDERDIALOG_H

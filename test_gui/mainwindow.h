@@ -21,7 +21,6 @@
 #include "dashboardwidget.h"
 #include "calendarwidget.h"
 #include "sliderdialog.h"
-#include "eventlogwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +38,8 @@ public:
 
 private slots:
     //이벤트로그
+    void on_searchButton_clicked();
+    void loadEventLogs();
     void onJsonReadyRead();
     //밤, 낮 모드 전환
     void toggleMode();
@@ -67,13 +68,13 @@ private:
     CalendarWidget *calender;
 
     EventLogManager *eventLogManager; // EventLogManager 포인터 추가
-    EventLogWidget *eventLogWidget; // EventLogWidget UI
+    QStandardItemModel *model; // QTableView에 사용할 모델
 
     bool isNightMode; // 현재 모드 상태 (낮/밤)
 
     float brightness = 0.0f;
     float contrast = 1.0f;
-    float saturation = 1.0f;
+    float saturation = 50.0f;
 };
 
 #endif // MAINWINDOW_H
