@@ -18,8 +18,8 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QtMath> // qRound 사용을 위해 필요
-#include <QGraphicsDropShadowEffect>
 #include <QFrame>
+#include <QHeaderView>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -29,19 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
     , player(new VideoStreamPlayer(this))  // 플레이어 초기화
 {
     ui->setupUi(this);
-
-    // 프레임에 그림자 효과를 적용하려면 아래와 같이 진행합니다.
-    QFrame* frame = new QFrame(this);
-    frame->setGeometry(100, 100, 200, 100);  // 프레임 위치와 크기 설정
-
-    // 그림자 효과 설정
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(this);
-    shadowEffect->setOffset(5, 5);  // 그림자의 x, y 이동 설정
-    shadowEffect->setBlurRadius(10);  // 그림자의 흐림 정도 설정
-    shadowEffect->setColor(QColor(0, 0, 0, 150));  // 그림자 색상과 투명도 설정
-
-    // 프레임에 그림자 효과 적용
-    frame->setGraphicsEffect(shadowEffect);
 
     // 시간 표시 설정
     setupTimeDisplay();
@@ -186,6 +173,13 @@ MainWindow::MainWindow(QWidget *parent)
     model = new QStandardItemModel(this);
     ui->tableView->setModel(model); // 테이블 뷰에 모델 설정
     qDebug() << "테이블 뷰 모델 설정 완료";
+
+    ui->tableView->horizontalHeader()->setVisible(true);
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableView->setWordWrap(true);
+    ui->tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
     //검색 버튼 클릭 시 슬롯 연결
     connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
