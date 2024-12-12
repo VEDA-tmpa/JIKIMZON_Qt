@@ -1,6 +1,6 @@
 #!/bin/bash
 
 cd build
+qmake ../JIKIMZON.pro
 make clean
-qmake ../test.pro
 make -j2

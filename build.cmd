@@ -1,4 +1,6 @@
 cd build
-C:\Qt\6.8.0\mingw_64\bin\qmake.exe -o Makefile ..\test.pro
-make clean
-make debug -j4
+qmake -o Makefile ..\JIKIMZON.pro
+mingw32-make clean
+mingw32-make debug -j4
+cd ..
+./build/debug/JIKIMZON.exe

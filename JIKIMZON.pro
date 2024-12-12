@@ -1,53 +1,49 @@
-QT       += core gui network multimedia sql charts
-
-# 기본 QtQuick 모듈 추가
-QT += quick quickcontrols2
+QT       += core gui network multimedia sql charts quick quickcontrols2
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-# # QML 파일을 자동으로 포함하도록 설정
-# CONFIG += qml
-
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+
 SOURCES += \
-    calendarwidget.cpp \
-    dashboardwidget.cpp \
-    decryptor.cpp \
-    deserializer.cpp \
-    eventlogmanager.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    metadatadisplay.cpp \
-    sliderdialog.cpp \
-    videostreamplayer.cpp
+    src/calendarwidget.cpp \
+    src/dashboardwidget.cpp \
+    src/decryptor.cpp \
+    src/deserializer.cpp \
+    src/eventlogmanager.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/metadatadisplay.cpp \
+    src/sliderdialog.cpp \
+    src/videostreamplayer.cpp
 
 HEADERS += \
-    calendarwidget.h \
-    dashboardwidget.h \
-    frame.h \
-    decryptor.h \
-    deserializer.h \
-    eventlogmanager.h \
-    mainwindow.h \
-    metadatadisplay.h \
-    sliderdialog.h \
-    videostreamplayer.h
+    inc/calendarwidget.h \
+    inc/dashboardwidget.h \
+    inc/frame.h \
+    inc/decryptor.h \
+    inc/deserializer.h \
+    inc/eventlogmanager.h \
+    inc/mainwindow.h \
+    inc/metadatadisplay.h \
+    inc/sliderdialog.h \
+    inc/videostreamplayer.h
 
 FORMS += \
-    calendarwidget.ui \
-    dashboardwidget.ui \
-    mainwindow.ui \
-    metadatadisplay.ui \
-    sliderdialog.ui
-
+    ui/calendarwidget.ui \
+    ui/dashboardwidget.ui \
+    ui/mainwindow.ui \
+    ui/metadatadisplay.ui \
+    ui/sliderdialog.ui
 
 RESOURCES += \
-    icons.qrc
+    res/icons.qrc
+
+INCLUDEPATH += ./inc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
