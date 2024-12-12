@@ -29,6 +29,6 @@
         <file>growth.png</file>
     </qresource>
     <qresource prefix="/certs">
-        <file>server.cert</file>
+        <file>../certs/server.cert</file>
     </qresource>
 </RCC>

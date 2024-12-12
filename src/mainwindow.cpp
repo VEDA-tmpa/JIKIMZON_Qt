@@ -163,8 +163,19 @@ MainWindow::MainWindow(QWidget *parent)
             metaData,
             &MetaDataDisplay::updateMetaData);
 
+
+    QString dbPath = QCoreApplication::applicationDirPath();
+    QString target = "JIKIMZON_Qt";
+    int index = dbPath.indexOf(target);
+    if (index != -1)
+    {
+        dbPath = dbPath.left(index + target.length());
+    }
+    dbPath += (QString(QDir::separator()) + "res" + QString(QDir::separator()) + "event_log.db");
+    qDebug() << "dbPath: " << dbPath;
+
     //데베
-    eventLogManager = new EventLogManager("/Volumes/jjeongni/QtProgramming/JIKIMZON_Qt/test_gui/event_log.db", this);
+    eventLogManager = new EventLogManager(dbPath, this);
     qDebug() << "EventLogManager 초기화 완료";
 
     player->setEventLogManager(eventLogManager);
