@@ -1,82 +1,138 @@
 # JIKIMZON_Qt
 
 ## 개발 환경
-
-- Qt Framework 6.5.3
-- FFmpeg 7.1
-- C++ 15.0.0
+- Qt Framework
+- FFmpeg 
+- OpenSSL
+- C++
 
 ## 튜토리얼
-
-### 외부 라이브러리 설치 (macOS)
-
-### ffmpeg
-```bash
+### ① 외부 라이브러리 설치
+#### macOS
+- Qt Framework 6.5.3
+- ffmpeg 7.1
+  ```bash
     brew install ffmpeg
-```
-    
-### openssl
+  ```
+- openssl
+    ```bash
+        brew install openssl
 
-```bash
-    brew install openssl
+        //OpenSSL의 경로를 환경 변수에 추가(`.bash_profile` 또는 `.zshrc`  파일)
+        export PATH="/usr/local/opt/openssl/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/openssl/lib"
+        export CPPFLAGS="-I/usr/local/opt/openssl/include"
 
-    //OpenSSL의 경로를 환경 변수에 추가(`.bash_profile` 또는 `.zshrc` 파일)
-    export PATH="/usr/local/opt/openssl/bin:$PATH"
-    export LDFLAGS="-L/usr/local/opt/openssl/lib"
-    export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        //변경 사항 적용
+        source ~/.bash_profile  # or source ~/.zshrc
+    ```  
+#### Windows
+- Qt 6.8.1
+    - 환경변수 설정
+        ```
+        C:\Qt\6.8.1\mingw_64\bin
+        C:\Qt\Tools\mingw1310_64\bin
+        ```
+- ffmpeg 7.1
+    1. https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full-shared.7z 다운로드 및 압축해제
+    2. 해당 경로 환경변수 설정
+        ```
+        C:\dev\ffmpeg\bin
+        ```
+- openssl 3.4.0
+    1. https://slproweb.com/products/Win32OpenSSL.html win64 다운로드 및 실행
+    2. 경로 지정 및 설치
+    3. 해당 경로 환경변수 설정
+        ```
+        C:\dev\openssl\bin
+        ```
+→ 환경변수 설정 이후 재부팅
 
-    //변경 사항을 적용
-    source ~/.bash_profile  # 또는 source ~/.zshrc
-```
 
-### 플랫폼 별 config 수정
-
-Qt 프로젝트의 `.pro` 파일을 FFmpeg, OpenSSL를 macOS에서 사용하기 위해 라이브러리 설치 경로에 따라 설정을 조정
-
-## `.pro` 파일 수정 단계
-
-1. **`.pro` 파일 열기**: Qt 프로젝트 디렉토리에서 해당 프로젝트의 `.pro` 파일을 찾습니다.
-2. **필요한 모듈 추가**: 파일의 시작 부분에 필요한 Qt 모듈을 포함합니다:
-    
+#### Linux
+- Qt
+- ffmpeg 5.1.6
+    ``` bash
+    sudo apt update
+    sudo apt install libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
     ```
-    QT  += core gui network multimedia sql charts  
+- openssl 3.0.15
+    ``` bash
+    sudo apt update
+    sudo apt install libssl-dev libcrypto++-dev
     ```
-    
-3. **플랫폼별 설정**: 조건문을 사용하여 macOS를 확인하고 라이브러리 경로를 추가
-    1. **macx 블록**: 이 블록은 macOS에 특화된 설정을 포함합니다. `macx` 키워드는 이러한 설정이 macOS에서만 적용되도록 보장
-    2. **라이브러리 경로**:
-    - `QMAKE_RPATHDIR`: FFmpeg의 런타임 라이브러리 경로를 설정
-    - `INCLUDEPATH`: OpenSSL, FFmpeg의 헤더 파일을 찾는 위치를 지정
-    - `LIBS`: 지정된 라이브러리에 링크하여 애플리케이션이 해당 기능을 사용
 
-```
+
+
+### ② `JIKIMZON.pro` config 파일 수정
+- FFmpeg, OpenSSL 라이브러리 설치 경로를 `JIKIMZON.pro` 파일에 추가
+    - `QMAKE_RPATHDIR`: 런타임 라이브러리 경로 설정
+    - `INCLUDEPATH`: 헤더 파일 경로 설정
+    - `LIBS`: 라이브러리에 링크 경로 설정
+#### macOS
+```ini
 # macOS 전용 설정
 macx {
-    # FFmpeg 라이브러리 경로 추가
     QMAKE_RPATHDIR += /opt/homebrew/Cellar/ffmpeg/7.1_3/lib
 
     # OpenSSL 라이브러리 경로
     INCLUDEPATH += /opt/homebrew/opt/openssl@3/include
     LIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
-    LIBS += -lz  # 압축을 위한 zlib
+    LIBS += -lz 
 
     # FFmpeg 포함 및 라이브러리 경로
     INCLUDEPATH += /opt/homebrew/Cellar/ffmpeg/7.1_3/include
     LIBS += -L/opt/homebrew/Cellar/ffmpeg/7.1_3/lib \\
             -lavcodec -lavformat -lavutil -lswscale -lpostproc -lavdevice -lavfilter
 }
+```
+#### Windows
+```ini
+#windows
+win32 {
+    LIBS += -lws2_32    # winsock2
 
+    INCLUDEPATH += "C:\dev\ffmpeg\include"
+    LIBS += -LC:\dev\ffmpeg\lib \
+            -lavcodec -lavformat -lavutil -lswscale -lpostproc
+
+    INCLUDEPATH += "C:\dev\openssl\include"
+    LIBS += -LC:\dev\openssl\lib \
+            -lssl -lcrypto
+}
 ```
 
-빌드가 완료된 후 `.pro` 파일을 더블 클릭하여 애플리케이션을 실행, 비디오 스트리밍과 객체 탐지 결과를 실시간으로 확인
+#### Linux
+```ini
+#linux
+linux {
+    INCLUDEPATH += /usr/include/aarch64-linux-gnu/qt5
+    INCLUDEPATH += /usr/include/aarch64-linux-gnu
+    LIBS += -lavcodec -lavformat -lavutil -lswscale \
+            -lssl -lcrypto
+}
+```
 
-![실행방법](https://github.com/user-attachments/assets/20d2d9c8-6d81-44e1-ba01-4d07b7ed0b41)
+### ③ 빌드 및 실행
 
+- QtCreator
+  - `.pro` 파일을 더블 클릭하여 프로젝트를 열고, 빌드하여 비디오 스트리밍과 객체 탐지 결과를 실시간으로 확인
+   ![실행방법](https://github.com/user-attachments/assets/20d2d9c8-6d81-44e1-ba01-4d07b7ed0b41)
+
+- Windows
+    ```
+    ./build.cmd
+    ```
+- Linux
+    ```
+    chmod +x ./build.sh
+    ./build.sh
+    ```
 ## 스택
 
 - Qt Framework: GUI 개발
 - FFmpeg: 비디오 스트리밍 및 디코딩
-- C++: 주요 프로그래밍 언어
+- C++
 - QChartView: 데이터 시각화
 
 ## 기능
@@ -102,27 +158,80 @@ macx {
 ```
 project_root/
 │
-├── src/
-│   ├── main.cpp
-│   ├── mainwindow.cpp
-│   ├── mainwindow.h
-│   ├── videostreamplayer.cpp
-│   ├── videostreamplayer.h
-│   ├── metadatadisplay.cpp
-│   ├── metadatadisplay.h
-│   ├── dashboard.cpp
-│   ├── dashboard.h
-│   ├── calendarwidget.cpp
-│   ├── calendarwidget.h
-│   └── sliderdialog.cpp
+├── JIKIMZON.pro
+├── Card.qml
+├── main.qml
 │
-├── include/
-│   └── ffmpeg/
+├── build.cmd
+├── build.sh
+├── README.md
 │
-├── resources/
-│   └── icons/
+├── certs
+│   ├── keyfile.bin
+│   ├── keyfile1.bin
+│   └── server.cert
 │
-├── tests/
+├── inc
+│   ├── calendarwidget.h
+│   ├── dashboardwidget.h
+│   ├── decryptor.h
+│   ├── deserializer.h
+│   ├── eventlogmanager.h
+│   ├── frame.h
+│   ├── mainwindow.h
+│   ├── metadatadisplay.h
+│   ├── sliderdialog.h
+│   └── videostreamplayer.h
 │
-└── project.pro
+├── src
+│   ├── calendarwidget.cpp
+│   ├── dashboardwidget.cpp
+│   ├── decryptor.cpp
+│   ├── deserializer.cpp
+│   ├── eventlogmanager.cpp
+│   ├── main.cpp
+│   ├── mainwindow.cpp
+│   ├── metadatadisplay.cpp
+│   ├── sliderdialog.cpp
+│   └── videostreamplayer.cpp
+│
+├── ui
+│   ├── calendarwidget.ui
+│   ├── dashboardwidget.ui
+│   ├── mainwindow.ui
+│   ├── metadatadisplay.ui
+│   └── sliderdialog.ui
+│    
+├── res
+│   ├── Moon2.png
+│   ├── Sun2.png
+│   ├── arrow_down.png
+│   ├── backward.png
+│   ├── biodegradable.png
+│   ├── box.png
+│   ├── calendar.png
+│   ├── data-collection.png
+│   ├── default.png
+│   ├── desktop-2.png
+│   ├── event_log.db
+│   ├── forward.png
+│   ├── glass.png
+│   ├── growth.png
+│   ├── icons.qrc
+│   ├── left.png
+│   ├── linechart.png
+│   ├── logo.png
+│   ├── metal.png
+│   ├── monitoring.png
+│   ├── paper.png
+│   ├── pause.png
+│   ├── plastic.png
+│   ├── play.png
+│   ├── right.png
+│   ├── setting.png
+│   └── timeline.png
+├── archive
+│   └── ...
+└── build
+    └── ...
 ```
