@@ -1,13 +1,40 @@
 #ifndef VIDEOSTREAMPLAYER_H
 #define VIDEOSTREAMPLAYER_H
 
-#include "Decryptor.h"  // Decryptor 헤더 추가
+#include "decryptor.h"  // Decryptor 헤더 추가
+#include "eventlogmanager.h"
+#include "metadatadisplay.h" // MetaDataDisplay 헤더 포함
+
 #include <QThread>
 #include <QTcpSocket>
 #include <QImage>
 #include <zlib.h>
+#include <QList>
 #include <QByteArray>
+#include <QMutex>
+#include <QQueue>
+#include <QWaitCondition>
+#include <QTcpSocket>
+#include <QPainter>
+#include <QByteArray>
+#include <QBuffer>
+#include <QDataStream>
+#include <QList>
+#include <QTime>
+#include <QSslSocket>
+
 #include <opencv2/opencv.hpp>
+
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/avutil.h>
+#include <libavutil/opt.h>
+#include <libavutil/error.h>
+#include <libavutil/rational.h>
+}
 
 class VideoStreamPlayer : public QThread
 {
@@ -15,9 +42,10 @@ class VideoStreamPlayer : public QThread
     QByteArray key;  // key 변수 정의
 public:
     explicit VideoStreamPlayer(QObject *parent = nullptr);
+    VideoStreamPlayer() = default;
     ~VideoStreamPlayer();
 
-    void startStream(QTcpSocket *socket, int frameWidth, int frameHeight, int frameSize);
+    void startStream(QSslSocket *socket, int frameWidth, int frameHeight, int frameSize);
     void stopStream();
     void pauseStream();
     void resumeStream();
@@ -25,28 +53,45 @@ public:
     void goBackward();
     void goForward();
     bool isStopped() const;
-    void addOverlayToFrame(cv::Mat &frame,
-                           const std::vector<cv::Rect> &detectedObjects,
-                           const std::vector<std::string> &labels);
-    // void addOverlayToFrame2(cv::Mat &frame, const std::vector<cv::Rect> &detectedObjects,
-    //                         const std::vector<cv::Mat> &icons);
+    QList<QByteArray> extractNalUnits(const QByteArray &decryptedData);
+    //json파싱, 비디오 오버레이
+    void parseObjectDetectionData(QByteArray &jsonData);
+    void addOverlayToFrame(QTime time, QImage &image);
+    void setEventLogManager(EventLogManager *manager); // Setter 추가
+
+    //비디오 설정(밝기, 대비, 채도)
+    QImage adjustBrightness(QImage image, int value);
+    QImage adjustContrast(QImage image, int value);
+    QImage adjustSaturation(QImage image, int value);
 
 signals:
     void frameReady(const QImage &frame);
+    void objectDetected(const QString &timestamp, const QString &location, const QString &objectType);
 
+    void dashobjectDetected(int frameId, const QString &timestamp, const QString &objectType);
 protected:
     void run() override;
 
 private:
-    QTcpSocket *tcpSocket;
+    QSslSocket *sslSocket;
     bool stop;
     bool pause;  // 일시 정지 상태
 
     int currentFrameIndex;  // 현재 프레임 인덱스
-    QVector<QImage> frameHistory;  // 재생된 프레임 기록
+    QList<QImage> frameHistory;  // 재생된 프레임 기록
     int frameWidth;
     int frameHeight;
     int frameSize;
+
+    QVector<int> detectedFrameIds; // 프레임 ID를 저장하는 벡터
+    QList<QTime> detectedTime; // 타임스탬프를 저장하는 벡터
+    QVector<QRect> detectedObjects; // 객체 감지를 위한 사각형 벡터
+    QStringList objectLabels; // 객체 라벨을 저장하는 리스트
+
+    EventLogManager *eventLogManager; // EventLogManager 포인터 선언
+    MetaDataDisplay *metaData; // MetaDataDisplay 포인터
+
+    void str2time(const QString &str, QTime &time); // 시간 문자열을 QTime으로 변환하는 함수
 };
 
 #endif // VIDEOSTREAMPLAYER_H

@@ -6,175 +6,828 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>970</width>
-    <height>745</height>
+    <width>1400</width>
+    <height>750</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1400</width>
+    <height>750</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1400</width>
+    <height>750</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>JIKIMZON</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="QIcon::ThemeIcon::CameraVideo"/>
+  </property>
+  <property name="documentMode">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="metaDataContainer" native="true">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>70</y>
-      <width>411</width>
-      <height>601</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="gridLayoutWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: #F8F9FB;
+</string>
+   </property>
+   <widget class="QFrame" name="sidebarframe">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
-      <width>491</width>
-      <height>391</height>
+      <y>20</y>
+      <width>191</width>
+      <height>661</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="2" column="2">
-      <widget class="QPushButton" name="forwardButton">
-       <property name="text">
-        <string>forward</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="4">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+border-radius: 15px;
+
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <widget class="QPushButton" name="MButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>171</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: transparent; /* 버튼 배경을 투명하게 설정 */
+    color: black; /* 기본 텍스트 색상은 검은색 */
+    font-weight: bold; /* 텍스트를 두껍게 설정 */
+    font-size: 15px; /* 텍스트 크기 설정 (여기서 15px로 시작) */
+    border: none; /* 버튼 테두리 없앰 */
+}
+
+QPushButton:hover {
+   background-color:  rgba(170, 201, 227, 80);
+    color: black; /* 호버 시 텍스트 색상 유지 */
+    font-size: 18px; /* 호버 시 텍스트 크기를 18px로 설정 (필요에 따라 조정 가능) */
+}
+</string>
+     </property>
+     <property name="text">
+      <string> Monitoring</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/icon/desktop-2.png</normalon>
+      </iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="RButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>171</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: transparent; /* 버튼 배경을 투명하게 설정 */
+    color: black; /* 기본 텍스트 색상은 검은색 */
+    font-weight: bold; /* 텍스트를 두껍게 설정 */
+    font-size: 15px; /* 텍스트 크기 설정 (여기서 15px로 시작) */
+    border: none; /* 버튼 테두리 없앰 */
+}
+
+QPushButton:hover {
+  background-color:  rgba(170, 201, 227, 80);
+    color: black; /* 호버 시 텍스트 색상 유지 */
+    font-size: 18px; /* 호버 시 텍스트 크기를 18px로 설정 (필요에 따라 조정 가능) */
+}
+</string>
+     </property>
+     <property name="text">
+      <string> Chart</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/icon/growth.png</normalon>
+      </iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="CButton">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>240</y>
+       <width>171</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: transparent; /* 버튼 배경을 투명하게 설정 */
+    color: black; /* 기본 텍스트 색상은 검은색 */
+    font-weight: bold; /* 텍스트를 두껍게 설정 */
+    font-size: 15px; /* 텍스트 크기 설정 (여기서 15px로 시작) */
+    border: none; /* 버튼 테두리 없앰 */
+}
+
+QPushButton:hover {
+  background-color:  rgba(170, 201, 227, 80);
+    color: black; /* 호버 시 텍스트 색상 유지 */
+    font-size: 18px; /* 호버 시 텍스트 크기를 18px로 설정 (필요에 따라 조정 가능) */
+}
+</string>
+     </property>
+     <property name="text">
+      <string> Calendar</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/icon/calendar.png</normalon>
+      </iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="EButton">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>300</y>
+       <width>171</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: transparent; /* 버튼 배경을 투명하게 설정 */
+    color: black; /* 기본 텍스트 색상은 검은색 */
+    font-weight: bold; /* 텍스트를 두껍게 설정 */
+    font-size: 15px; /* 텍스트 크기 설정 (여기서 15px로 시작) */
+    border: none; /* 버튼 테두리 없앰 */
+}
+
+QPushButton:hover {
+  background-color:  rgba(170, 201, 227, 80);
+    color: black; /* 호버 시 텍스트 색상 유지 */
+    font-size: 18px; /* 호버 시 텍스트 크기를 18px로 설정 (필요에 따라 조정 가능) */
+}
+</string>
+     </property>
+     <property name="text">
+      <string> Event Log</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/icon/data-collection.png</normalon>
+      </iconset>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>30</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 20px;
+font-weight: bold;
+color: #333333;
+</string>
+     </property>
+     <property name="text">
+      <string>JIKIMZON</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="logo">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>71</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: transparent;
+    border: none;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/icon/logo.png</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>20</y>
+      <width>1201</width>
+      <height>681</height>
+     </rect>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="currentIndex">
+     <number>3</number>
+    </property>
+    <widget class="QWidget" name="b">
+     <widget class="QWidget" name="dashboardContainer" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>1151</width>
+        <height>561</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget{
+background-color: rgb(255, 255, 255);
+border-radius: 15px;
+}
+
+</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #333333;
+</string>
+      </property>
+      <property name="text">
+       <string>Chart</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="c">
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #333333;
+</string>
+      </property>
+      <property name="text">
+       <string> Calendar</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="calenderContainer" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>1151</width>
+        <height>561</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget{
+background-color: rgb(255, 255, 255);
+border-radius: 15px;
+}
+
+</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="d">
+     <widget class="QWidget" name="eventLogContainer" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>1151</width>
+        <height>561</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget{
+background-color: rgb(255, 255, 255);
+border-radius: 15px;
+}
+
+</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QFrame" name="frame">
+         <property name="styleSheet">
+          <string notr="true">    background-color:  rgba(170, 201, 227, 50);
+    border-radius: 15px;        /* 모서리 둥글게 */
+    padding: 16px;              /* 내부 여백 */</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="eventlineEdit">
+            <property name="styleSheet">
+             <string notr="true">/* QLineEdit 기본 스타일 */
+QLineEdit {
+    background-color: rgba(255, 255, 255, 100);  /* 배경 색상 */
+    border-radius: 5px;         /* 모서리 둥글게 */
+    padding: 10px;               /* 내부 여백 */
+    font-size: 13px;            /* 텍스트 크기 */
+    color: #333333;             /* 텍스트 색상 */
+}
+
+/* QLineEdit 포커스 시 스타일 (기본 상태로 둡니다) */
+QLineEdit:focus {
+background-color:  rgba(170, 201, 227, 50);
+}
+</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QComboBox" name="eventcomboBox">
+            <property name="styleSheet">
+             <string notr="true">/* QComboBox 기본 스타일 */
+QComboBox {
+    background-color: rgba(255, 255, 255, 100);  
+    border-radius: 10px;         /* 모서리 둥글게 */
+    padding: 10px;              /* 내부 여백 */
+    font-size: 13px;            /* 텍스트 크기 */
+    color: #333333;             /* 텍스트 색상 */
+}
+
+/* QComboBox 항목 호버 시 색상 */
+QComboBox::hover {
+      background-color:  rgba(170, 201, 227, 50);
+}
+
+/* QComboBox 항목 선택 시 색상 */
+QComboBox::item:selected {
+    background-color:     background-color:  rgba(170, 201, 227, 100);
+    color: #436f90;             /* 선택된 항목 텍스트 색상 */
+}
+
+/* QComboBox 화살표 아이콘 투명하게 설정 */
+QComboBox::down-arrow {
+    width: 18px;                         /* 화살표 크기 조정 */
+    height: 18px;
+    background-color: rgba(0, 0, 0, 0);  /* 화살표 배경 투명 */
+}
+
+/* QComboBox 팝업 목록에 대한 스타일 (항목 선택 시 팝업 배경 색상) */
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;  /* 팝업 배경 색상 */
+    selection-background-color: #5C8DB1; /* 선택된 항목 배경 색상 */
+    selection-color: rgba(170, 201, 227, 50);
+    color: #333333;             /* 텍스트 색상 */
+}
+</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>object_class</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>frame_id</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>timestamp</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>y</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>width</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>height</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="searchButton">
+            <property name="styleSheet">
+             <string notr="true">/* OK 버튼 스타일 */
+QPushButton{
+    background-color: rgba(255, 255, 255, 100);  /* 밝은 회색 */
+    color: rgb(0, 0, 0);             /* 글자색 검정 */
+    font-size: 13px;            /* 글자 크기 */
+    font-weight: bold;
+    border-radius: 5px;         /* 모서리를 살짝 둥글게 */
+    padding: 10px 20px;          /* 버튼 안쪽 여백 */
+}
+
+/* OK 버튼 hover 효과 */
+QPushButton:hover {
+    background-color:  rgba(170, 201, 227, 50);
+}</string>
+            </property>
+            <property name="text">
+             <string>검색</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QTableView" name="tableView">
+            <property name="styleSheet">
+             <string notr="true">/* QTableView 기본 스타일 */
+QTableView {
+          background-color: rgba(255, 255, 255, 100);
+        border-radius: 10px;
+    gridline-color: #a8c5da;    /* 그리드라인 색상 */
+    color: #436f90;             /* 텍스트 색상 */
+}
+
+/* QTableView 아이템 스타일 */
+QTableView::item {
+    padding: 6px;               /* 항목의 여백 */
+    border: 1px solid transparent;  /* 항목의 기본 테두리 색상 */
+    color: #436f90;             /* 항목 텍스트 색상 */
+}
+
+QTableView::item:selected {
+   background-color:  rgba(170, 201, 227, 80);
+    color: #436f90;             /* 선택된 항목 텍스트 색상 */
+}
+
+QTableView::item:hover {
+    background-color:  rgba(170, 201, 227, 80);
+    color: #436f90;             /* 호버 시 항목 텍스트 색상 */
+}
+
+/* QTableView 수평 헤더 스타일 */
+QTableView::horizontalHeader {
+    background-color: rgba(92, 141, 177, 150); /* 헤더 배경 색상 */
+    color: #ffffff;             /* 헤더 텍스트 색상 */
+    font-weight: bold;          /* 헤더 텍스트 굵게 */
+    padding: 4px;               /* 헤더 텍스트 여백 */
+    border-bottom: 2px solid #a8c5da; /* 헤더 하단 테두리 */
+}
+
+/* 스크롤바 스타일 */
+QScrollBar:vertical {
+    border: none;
+    background: rgba(176, 227, 255, 100); /* 스크롤바 배경 */
+    width: 12px;                       /* 스크롤바 너비 */
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: rgba(92, 141, 177, 80); /* 스크롤바 핸들 */
+    min-height: 20px;                        /* 핸들 최소 높이 */
+    border-radius: 6px;                      /* 모서리 둥글게 */
+}
+
+QScrollBar::add-line:vertical, 
+QScrollBar::sub-line:vertical {
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, 
+QScrollBar::down-arrow:vertical {
+    background: none;
+}
+
+QScrollBar::add-page:vertical, 
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>191</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #333333;
+</string>
+      </property>
+      <property name="text">
+       <string> Event Log</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="a">
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>131</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #333333;
+</string>
+      </property>
+      <property name="text">
+       <string>Monitoring</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="metaDataContainer" native="true">
+      <property name="geometry">
+       <rect>
+        <x>720</x>
+        <y>20</y>
+        <width>441</width>
+        <height>641</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget{    
+background-color: rgba(255, 255, 255, 180);  /* 배경 색상과 투명도 (180은 0~255 사이의 값으로 투명도를 설정) */
+    border-radius: 15px;        /* 모서리 둥글게 */
+    padding: 16px;              /* 내부 여백 */
+}</string>
+      </property>
+     </widget>
+     <widget class="QFrame" name="videoframe">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>691</width>
+        <height>571</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QFrame {
+    background-color: rgba(255, 255, 255, 180);  /* 배경 색상과 투명도 (180은 0~255 사이의 값으로 투명도를 설정) */
+    border-radius: 15px;        /* 모서리 둥글게 */
+    padding: 16px;              /* 내부 여백 */
+}
+</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
       <widget class="QLabel" name="videoLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>651</width>
+         <height>421</height>
+        </rect>
+       </property>
        <property name="styleSheet">
-        <string notr="true">QLabel {
-        background:  rgb(0, 0, 0);  /* 배경 투명 transparent */
-        border: 1px solid black;   /* 얇은 검은색 테두리 */
-        padding: 5px;              /* 테두리와 이미지 간의 간격 */
-    }</string>
+        <string notr="true">QLabel{
+border-radius: 15px;        /* 모서리 둥글게 */
+}</string>
        </property>
        <property name="text">
         <string/>
        </property>
       </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="resumeButton">
-       <property name="text">
-        <string>resume</string>
+      <widget class="QWidget" name="widget_4" native="true">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>530</y>
+         <width>171</width>
+         <height>41</height>
+        </rect>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="pauseButton">
-       <property name="text">
-        <string>pause</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="3">
-      <widget class="QPushButton" name="backwardButton">
-       <property name="text">
-        <string>backward</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>470</y>
-      <width>501</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>1</number>
-    </property>
-    <widget class="QWidget" name="tab_2">
-     <attribute name="title">
-      <string>알림설정</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="tab">
-     <attribute name="title">
-      <string>이벤트</string>
-     </attribute>
-     <widget class="QComboBox" name="comboBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>103</width>
-        <height>32</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>20</y>
-        <width>291</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>20</y>
-        <width>81</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>검색</string>
-      </property>
-     </widget>
-     <widget class="QTableView" name="tableView">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>60</y>
-        <width>461</width>
-        <height>101</height>
-       </rect>
-      </property>
-     </widget>
-    </widget>
-   </widget>
-   <widget class="QPushButton" name="btnToggleMode">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>10</y>
-      <width>51</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-    background-color: rgb(229, 231, 158); /* 배경색 */
-    border: 2px solid rgb(69, 61, 53); /* 테두리 색상과 두께 */
-    border-radius: 25px; /* 버튼 크기의 절반으로 설정 (정확한 원형) */
-    color: white; /* 텍스트 색상 */
-    font-size: 15px; /* 텍스트 크기 */
-    width: 30px; /* 버튼의 너비 */
-    height: 30px; /* 버튼의 높이 */
+       <property name="styleSheet">
+        <string notr="true">QWidget {
+    background: transparent;/* 상단 바와 하단 바 배경을 투명하게 */
 }
 
-QPushButton:hover {
-    background-color: rgb(170, 197, 227); /* 호버 상태 배경색 */
-}
-
-QPushButton:pressed {
-    background-color: rgb(252, 253, 248); /* 클릭 시 배경색 */
+QPushButton {
+    background: rgba(0, 0, 0, 0);  /* 버튼 배경 투명 */
+    color: white;  /* 텍스트 색상 */
+    border: none;  /* 테두리 없애기 */
+    font-size: 16px;  /* 폰트 크기 */
+    padding: 10px;  /* 패딩 */
 }</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QPushButton" name="backwardButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/icon/backward.png</normaloff>:/icon/backward.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pauseButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icon/pause.png</normalon>
+           </iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="resumeButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icon/play.png</normalon>
+           </iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="forwardButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icon/forward.png</normalon>
+           </iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QPushButton" name="setting">
+       <property name="geometry">
+        <rect>
+         <x>630</x>
+         <y>530</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background: rgba(0, 0, 0, 0);  /* 버튼 배경 투명 */
+    color: white;  /* 텍스트 색상 */
+    border: none;  /* 테두리 없애기 */
+    font-size: 16px;  /* 폰트 크기 */
+    padding: 10px;  /* 패딩 */
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/icon/setting.png</normalon>
+        </iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QWidget" name="widget_5" native="true">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>651</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QWidget {
+    background: rgba(0, 0, 0, 0);  /* 상단 바와 하단 바 배경을 투명하게 */
+}
+</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="5,3,3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="timeLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="weatherLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="networkStatusLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -182,13 +835,15 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>970</width>
+     <width>1400</width>
      <height>24</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

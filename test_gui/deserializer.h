@@ -4,8 +4,14 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include <arpa/inet.h>
-#include "Frame.h"
+
+#ifdef _WIN32
+    #include <winsock2.h>
+#else
+    #include <arpa/inet.h>
+#endif
+
+#include "frame.h"
 
 namespace frame {
 

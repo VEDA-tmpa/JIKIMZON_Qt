@@ -9,7 +9,26 @@
         <file>default.png</file>
     </qresource>
     <qresource prefix="/icon">
-        <file>moon.png</file>
-        <file>sun.png</file>
+        <file>forward.png</file>
+        <file>pause.png</file>
+        <file>play.png</file>
+        <file>backward.png</file>
+        <file>Moon2.png</file>
+        <file>Sun2.png</file>
+        <file>right.png</file>
+        <file>left.png</file>
+        <file>setting.png</file>
+        <file>arrow_down.png</file>
+        <file>logo.png</file>
+        <file>calendar.png</file>
+        <file>monitoring.png</file>
+        <file>linechart.png</file>
+        <file>timeline.png</file>
+        <file>data-collection.png</file>
+        <file>desktop-2.png</file>
+        <file>growth.png</file>
+    </qresource>
+    <qresource prefix="/certs">
+        <file>server.cert</file>
     </qresource>
 </RCC>
