@@ -26,6 +26,8 @@
         //변경 사항 적용
         source ~/.bash_profile  # or source ~/.zshrc
     ```  
+<br>
+
 #### Windows
 - Qt 6.8.1
     - 환경변수 설정
@@ -47,7 +49,7 @@
         C:\dev\openssl\bin
         ```
 → 환경변수 설정 이후 재부팅
-
+<br>
 
 #### Linux
 - Qt
@@ -61,14 +63,15 @@
     sudo apt update
     sudo apt install libssl-dev libcrypto++-dev
     ```
-
-
+<br><br>
 
 ### ② `JIKIMZON.pro` config 파일 수정
 - FFmpeg, OpenSSL 라이브러리 설치 경로를 `JIKIMZON.pro` 파일에 추가
     - `QMAKE_RPATHDIR`: 런타임 라이브러리 경로 설정
     - `INCLUDEPATH`: 헤더 파일 경로 설정
     - `LIBS`: 라이브러리에 링크 경로 설정
+<br>
+
 #### macOS
 ```ini
 # macOS 전용 설정
@@ -86,6 +89,8 @@ macx {
             -lavcodec -lavformat -lavutil -lswscale -lpostproc -lavdevice -lavfilter
 }
 ```
+<br>
+
 #### Windows
 ```ini
 #windows
@@ -101,6 +106,7 @@ win32 {
             -lssl -lcrypto
 }
 ```
+<br>
 
 #### Linux
 ```ini
@@ -112,6 +118,7 @@ linux {
             -lssl -lcrypto
 }
 ```
+<br><br>
 
 ### ③ 빌드 및 실행
 
@@ -128,12 +135,16 @@ linux {
     chmod +x ./build.sh
     ./build.sh
     ```
+<br>
+
 ## 스택
 
 - Qt Framework: GUI 개발
 - FFmpeg: 비디오 스트리밍 및 디코딩
 - C++
 - QChartView: 데이터 시각화
+<br>
+
 
 ## 기능
 
@@ -152,6 +163,8 @@ linux {
 - **캘린더 위젯**: 저장된 객체 탐지 통계를 막대그래프 형태로 표시
     - **QChartView**를 사용하여 저장된 객체 탐지 통계를 **막대그래프**로 표시
     - 사용자가 저장된 과거 데이터를 분석하거나, 특정 시간대의 탐지 결과를 비교
+<br>
+
 
 ## 프로젝트 구조
 
