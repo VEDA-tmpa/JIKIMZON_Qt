@@ -52,14 +52,14 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
     QString timeMinuteOnly = timeOnly.left(4); // "114616" -> "1146"
     timeMinuteOnly.insert(2, ":");           // "1146" -> "11:46"
 
-    // 중복 데이터 체크 (시간 + 객체 유형 기준)
-    QString metaDataKey = time + objectType;
+    // // 중복 데이터 체크 (시간 + 객체 유형 기준)
+    // QString metaDataKey = time + objectType;
 
-    if (processedMetaData.contains(metaDataKey)) {
-        qDebug() << "중복 데이터입니다. 업데이트를 건너뜁니다.";
-        return;
-    }
-    processedMetaData.insert(metaDataKey); // 중복 데이터로 추가
+    // if (processedMetaData.contains(metaDataKey)) {
+    //     qDebug() << "중복 데이터입니다. 업데이트를 건너뜁니다.";
+    //     return;
+    // }
+    // processedMetaData.insert(metaDataKey); // 중복 데이터로 추가
 
     // // UI 레이블에 메타데이터 업데이트
     ui->timeLabel->setText("시간: " + time);
