@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
         frameSSLSocket->ignoreSslErrors();
     });
     
-    frameSSLSocket->connectToHostEncrypted("192.168.50.7", 12345);
+    frameSSLSocket->connectToHostEncrypted("192.168.50.14", 12345);
     if (!frameSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << frameSSLSocket->errorString();
     }
@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent)
         jsonSSLSocket->ignoreSslErrors();
     });
 
-    jsonSSLSocket->connectToHostEncrypted("192.168.50.7", 54321);
+    jsonSSLSocket->connectToHostEncrypted("192.168.50.14", 54321);
     if (!jsonSSLSocket->waitForEncrypted(3000)) {
         qDebug() << "Error:" << jsonSSLSocket->errorString();
     }
