@@ -12,7 +12,7 @@ EventLogManager::EventLogManager(const QString &dbPath, QObject *parent)
     }
     qDebug() << "Database opened successfully.";
 
-    // clearTable();  // 기존 데이터 삭제
+   clearTable();  // 기존 데이터 삭제
 
     createTable(); // 테이블 생성 호출
 }

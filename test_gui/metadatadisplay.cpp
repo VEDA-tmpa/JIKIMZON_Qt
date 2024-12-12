@@ -176,23 +176,23 @@ void MetaDataDisplay::updateMetaData(const QString &time, const QString &locatio
     ui->eventLog->addItem(logMessage);
 
 
-    // 객체 수 업데이트 (분 단위로 카운트)
-    QString currentMinute = timeMinuteOnly; // HH:MM 형식
-    objectCounts[currentMinute][objectType]++; // 분 단위로 객체 타입별 카운트 증가
+    // // 객체 수 업데이트 (분 단위로 카운트)
+    // QString currentMinute = timeMinuteOnly; // HH:MM 형식
+    // objectCounts[currentMinute][objectType]++; // 분 단위로 객체 타입별 카운트 증가
 
-    // 현재 시간(분 단위) 체크
-    if (lastUpdatedMinute != currentMinute) {
-        lastUpdatedMinute = currentMinute;
+    // // 현재 시간(분 단위) 체크
+    // if (lastUpdatedMinute != currentMinute) {
+    //     lastUpdatedMinute = currentMinute;
 
-        // 차트 업데이트
-        updateChart();
-    }
+    //     // 차트 업데이트
+    //     updateChart();
+    // }
 
-    // // 객체 수 업데이트
-    // objectCounts[objectType]++;
+    // 객체 수 업데이트
+    objectCounts[objectType]++;
 
-    // // 차트 업데이트
-    // updateChart();
+    // 차트 업데이트
+    updateChart();
 }
 
 void MetaDataDisplay::updateChart()
@@ -208,17 +208,17 @@ void MetaDataDisplay::updateChart()
     // objectCounts["paper"] = 0;           // 종이 8개
     // objectCounts["plastic"] = 0;        // 플라스틱 12개
 
-    // 현재 시간의 데이터만 가져오기
-    QString currentMinute = lastUpdatedMinute;  // updateMetaData에서 갱신된 lastUpdatedMinute 사용
-    if (!objectCounts.contains(currentMinute)) {
-        qDebug() << "No data for the current minute:" << currentMinute;
-        return;
-    }
+    // // 현재 시간의 데이터만 가져오기
+    // QString currentMinute = lastUpdatedMinute;  // updateMetaData에서 갱신된 lastUpdatedMinute 사용
+    // if (!objectCounts.contains(currentMinute)) {
+    //     qDebug() << "No data for the current minute:" << currentMinute;
+    //     return;
+    // }
 
-    // 현재 시간에 해당하는 객체 데이터를 가져옴
-    QMap<QString, int> currentCounts = objectCounts[currentMinute];
+    // // 현재 시간에 해당하는 객체 데이터를 가져옴
+    // QMap<QString, int> currentCounts = objectCounts[currentMinute];
 
-    qDebug() << "Current counts:" << currentCounts;
+    // qDebug() << "Current counts:" << currentCounts;
 
 
     // 도넛 그래프 시리즈 설정
@@ -242,37 +242,13 @@ void MetaDataDisplay::updateChart()
     colors["paper"] = QColor(255, 202, 58);
     colors["plastic"] = QColor(106, 76, 147);
 
-    // int totalCount = 0;
-    // for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
-    //     totalCount += it.value();
-    // }
-
-    // // 탐지된 객체에 대해 비율을 도넛 그래프에 추가
-    // for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
-    //     QString category = it.key();
-    //     int count = it.value();
-
-    //     // 객체에 대한 이모티콘을 설정
-    //     QString label = emojis.value(category) + " " + QString::number(count);
-
-    //     // 도넛 그래프에 추가
-    //     QPieSlice *slice = series->append(label, count);
-    //     slice->setBrush(colors.value(category));  // 색상 설정
-    //     slice->setLabelVisible(true);  // 라벨 표시
-
-    //     // 비율을 라벨로 추가 (예: "카드보드 15 (25%)")
-    //     slice->setLabel(QString("%1 (%2%)")
-    //                         .arg(emojis.value(category))
-    //                         .arg(static_cast<int>(count * 100.0 / totalCount)));
-    // }
-
     int totalCount = 0;
-    for (auto it = currentCounts.begin(); it != currentCounts.end(); ++it) {
+    for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
         totalCount += it.value();
     }
 
     // 탐지된 객체에 대해 비율을 도넛 그래프에 추가
-    for (auto it = currentCounts.begin(); it != currentCounts.end(); ++it) {
+    for (auto it = objectCounts.begin(); it != objectCounts.end(); ++it) {
         QString category = it.key();
         int count = it.value();
 
@@ -289,6 +265,30 @@ void MetaDataDisplay::updateChart()
                             .arg(emojis.value(category))
                             .arg(static_cast<int>(count * 100.0 / totalCount)));
     }
+
+    // int totalCount = 0;
+    // for (auto it = currentCounts.begin(); it != currentCounts.end(); ++it) {
+    //     totalCount += it.value();
+    // }
+
+    // // 탐지된 객체에 대해 비율을 도넛 그래프에 추가
+    // for (auto it = currentCounts.begin(); it != currentCounts.end(); ++it) {
+    //     QString category = it.key();
+    //     int count = it.value();
+
+    //     // 객체에 대한 이모티콘을 설정
+    //     QString label = emojis.value(category) + " " + QString::number(count);
+
+    //     // 도넛 그래프에 추가
+    //     QPieSlice *slice = series->append(label, count);
+    //     slice->setBrush(colors.value(category));  // 색상 설정
+    //     slice->setLabelVisible(true);  // 라벨 표시
+
+    //     // 비율을 라벨로 추가 (예: "카드보드 15 (25%)")
+    //     slice->setLabel(QString("%1 (%2%)")
+    //                         .arg(emojis.value(category))
+    //                         .arg(static_cast<int>(count * 100.0 / totalCount)));
+    // }
 
     connect(series, &QPieSeries::hovered, this, [=](QPieSlice *slice, bool state) {
         if (state) {
