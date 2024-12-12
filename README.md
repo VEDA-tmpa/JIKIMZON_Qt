@@ -5,6 +5,7 @@
 - FFmpeg 
 - OpenSSL
 - C++
+<br>
 
 ## 튜토리얼
 ### ① 외부 라이브러리 설치
@@ -49,7 +50,8 @@
         C:\dev\openssl\bin
         ```
 → 환경변수 설정 이후 재부팅
-<br>
+
+<br><br>
 
 #### Linux
 - Qt
